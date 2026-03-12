@@ -13,6 +13,7 @@ import TreasuryPage from '@/pages/TreasuryPage';
 import CompliancePage from '@/pages/CompliancePage';
 import CustomerDatabasePage from '@/pages/CustomerDatabasePage';
 import HowItWorksPage from '@/pages/HowItWorksPage';
+import ChatPage from '@/pages/ChatPage';
 
 export default function App() {
     return (
@@ -26,6 +27,7 @@ export default function App() {
                         <Route path="/browse" element={<BrowsePage />} />
                         <Route path="/listing/:id" element={<ListingDetailPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/profile/:id" element={<ProfilePage />} />
                         <Route path="/viewings" element={<ViewingsPage />} />
                         <Route path="/add-property" element={<AddPropertyPage />} />
                         <Route path="/residing-dashboard" element={<ResidingDashboardPage />} />
@@ -33,6 +35,7 @@ export default function App() {
                         <Route path="/compliance" element={<CompliancePage />} />
                         <Route path="/customers" element={<CustomerDatabasePage />} />
                         <Route path="/how-it-works" element={<HowItWorksPage />} />
+                        <Route path="/chat" element={<ChatPage />} />
                     </Routes>
                 </main>
             </AuthProvider>

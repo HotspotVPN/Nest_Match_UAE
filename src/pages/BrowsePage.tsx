@@ -4,20 +4,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { listings, formatCurrency, users, getInitials } from '@/data/mockData';
 import { Search, MapPin, Train, ShieldCheck, Users as UsersIcon, Award } from 'lucide-react';
 
-const DISTRICTS = ['All', 'Dubai Marina', 'JLT', 'Downtown Dubai', 'Business Bay', 'JBR', 'Al Barsha'];
+const DISTRICTS = ['All', 'Deira', 'International City', 'Al Qusais', 'Bur Dubai', 'Al Nahda', 'Discovery Gardens', 'JVC', 'Dubai Silicon Oasis', 'Al Barsha', 'Dubai Marina', 'JLT', 'Business Bay', 'Downtown Dubai', 'JBR'];
 
 export default function BrowsePage() {
     const { currentUser } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('All');
-    const [budgetMax, setBudgetMax] = useState(10000);
+    const [budgetMin, setBudgetMin] = useState(500);
+    const [budgetMax, setBudgetMax] = useState(3500);
 
     // COMPLIANCE FILTER: Only show properties where currentOccupants < maxLegalOccupancy
     const filteredListings = listings.filter(l => {
         if (l.currentOccupants >= l.maxLegalOccupancy) return false; // STRICT: Hide at-capacity
         if (!l.isActive) return false;
         if (selectedDistrict !== 'All' && l.district !== selectedDistrict) return false;
-        if (l.rent_per_room > budgetMax) return false;
+        if (l.rent_per_room < budgetMin || l.rent_per_room > budgetMax) return false;
         if (searchQuery && !l.title.toLowerCase().includes(searchQuery.toLowerCase()) && !l.address.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
     });
@@ -54,9 +55,36 @@ export default function BrowsePage() {
                                 {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
-                        <div className="form-group" style={{ flex: '1', minWidth: '150px' }}>
-                            <label className="form-label">Max Budget: {formatCurrency(budgetMax)}/mo</label>
-                            <input type="range" min={1000} max={10000} step={500} value={budgetMax} onChange={e => setBudgetMax(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--brand-purple)' }} />
+                        <div className="form-group" style={{ flex: '2', minWidth: '300px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                <label className="form-label" style={{ marginBottom: 0 }}>Budget Range (AED)</label>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--brand-purple)' }}>
+                                    {formatCurrency(budgetMin)} - {formatCurrency(budgetMax)}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <input 
+                                    type="range" 
+                                    min={500} 
+                                    max={5000} 
+                                    step={100} 
+                                    value={budgetMin} 
+                                    onChange={e => setBudgetMin(Math.min(Number(e.target.value), budgetMax))} 
+                                    style={{ width: '100%', accentColor: 'var(--brand-purple)' }} 
+                                    title="Minimum Rent"
+                                />
+                                <span style={{ color: 'var(--text-muted)' }}>to</span>
+                                <input 
+                                    type="range" 
+                                    min={500} 
+                                    max={5000} 
+                                    step={100} 
+                                    value={budgetMax} 
+                                    onChange={e => setBudgetMax(Math.max(Number(e.target.value), budgetMin))} 
+                                    style={{ width: '100%', accentColor: 'var(--brand-purple)' }} 
+                                    title="Maximum Rent"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

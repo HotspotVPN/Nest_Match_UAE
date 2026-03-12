@@ -287,7 +287,7 @@ export interface Application {
 }
 
 // ─── Payment Types ────────────────────────────────────────────
-export type PaymentType = 'rent' | 'deposit' | 'refund';
+export type PaymentType = 'rent' | 'deposit' | 'refund' | 'penalty_capture';
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'overdue';
 export type PaymentMethod = 'bank_transfer' | 'direct_debit' | 'card';
 export type ReraEscrowStatus = 'registered' | 'held' | 'release_requested' | 'released';

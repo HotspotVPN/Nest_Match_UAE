@@ -1,11 +1,12 @@
-import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { listings, users, formatCurrency, getInitials, viewingBookings } from '@/data/mockData';
+import { listings, users, formatCurrency, getInitials, viewingBookings, propertyRatings } from '@/data/mockData';
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
-    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
+    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock, CreditCard,
+    MessageSquare, History, Edit2, X, CheckCircle2
 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -15,6 +16,11 @@ export default function ListingDetailPage() {
     const [bookingDate, setBookingDate] = useState('');
     const [bookingTime, setBookingTime] = useState('');
     const [bookingStep, setBookingStep] = useState<'details' | 'payment' | 'confirmation'>('details');
+    const [isEditingRent, setIsEditingRent] = useState(false);
+    const [rentAmount, setRentAmount] = useState(listing?.rent_per_room || 0);
+    const [activeBills, setActiveBills] = useState<string[]>(listing?.bills_included ? ['Water', 'Wi-Fi', 'DEWA', 'Building Maintenance'] : []);
+    const [activeAmenities, setActiveAmenities] = useState<string[]>(listing?.amenities || []);
+    const [showTenantsModal, setShowTenantsModal] = useState(false);
 
     if (!listing) return (
         <div className="section container" style={{ textAlign: 'center', paddingTop: '4rem' }}>
@@ -31,8 +37,19 @@ export default function ListingDetailPage() {
     
     // Add verification Tier 2 check from context
     const { isVerifiedForBooking } = useAuth();
+    const isOwner = currentUser?.id === listing.landlord_id;
 
-    const hasActiveViewing = currentUser && viewingBookings.some(v => v.property_id === listing.id && v.searcher_id === currentUser.id && !['COMPLETED', 'TENANT_NO_SHOW_PENALTY', 'LANDLORD_NO_SHOW_PENALTY'].includes(v.status));
+    const myConfirmedViewings = viewingBookings.filter(v => 
+        (v.searcher_id === currentUser?.id) && 
+        v.property_id === listing.id && 
+        ['CONFIRMED', 'COMPLETED'].includes(v.status)
+    );
+    const canBook = myConfirmedViewings.length === 0;
+
+    // Aggregate anonymous ratings for UAE compliance
+    const propertyReviews = propertyRatings.filter(pr => pr.property_id === listing.id);
+    const averageAcQuality = propertyReviews.length ? (propertyReviews.reduce((sum, pr) => sum + pr.acQuality, 0) / propertyReviews.length).toFixed(1) : 'N/A';
+    const averageMaintenance = propertyReviews.length ? (propertyReviews.reduce((sum, pr) => sum + pr.maintenanceSpeed, 0) / propertyReviews.length).toFixed(1) : 'N/A';
 
     return (
         <div className="section" style={{ paddingTop: '2rem' }}>
@@ -102,8 +119,17 @@ export default function ListingDetailPage() {
                             <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <UsersIcon size={20} /> Occupancy Status
                             </h3>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.375rem' }}>
-                                <span style={{ fontSize: '0.875rem' }}>Current: {listing.currentOccupants} / {listing.maxLegalOccupancy}</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.375rem', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.875rem' }}>
+                                    Current:{' '}
+                                    {isOwner ? (
+                                        <button onClick={() => setShowTenantsModal(true)} className="btn btn-ghost btn-sm" style={{ padding: '0 0.25rem', textDecoration: 'underline', color: 'var(--primary)', height: 'auto', minHeight: 'auto', display: 'inline' }}>
+                                            {listing.currentOccupants} / {listing.maxLegalOccupancy}
+                                        </button>
+                                    ) : (
+                                        `${listing.currentOccupants} / ${listing.maxLegalOccupancy}`
+                                    )}
+                                </span>
                                 <span style={{ fontSize: '0.75rem', color: occupancyClass === 'full' ? 'var(--error)' : occupancyClass === 'warning' ? 'var(--warning)' : 'var(--success)' }}>
                                     {occupancyClass === 'full' ? 'AT CAPACITY' : occupancyClass === 'warning' ? 'Nearly Full' : 'Available'}
                                 </span>
@@ -121,10 +147,34 @@ export default function ListingDetailPage() {
 
                         {/* Amenities */}
                         <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-                            <h3 style={{ marginBottom: '0.75rem' }}>Amenities</h3>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                {listing.amenities.map(a => <span key={a} className="tag">{a}</span>)}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                <h3 style={{ margin: 0 }}>Amenities</h3>
+                                {isOwner && <button className="btn btn-ghost btn-sm" style={{ color: 'var(--primary)', padding: '0 0.5rem', height: 'auto', minHeight: 'auto' }}>+ Add</button>}
                             </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {activeAmenities.map(a => (
+                                    <span key={a} className="tag" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                        {a}
+                                        {isOwner && <X size={12} style={{ cursor: 'pointer', opacity: 0.7 }} onClick={() => setActiveAmenities(activeAmenities.filter(am => am !== a))} />}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {/* Pending Tenant Recommendations (Landlord Only) */}
+                            {isOwner && (
+                                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+                                    <h4 style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Pending Tenant Recommendations</h4>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        <span className="tag" style={{ borderStyle: 'dashed', background: 'transparent', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            Air Purifier 
+                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                <button className="btn btn-ghost btn-icon" style={{ width: '20px', height: '20px', color: 'var(--success)' }} onClick={() => setActiveAmenities([...activeAmenities, 'Air Purifier'])}><CheckCircle2 size={14} /></button>
+                                                <button className="btn btn-ghost btn-icon" style={{ width: '20px', height: '20px', color: 'var(--error)' }}><X size={14} /></button>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Transport */}
@@ -133,7 +183,7 @@ export default function ListingDetailPage() {
                                 <h3 style={{ marginBottom: '0.75rem' }}>Transport</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     {listing.transport_chips.map((chip, i) => (
-                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)' }}>
+                                        <a key={i} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.district + ' ' + chip.label + ' Station')}`} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', textDecoration: 'none', color: 'inherit', transition: 'background 0.2s' }}>
                                             <Train size={16} style={{ color: chip.line_color || 'var(--text-muted)' }} />
                                             <div>
                                                 <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{chip.label}</div>
@@ -142,7 +192,7 @@ export default function ListingDetailPage() {
                                             {chip.lines?.map(line => (
                                                 <span key={line} className="badge" style={{ marginLeft: 'auto', background: `${chip.line_color}20`, color: chip.line_color, border: `1px solid ${chip.line_color}40`, fontSize: '0.625rem' }}>{line}</span>
                                             ))}
-                                        </div>
+                                        </a>
                                     ))}
                                 </div>
                             </div>
@@ -185,8 +235,19 @@ export default function ListingDetailPage() {
                     <div>
                         {/* Price Card */}
                         <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', position: 'sticky', top: '80px' }}>
-                            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-display)', marginBottom: '0.25rem' }}>
-                                {formatCurrency(listing.rent_per_room)}
+                            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-display)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        {isEditingRent ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>AED</span>
+                                                <input type="number" className="form-input" style={{ width: '120px', fontSize: '1.25rem', padding: '0.25rem 0.5rem' }} value={rentAmount} onChange={e => setRentAmount(Number(e.target.value))} />
+                                                <button className="btn btn-primary btn-icon" style={{ width: '32px', height: '32px' }} onClick={() => setIsEditingRent(false)}><Check size={16} /></button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {formatCurrency(rentAmount)}
+                                                {isOwner && <button className="btn btn-ghost btn-icon" style={{ color: 'var(--text-muted)', width: '28px', height: '28px' }} onClick={() => setIsEditingRent(true)}><Edit2 size={16} /></button>}
+                                            </>
+                                        )}
                             </div>
                             <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>per room / month</div>
 
@@ -195,12 +256,43 @@ export default function ListingDetailPage() {
                                 <span style={{ fontWeight: 600 }}>{formatCurrency(listing.deposit)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0', borderTop: '1px solid var(--border-subtle)', fontSize: '0.875rem' }}>
-                                <span style={{ color: 'var(--text-muted)' }}>Bills</span>
-                                <span style={{ fontWeight: 600 }}>{listing.bills_included ? 'Included' : 'Split'}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0', borderTop: '1px solid var(--border-subtle)', fontSize: '0.875rem' }}>
                                 <span style={{ color: 'var(--text-muted)' }}>Available Rooms</span>
                                 <span style={{ fontWeight: 600 }}>{listing.available_rooms}</span>
+                            </div>
+
+                            {/* Bills Details - Expandable via labels for owners or just detailed */}
+                            <div style={{ padding: '0.625rem 0', borderTop: '1px solid var(--border-subtle)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginBottom: '0.75rem' }}>
+                                    <span style={{ color: 'var(--text-muted)' }}>Bills & Utilities</span>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                                    {['Water', 'Wi-Fi', 'Deep Cleaning', 'Garbage Collection', 'Building Maintenance', 'DEWA'].map(bill => {
+                                        const isActive = activeBills.includes(bill);
+                                        return (
+                                            <button 
+                                                key={bill}
+                                                disabled={!isOwner}
+                                                onClick={() => {
+                                                    if (isActive) setActiveBills(activeBills.filter(b => b !== bill));
+                                                    else setActiveBills([...activeBills, bill]);
+                                                }}
+                                                className={`badge ${isActive ? 'badge-blue' : ''}`}
+                                                style={{ 
+                                                    opacity: isActive ? 1 : 0.5, 
+                                                    cursor: isOwner ? 'pointer' : 'default',
+                                                    border: `1px solid ${isActive ? 'rgba(56, 189, 248, 0.4)' : 'var(--border-strong)'}`,
+                                                    background: isActive ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
+                                                    color: isActive ? 'var(--brand-blue-light)' : 'var(--text-muted)',
+                                                    transition: 'all 0.2s',
+                                                    padding: '0.25rem 0.5rem',
+                                                    fontSize: '0.6875rem'
+                                                }}
+                                            >
+                                                {bill}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
 
                             <hr className="divider" />
@@ -208,7 +300,7 @@ export default function ListingDetailPage() {
                             {/* Book Viewing CTA */}
                             {listing.available_rooms > 0 && currentUser?.type === 'roommate' && (
                                 <>
-                                    {hasActiveViewing ? (
+                                    {!canBook ? (
                                         <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', textAlign: 'center' }}>
                                             <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>Viewing already booked</span>
                                         </div>
@@ -238,11 +330,13 @@ export default function ListingDetailPage() {
                             {landlord && (
                                 <div style={{ marginTop: '1rem', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                                        <div className="avatar avatar-md">{getInitials(landlord.name)}</div>
-                                        <div>
-                                            <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{landlord.name}</div>
-                                            <span className="verified-badge"><ShieldCheck size={12} /> UAE PASS Verified</span>
-                                        </div>
+                                        <Link to={`/profile/${landlord.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <div className="avatar avatar-md">{getInitials(landlord.name)}</div>
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{landlord.name}</div>
+                                                <span className="verified-badge"><ShieldCheck size={12} /> UAE PASS Verified</span>
+                                            </div>
+                                        </Link>
                                     </div>
                                     {landlord.rating && (
                                         <div style={{ fontSize: '0.75rem', color: '#f59e0b' }}>★ {landlord.rating.toFixed(1)} ({landlord.total_reviews} reviews)</div>
@@ -269,6 +363,7 @@ export default function ListingDetailPage() {
                 </div>
 
                 {/* Booking Modal */}
+                {/* ... existing booking modal ... */}
                 {showBookingModal && (
                     <div className="modal-overlay" onClick={() => setShowBookingModal(false)}>
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -311,28 +406,35 @@ export default function ListingDetailPage() {
                                 <>
                                     <h2 style={{ marginBottom: '0.5rem' }}>Confirm 50 AED Pre-Auth</h2>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-                                        This is a manual-capture pre-authorization, not a charge.
+                                        To comply with RERA regulations, this is NOT a viewing fee. This is a 50 AED pre-authorization hold. You will only be charged a Platform Abuse Penalty if you fail to attend the confirmed viewing.
                                     </p>
 
                                     {/* Simulated Stripe Card Input */}
-                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-medium)', marginBottom: '1rem' }}>
-                                        <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                                            <label className="form-label">Card Number</label>
-                                            <input className="form-input" placeholder="4242 4242 4242 4242" disabled style={{ opacity: 0.7 }} />
+                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-medium)', marginBottom: '1rem', background: 'var(--bg-surface-2)' }}>
+                                        <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                            <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Cardholder Name</label>
+                                            <input className="form-input" placeholder="e.g. John Doe" />
                                         </div>
-                                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                        <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                            <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Card Number</label>
+                                            <input className="form-input" placeholder="**** **** **** 1234" />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '1rem' }}>
                                             <div className="form-group" style={{ flex: 1 }}>
-                                                <label className="form-label">Expiry</label>
-                                                <input className="form-input" placeholder="12/28" disabled style={{ opacity: 0.7 }} />
+                                                <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Expiry Date</label>
+                                                <input className="form-input" placeholder="MM/YY" />
                                             </div>
                                             <div className="form-group" style={{ flex: 1 }}>
-                                                <label className="form-label">CVC</label>
-                                                <input className="form-input" placeholder="123" disabled style={{ opacity: 0.7 }} />
+                                                <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>CVC</label>
+                                                <input className="form-input" placeholder="123" type="password" />
                                             </div>
                                         </div>
-                                        <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '0.5rem', textAlign: 'center' }}>
-                                            💳 Demo mode — no real payment processed
-                                        </p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+                                            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Powered by <strong>Stripe</strong></span>
+                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                <CreditCard size={20} style={{ color: 'var(--text-muted)' }} />
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem' }}>
@@ -340,8 +442,17 @@ export default function ListingDetailPage() {
                                         <span style={{ color: 'var(--warning)' }}>{formatCurrency(50)}</span>
                                     </div>
 
-                                    <button onClick={() => setBookingStep('confirmation')} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                                        Authorize 50 AED (No Immediate Charge)
+                                    <button 
+                                        id="auth-btn"
+                                        onClick={() => {
+                                            const btn = document.getElementById('auth-btn');
+                                            if (btn) btn.innerHTML = 'Authorizing...';
+                                            setTimeout(() => setBookingStep('confirmation'), 1500);
+                                        }} 
+                                        className="btn btn-primary btn-lg" 
+                                        style={{ width: '100%' }}
+                                    >
+                                        Authorize 50 AED Hold
                                     </button>
                                 </>
                             )}
@@ -364,6 +475,30 @@ export default function ListingDetailPage() {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Residing Tenants Modal (Landlord Only) */}
+                {showTenantsModal && isOwner && (
+                    <div className="modal-overlay" onClick={() => setShowTenantsModal(false)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Current Tenants</h2>
+                                <button className="btn btn-ghost btn-icon" onClick={() => setShowTenantsModal(false)}><X size={18} /></button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {users.filter(u => u.type === 'roommate' && viewingBookings.some(v => v.searcher_id === u.id && v.property_id === listing.id && ['CONFIRMED', 'COMPLETED'].includes(v.status))).slice(0, listing.currentOccupants).map((tenant, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)' }}>
+                                        <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{tenant.name}</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 85}</div>
+                                        </div>
+                                        <Link to={`/chat`} className="btn btn-ghost btn-sm"><MessageSquare size={14} /></Link>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}

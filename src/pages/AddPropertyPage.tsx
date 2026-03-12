@@ -19,7 +19,11 @@ export default function AddPropertyPage() {
         amenities: ['Central AC', 'Pool', 'Gym'],
         houseRules: ['No smoking', 'Quiet hours 10PM-7AM'],
         description: '', billsIncluded: true,
+        acceptedCheques: ['1 Cheque', '4 Cheques'] as string[],
+        ejariHandledBy: 'landlord',
+        maintenanceManagedBy: 'landlord',
     });
+    const [showDaleelEstimate, setShowDaleelEstimate] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
     const [verificationError, setVerificationError] = useState('');
 
@@ -93,6 +97,7 @@ export default function AddPropertyPage() {
                                     const res = await verifySharedHousingPermit(form.municipalityPermit, form.makaniNumber);
                                     if (res.isValid) {
                                         setForm(prev => ({ ...prev, maxLegalOccupancy: res.maxLegalOccupancy, district: res.permittedAreas || prev.district }));
+                                        setShowDaleelEstimate(true);
                                         setStep('occupancy');
                                     } else {
                                         setVerificationError(res.statusMessage);
@@ -113,6 +118,14 @@ export default function AddPropertyPage() {
                     {step === 'occupancy' && (
                         <>
                             <button onClick={() => setStep('permits')} className="btn btn-ghost btn-sm" style={{ marginBottom: '1rem' }}><ArrowLeft size={14} /> Back</button>
+                            
+                            {showDaleelEstimate && (
+                                <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <Building2 size={18} style={{ color: 'var(--info)' }} />
+                                    <span style={{ fontSize: '0.875rem', color: 'var(--info)' }}><strong>Smart Rent Estimate:</strong> DLD average for this Makani is AED 3,200/room</span>
+                                </div>
+                            )}
+
                             <h3 style={{ marginBottom: '1rem' }}><UsersIcon size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />Occupancy & Rules</h3>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                 <div className="form-group">
@@ -162,9 +175,46 @@ export default function AddPropertyPage() {
                                 <label className="form-label">Description</label>
                                 <textarea className="form-input" placeholder="Describe the property..." value={form.description} onChange={e => update('description', e.target.value)} />
                             </div>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                <input type="checkbox" checked={form.billsIncluded} onChange={e => update('billsIncluded', e.target.checked)} /> Bills included (DEWA, Internet, Chiller)
-                            </label>
+
+                            <hr className="divider" />
+                            <h4 style={{ marginBottom: '1rem' }}>Commercial Leasing Terms</h4>
+                            
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label className="form-label">Accepted Cheques</label>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {['1 Cheque', '2 Cheques', '4 Cheques', '6 Cheques', '12 Cheques'].map(c => (
+                                        <button key={c} onClick={() => {
+                                            const newCheques = form.acceptedCheques.includes(c) ? form.acceptedCheques.filter(x => x !== c) : [...form.acceptedCheques, c];
+                                            update('acceptedCheques', newCheques);
+                                        }} className={`btn btn-sm ${form.acceptedCheques.includes(c) ? 'btn-primary' : 'btn-ghost'}`} style={{ border: '1px solid var(--border-medium)' }}>{c}</button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ fontSize: '0.875rem' }}>Utilities (DEWA & Wi-Fi)</span>
+                                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                        <button onClick={() => update('billsIncluded', true)} className={`btn btn-sm ${form.billsIncluded ? 'btn-uaepass' : 'btn-ghost'}`}>Included in Rent</button>
+                                        <button onClick={() => update('billsIncluded', false)} className={`btn btn-sm ${!form.billsIncluded ? 'btn-uaepass' : 'btn-ghost'}`}>Split among Roommates</button>
+                                    </div>
+                                </div>
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ fontSize: '0.875rem' }}>Ejari Registration</span>
+                                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                        <button onClick={() => update('ejariHandledBy', 'landlord')} className={`btn btn-sm ${form.ejariHandledBy === 'landlord' ? 'btn-blue' : 'btn-ghost'}`}>Handled by Landlord/PM</button>
+                                        <button onClick={() => update('ejariHandledBy', 'tenant')} className={`btn btn-sm ${form.ejariHandledBy === 'tenant' ? 'btn-blue' : 'btn-ghost'}`}>Handled by Tenant</button>
+                                    </div>
+                                </div>
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ fontSize: '0.875rem' }}>Maintenance</span>
+                                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                        <button onClick={() => update('maintenanceManagedBy', 'landlord')} className={`btn btn-sm ${form.maintenanceManagedBy === 'landlord' ? 'btn-primary' : 'btn-ghost'}`}>Landlord Managed</button>
+                                        <button onClick={() => update('maintenanceManagedBy', 'agency')} className={`btn btn-sm ${form.maintenanceManagedBy === 'agency' ? 'btn-primary' : 'btn-ghost'}`}>Agency Managed</button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button onClick={() => setStep('review')} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
                                 Review Listing <ArrowRight size={16} />
                             </button>

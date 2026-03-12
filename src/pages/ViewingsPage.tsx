@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { viewingBookings, listings, users, formatCurrency, getInitials, formatDate } from '@/data/mockData';
 import { CalendarCheck, Clock, MapPin, CreditCard, CheckCircle2, XCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 
 const STATUS_CONFIG: Record<string, { label: string; badge: string; color: string }> = {
     PENDING: { label: 'Pending', badge: 'badge-orange', color: 'var(--warning)' },
@@ -19,13 +20,36 @@ export default function ViewingsPage() {
         v.searcher_id === currentUser.id || v.landlord_id === currentUser.id
     );
 
+    const [viewings, setViewings] = useState(myViewings);
+    const [statusFilter, setStatusFilter] = useState('All');
+
+    const updateViewingStatus = (id: string, newStatus: string) => {
+        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus as any } : v));
+    };
+
+    const filteredViewings = viewings.filter(v => {
+        if (statusFilter === 'All') return true;
+        if (statusFilter === 'Upcoming') return ['PENDING', 'PENDING_LANDLORD_APPROVAL', 'CONFIRMED'].includes(v.status);
+        if (statusFilter === 'Completed') return v.status === 'COMPLETED';
+        if (statusFilter === 'Penalties') return ['TENANT_NO_SHOW_PENALTY', 'LANDLORD_NO_SHOW_PENALTY'].includes(v.status);
+        return true;
+    });
+
     return (
         <div className="section" style={{ paddingTop: '2rem' }}>
             <div className="container" style={{ maxWidth: '900px' }}>
                 <h2 style={{ marginBottom: '0.5rem' }}>Viewing Bookings</h2>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.875rem' }}>
-                    {currentUser.type === 'roommate' ? 'Your scheduled property viewings' : 'Incoming viewing requests for your properties'}
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>
+                        {currentUser.type === 'roommate' ? 'Your scheduled property viewings' : 'Incoming viewing requests for your properties'}
+                    </p>
+                    <select className="form-input form-select" style={{ width: 'auto', padding: '0.25rem 2rem 0.25rem 0.75rem', fontSize: '0.8125rem' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                        <option value="All">All Viewings</option>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Penalties">Penalties</option>
+                    </select>
+                </div>
 
                 {/* Stats */}
                 <div className="grid-4" style={{ marginBottom: '2rem' }}>
@@ -44,7 +68,7 @@ export default function ViewingsPage() {
 
                 {/* Viewing Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {myViewings.map(viewing => {
+                    {filteredViewings.map(viewing => {
                         const listing = listings.find(l => l.id === viewing.property_id);
                         const searcher = users.find(u => u.id === viewing.searcher_id);
                         const landlord = users.find(u => u.id === viewing.landlord_id);
@@ -107,18 +131,52 @@ export default function ViewingsPage() {
                                             </label>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                                            <button className="btn btn-primary btn-sm"><CheckCircle2 size={14} /> Accept</button>
-                                            <button className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}><XCircle size={14} /> Decline</button>
+                                            <button onClick={() => updateViewingStatus(viewing.id, 'CONFIRMED')} className="btn btn-primary btn-sm"><CheckCircle2 size={14} /> Accept</button>
+                                            <button onClick={() => updateViewingStatus(viewing.id, 'COMPLETED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}><XCircle size={14} /> Decline</button>
                                         </div>
                                     </div>
                                 )}
 
                                 {viewing.status === 'CONFIRMED' && (
-                                    <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--success-bg)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
-                                        <span style={{ fontSize: '0.8125rem', color: 'var(--success)' }}>
-                                            Both parties confirmed — {formatCurrency(50)} penalty authorization active
-                                        </span>
+                                    <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--success-bg)', border: '1px solid rgba(34,197,94,0.3)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                            <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
+                                            <span style={{ fontSize: '0.8125rem', color: 'var(--success)', fontWeight: 600 }}>
+                                                Both parties confirmed — {formatCurrency(50)} penalty authorization active
+                                            </span>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                            <button 
+                                                onClick={() => {
+                                                    if (window.confirm('Mark viewing as completed? This will release the 50 AED penalty authorization.')) {
+                                                        updateViewingStatus(viewing.id, 'COMPLETED');
+                                                    }
+                                                }}
+                                                className="btn btn-primary btn-sm"
+                                            >
+                                                <CheckCircle2 size={14} /> Viewing Completed
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if (window.confirm('Report Tenant No-Show? This will CAPTURE the 50 AED penalty from the tenant.')) {
+                                                        updateViewingStatus(viewing.id, 'TENANT_NO_SHOW_PENALTY');
+                                                    }
+                                                }}
+                                                className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', border: '1px solid var(--error)' }}
+                                            >
+                                                <XCircle size={14} /> Report: Tenant No-Show
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if (window.confirm('Report Landlord No-Show? This will CHARGE the landlord a 50 AED penalty.')) {
+                                                        updateViewingStatus(viewing.id, 'LANDLORD_NO_SHOW_PENALTY');
+                                                    }
+                                                }}
+                                                className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', border: '1px solid var(--error)' }}
+                                            >
+                                                <AlertTriangle size={14} /> Report: Landlord No-Show
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
