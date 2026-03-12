@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, CheckCircle2, ArrowLeft, ArrowRight, MapPin, Building2, Users as UsersIcon } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, ArrowLeft, ArrowRight, MapPin, Building2, Users as UsersIcon, Loader2 } from 'lucide-react';
+import { verifySharedHousingPermit } from '@/services/mockDldService';
 
 type Step = 'permits' | 'occupancy' | 'pricing' | 'review';
 const STEPS: Step[] = ['permits', 'occupancy', 'pricing', 'review'];
@@ -19,6 +20,8 @@ export default function AddPropertyPage() {
         houseRules: ['No smoking', 'Quiet hours 10PM-7AM'],
         description: '', billsIncluded: true,
     });
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [verificationError, setVerificationError] = useState('');
 
     if (!currentUser || (currentUser.type !== 'landlord' && currentUser.type !== 'letting_agent')) {
         return <div className="section container" style={{ textAlign: 'center' }}><h2>Landlord / Agent access only</h2></div>;
@@ -83,9 +86,26 @@ export default function AddPropertyPage() {
                                 <input className="form-input" placeholder="e.g. TRAK-2025-DM-78901" value={form.trakheesiPermit} onChange={e => update('trakheesiPermit', e.target.value)} />
                             </div>
 
-                            <button onClick={() => setStep('occupancy')} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!form.title || !form.address || !makaniValid || !form.municipalityPermit}>
-                                Continue <ArrowRight size={16} />
+                            <button onClick={async () => {
+                                setIsVerifying(true);
+                                setVerificationError('');
+                                try {
+                                    const res = await verifySharedHousingPermit(form.municipalityPermit, form.makaniNumber);
+                                    if (res.isValid) {
+                                        setForm(prev => ({ ...prev, maxLegalOccupancy: res.maxLegalOccupancy, district: res.permittedAreas || prev.district }));
+                                        setStep('occupancy');
+                                    } else {
+                                        setVerificationError(res.statusMessage);
+                                    }
+                                } catch (e: any) {
+                                    setVerificationError(e.message || 'Verification failed');
+                                } finally {
+                                    setIsVerifying(false);
+                                }
+                            }} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!form.title || !form.address || !makaniValid || !form.municipalityPermit || isVerifying}>
+                                {isVerifying ? <Loader2 className="spinner" size={16} /> : `Verify Permit via DLD API`}
                             </button>
+                            {verificationError && <div style={{ color: 'var(--error)', fontSize: '0.8125rem', marginTop: '0.75rem', textAlign: 'center' }}>{verificationError}</div>}
                         </>
                     )}
 
@@ -97,8 +117,8 @@ export default function AddPropertyPage() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                 <div className="form-group">
                                     <label className="form-label">Max Legal Occupancy *</label>
-                                    <input type="number" className="form-input" min={1} max={10} value={form.maxLegalOccupancy} onChange={e => update('maxLegalOccupancy', Number(e.target.value))} />
-                                    <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>As stated on Municipality permit</span>
+                                    <input type="number" className="form-input" value={form.maxLegalOccupancy} disabled style={{ opacity: 0.7, borderColor: 'var(--success)', background: 'var(--success-bg)' }} />
+                                    <span style={{ fontSize: '0.6875rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}><CheckCircle2 size={12} /> Fetched from DLD API</span>
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Total Rooms</label>
@@ -172,6 +192,7 @@ export default function AddPropertyPage() {
                                     <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.02)' }}>
                                         <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{item.label}</span>
                                         <span style={{ fontWeight: 600, fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            {item.label === 'Max Occupancy' && <span className="badge badge-green" style={{ fontSize: '0.5625rem', marginRight: '0.25rem' }}>DLD VERIFIED</span>}
                                             {item.value}
                                             {item.check && <CheckCircle2 size={12} style={{ color: 'var(--success)' }} />}
                                         </span>

@@ -7,8 +7,8 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string; color: strin
     PENDING_LANDLORD_APPROVAL: { label: 'Awaiting Landlord', badge: 'badge-blue', color: 'var(--info)' },
     CONFIRMED: { label: 'Confirmed', badge: 'badge-green', color: 'var(--success)' },
     COMPLETED: { label: 'Completed', badge: 'badge-green', color: 'var(--success)' },
-    SEARCHER_NO_SHOW: { label: 'Tenant No-Show', badge: 'badge-red', color: 'var(--error)' },
-    LANDLORD_NO_SHOW: { label: 'Landlord No-Show', badge: 'badge-red', color: 'var(--error)' },
+    TENANT_NO_SHOW_PENALTY: { label: 'Tenant No-Show Penalty', badge: 'badge-red', color: 'var(--error)' },
+    LANDLORD_NO_SHOW_PENALTY: { label: 'Landlord No-Show Penalty', badge: 'badge-red', color: 'var(--error)' },
 };
 
 export default function ViewingsPage() {
@@ -85,7 +85,7 @@ export default function ViewingsPage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Commitment Hold</div>
+                                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Abuse Penalty Hold</div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600, color: 'var(--warning)' }}>
                                             <CreditCard size={14} /> {formatCurrency(viewing.hold_amount)}
                                         </div>
@@ -103,7 +103,7 @@ export default function ViewingsPage() {
                                                 Accept this viewing? You agree to a {formatCurrency(50)} penalty if you fail to attend.
                                             </p>
                                             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--warning)' }}>
-                                                <input type="checkbox" /> I agree to the mutual commitment penalty
+                                                <input type="checkbox" /> I agree to the Platform Abuse Penalty Authorization
                                             </label>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
@@ -117,7 +117,7 @@ export default function ViewingsPage() {
                                     <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--success-bg)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                         <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
                                         <span style={{ fontSize: '0.8125rem', color: 'var(--success)' }}>
-                                            Both parties committed — {formatCurrency(50)} hold active on both sides
+                                            Both parties confirmed — {formatCurrency(50)} penalty authorization active
                                         </span>
                                     </div>
                                 )}

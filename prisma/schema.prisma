@@ -1,0 +1,210 @@
+// ─── NestMatch UAE — Prisma Schema ────────────────────────────
+// Investor-ready database blueprint for REES application demo.
+// This schema enforces:
+//   1. Tiered UAE PASS Authentication
+//   2. Law No. 4 property compliance (occupancy from API, not user)
+//   3. Platform Abuse Penalty (NOT "viewing fee") for Stripe holds
+//   4. Defamation-safe star-only ratings (no text fields)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────
+
+enum UserRole {
+  SEARCHING_TENANT
+  RESIDING_TENANT
+  LANDLORD
+  AGENT
+  COMPLIANCE_ADMIN
+  FINANCE_ADMIN
+  OPERATIONS_ADMIN
+}
+
+enum ViewingStatus {
+  PENDING
+  PENDING_LANDLORD_APPROVAL
+  CONFIRMED
+  COMPLETED
+  TENANT_NO_SHOW_PENALTY     // Platform Abuse — tenant ghosted
+  LANDLORD_NO_SHOW_PENALTY   // Platform Abuse — landlord ghosted
+}
+
+enum PaymentType {
+  RENT
+  DEPOSIT
+  REFUND
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  OVERDUE
+}
+
+enum ReraEscrowStatus {
+  REGISTERED
+  HELD
+  RELEASE_REQUESTED
+  RELEASED
+}
+
+// ─── User Model (Tiered UAE PASS Authentication) ──────────────
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String?                      // Tier 1: email/password
+  googleId            String?   @unique            // Tier 1: Google OAuth
+  uaePassId           String?   @unique            // Tier 2: UAE PASS identity
+  emiratesId          String?   @unique            // Emirates ID (auto-filled by UAE PASS)
+  isUaePassVerified   Boolean   @default(false)    // Tier 2: UAE PASS OAuth completed
+  isIdVerified        Boolean   @default(false)    // Tier 2 alt: Onfido verification (new expats)
+  role                UserRole
+  name                String
+  phone               String?                      // +971 format
+  avatar              String?
+  bio                 String?
+  lifestyleTags       String[]                     // Tags for blind matching
+  personalityTraits   String[]                     // Personality descriptors
+  hobbies             String[]                     // Hobbies for roommate matching
+  gccScore            Int       @default(0)        // Good Conduct Certificate: 0-100
+  isPremium           Boolean   @default(false)
+  bankLinked          Boolean   @default(false)
+  stripeCustomerId    String?                      // Stripe Customer ID for holds
+  reraLicense         String?                      // For AGENT role only
+  agencyName          String?                      // For AGENT role only
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  ownedProperties     Property[]        @relation("PropertyLandlord")
+  managedProperties   Property[]        @relation("PropertyAgent")
+  viewingsAsTenant    ViewingBooking[]   @relation("ViewingTenant")
+  viewingsAsLandlord  ViewingBooking[]   @relation("ViewingLandlord")
+  ratingsGiven        PropertyRating[]
+  paymentsMade        Payment[]          @relation("Payer")
+  paymentsReceived    Payment[]          @relation("Payee")
+
+  @@map("users")
+}
+
+// ─── Property Model (Law No. 4 Compliance) ────────────────────
+
+model Property {
+  id                   String    @id @default(uuid())
+  landlordId           String
+  agentId              String?
+  title                String
+  address              String
+  district             String
+  makaniNumber         String                       // EXACTLY 10 chars
+  trakheesiPermit      String?
+  municipalityPermit   String    @unique            // Law No. 4 shared housing permit
+  maxLegalOccupancy    Int                          // FETCHED from DLD API — never user-entered
+  currentOccupants     Int       @default(0)
+  isApiVerified        Boolean   @default(false)    // DLD Mock API validated this permit
+  isActive             Boolean   @default(true)     // Auto-false at capacity
+  rentPerRoom          Int                          // AED
+  deposit              Int                          // AED
+  totalRooms           Int
+  availableRooms       Int
+  description          String?
+  amenities            String[]
+  houseRules           String[]
+  billsIncluded        Boolean   @default(false)
+  reraEscrowVerified   Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  landlord             User              @relation("PropertyLandlord", fields: [landlordId], references: [id])
+  agent                User?             @relation("PropertyAgent", fields: [agentId], references: [id])
+  viewings             ViewingBooking[]
+  ratings              PropertyRating[]
+  payments             Payment[]
+
+  @@map("properties")
+}
+
+// ─── ViewingBooking Model (Platform Abuse Penalty) ────────────
+// RERA prohibits "viewing fees." This is a SaaS Terms of Service 
+// enforcement mechanism using Stripe manual-capture pre-authorizations.
+
+model ViewingBooking {
+  id                     String          @id @default(uuid())
+  propertyId             String
+  tenantId               String
+  landlordId             String
+  scheduledDate          DateTime
+  timeSlot               String
+  status                 ViewingStatus   @default(PENDING)
+  stripeHoldId           String?                   // Stripe PaymentIntent ID (pre-auth)
+  holdAmount             Int             @default(5000)  // 50 AED in fils
+  landlordAgreedPenalty  Boolean         @default(false) // Landlord accepted the mutual commitment
+  resolutionDate         DateTime?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  // Relations
+  property               Property        @relation(fields: [propertyId], references: [id])
+  tenant                 User            @relation("ViewingTenant", fields: [tenantId], references: [id])
+  landlord               User            @relation("ViewingLandlord", fields: [landlordId], references: [id])
+
+  @@map("viewing_bookings")
+}
+
+// ─── PropertyRating Model (Defamation-Safe) ───────────────────
+// STRICT: Star sliders ONLY — NO text fields per UAE Federal 
+// Decree-Law No. 34 of 2021 (Cybercrime Law)
+
+model PropertyRating {
+  id                   String    @id @default(uuid())
+  propertyId           String
+  tenantId             String
+  acQualityScore       Int                          // 1-5 stars
+  amenitiesScore       Int                          // 1-5 stars
+  maintenanceSpeedScore Int                         // 1-5 stars
+  // STRICTLY NO TEXT FIELDS (reviewText, comments, etc.)
+  createdAt            DateTime  @default(now())
+
+  // Relations
+  property             Property  @relation(fields: [propertyId], references: [id])
+  tenant               User      @relation(fields: [tenantId], references: [id])
+
+  @@unique([propertyId, tenantId])  // One rating per tenant per property
+  @@map("property_ratings")
+}
+
+// ─── Payment Model ────────────────────────────────────────────
+
+model Payment {
+  id                 String            @id @default(uuid())
+  propertyId         String
+  payerId            String
+  payeeId            String
+  type               PaymentType
+  amount             Int                            // AED
+  dueDate            DateTime
+  paidDate           DateTime?
+  status             PaymentStatus     @default(PENDING)
+  reference          String            @unique
+  reraEscrowRef      String?                        // RERA escrow reference
+  reraEscrowStatus   ReraEscrowStatus?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relations
+  property           Property          @relation(fields: [propertyId], references: [id])
+  payer              User              @relation("Payer", fields: [payerId], references: [id])
+  payee              User              @relation("Payee", fields: [payeeId], references: [id])
+
+  @@map("payments")
+}

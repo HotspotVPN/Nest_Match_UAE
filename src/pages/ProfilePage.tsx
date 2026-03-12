@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 export default function ProfilePage() {
-    const { currentUser } = useAuth();
+    const { currentUser, verificationTier } = useAuth();
     const navigate = useNavigate();
 
     if (!currentUser) { navigate('/login'); return null; }
@@ -28,7 +28,13 @@ export default function ProfilePage() {
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
                                 <h2 style={{ margin: 0 }}>{currentUser.name}</h2>
-                                <span className="badge badge-uaepass"><ShieldCheck size={12} /> UAE PASS Verified</span>
+                                {currentUser.isUaePassVerified ? (
+                                    <span className="badge badge-uaepass"><ShieldCheck size={12} /> UAE PASS Verified (Tier 2)</span>
+                                ) : currentUser.isIdVerified ? (
+                                    <span className="badge badge-green"><ShieldCheck size={12} /> ID Verified (Tier 2)</span>
+                                ) : (
+                                    <span className="badge badge-orange"><ShieldCheck size={12} /> Tier 1 Basic</span>
+                                )}
                                 {currentUser.isPremium && <span className="badge badge-gold">⭐ Premium</span>}
                                 {gccQualified && (
                                     <span className="gcc-badge"><Award size={12} /> Verified GCC</span>
@@ -97,8 +103,8 @@ export default function ProfilePage() {
                         </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {[
-                                { label: 'UAE PASS Identity', done: true },
-                                { label: 'Emirates ID Confirmed', done: !!currentUser.emiratesId },
+                                { label: 'UAE PASS Identity', done: !!currentUser.isUaePassVerified },
+                                { label: 'Emirates ID Confirmed', done: !!currentUser.emiratesId || !!currentUser.isIdVerified },
                                 { label: 'AML / PEP Screening', done: currentUser.compliance.aml_status === 'completed' },
                                 { label: 'Bank Account Linked', done: !!currentUser.bank_linked },
                             ].map(item => (
@@ -110,6 +116,12 @@ export default function ProfilePage() {
                         </div>
                         {currentUser.uaePassId && (
                             <div style={{ marginTop: '0.75rem', fontSize: '0.6875rem', color: 'var(--text-muted)' }}>UAE PASS ID: {currentUser.uaePassId}</div>
+                        )}
+                        {verificationTier === 'tier1' && (
+                            <div style={{ marginTop: '1rem', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)' }}>
+                                <p style={{ fontSize: '0.8125rem', marginBottom: '0.75rem' }}>Upgrade to Tier 2 to unlock chat and bookings.</p>
+                                <button className="btn btn-primary btn-sm" style={{ width: '100%' }}>Verify Visual ID (Onfido)</button>
+                            </div>
                         )}
                     </div>
                 </div>

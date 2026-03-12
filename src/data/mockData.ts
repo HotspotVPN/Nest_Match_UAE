@@ -27,6 +27,7 @@ export const users: User[] = [
     {
         id: 'landlord-1', type: 'landlord', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1990-00001', emiratesId: '784-1990-1234567-1',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Ahmed Al Maktoum', email: 'ahmed.almaktoum@nestmatch.ae', avatar: '',
         bio: 'Experienced property investor managing 8 units across Dubai Marina, JBR, and Downtown. I believe in providing well-maintained, fully compliant shared housing. All my properties are Municipality-permitted and RERA-registered.',
         keywords: ['professional', 'responsive', 'compliant', 'long-term', 'premium'],
@@ -43,6 +44,7 @@ export const users: User[] = [
     {
         id: 'landlord-2', type: 'landlord', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1985-00002', emiratesId: '784-1985-2345678-2',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Fatima Hassan', email: 'fatima.hassan@nestmatch.ae', avatar: '',
         bio: 'Property owner in JLT and Business Bay. I focus on creating comfortable shared living spaces for young professionals. Quick maintenance responses and transparent communication.',
         keywords: ['professional', 'transparent', 'tenant-friendly', 'modern'],
@@ -58,6 +60,7 @@ export const users: User[] = [
     {
         id: 'agent-1', type: 'letting_agent', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1988-00003', emiratesId: '784-1988-3456789-3',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Khalid Al Rashid', email: 'khalid@dubaipropertygroup.ae', avatar: '',
         bio: 'RERA-certified property broker with 6 years managing shared housing portfolios in Dubai. Specializing in compliant co-living setups. I handle tenant relations, viewings, and Municipality permit coordination.',
         keywords: ['RERA-certified', 'professional', 'shared-housing', 'responsive', 'compliant'],
@@ -73,6 +76,7 @@ export const users: User[] = [
     {
         id: 'roommate-1', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1995-00004', emiratesId: '784-1995-4567890-4',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Priya Sharma', email: 'priya.sharma@email.com', avatar: '',
         bio: 'UX Designer at a fintech startup in DIFC. Love weekend brunches at Dubai Marina, yoga at sunrise, and cooking elaborate Indian meals. I keep common areas spotless and believe communication is key.',
         keywords: ['non-smoker', 'early-bird', 'professional', 'clean', 'social', 'yoga'],
@@ -100,6 +104,7 @@ export const users: User[] = [
     {
         id: 'roommate-2', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1993-00005', emiratesId: '784-1993-5678901-5',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Marcus Chen', email: 'marcus.chen@email.com', avatar: '',
         bio: 'Software engineer working remotely for a climate tech company in Singapore. Quiet during work hours, love hitting the gym in the evenings and exploring Dubai\'s food scene on weekends. Big fan of board games and cycling.',
         keywords: ['professional', 'quiet', 'gym-goer', 'non-smoker', 'tech', 'foodie'],
@@ -126,6 +131,7 @@ export const users: User[] = [
     {
         id: 'roommate-3', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1996-00006', emiratesId: '784-1996-6789012-6',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Elena Rodriguez', email: 'elena.rodriguez@email.com', avatar: '',
         bio: 'Marketing coordinator at a sustainability startup in Dubai Design District. Love exploring the city — weekend markets, art galleries, and trying every coffee shop I can find.',
         keywords: ['non-smoker', 'social', 'professional', 'clean', 'creative', 'coffee-lover'],
@@ -149,6 +155,7 @@ export const users: User[] = [
     {
         id: 'roommate-4', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1994-00007', emiratesId: '784-1994-7890123-7',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Omar Khalil', email: 'omar.khalil@email.com', avatar: '',
         bio: 'Bartender and music producer. I work late shifts so I\'m quiet during the day. Love cooking Middle Eastern breakfasts on Friday mornings. 9 months in the flat and loving JLT.',
         keywords: ['night-owl', 'musician', 'clean', 'friendly', 'non-smoker', 'creative'],
@@ -168,6 +175,7 @@ export const users: User[] = [
     {
         id: 'roommate-5', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1997-00008', emiratesId: '784-1997-8901234-8',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Yuki Tanaka', email: 'yuki.tanaka@email.com', avatar: '',
         bio: 'Japanese architect working on EXPO City Dubai projects. Living in Business Bay for 6 months. Love the canal walks, weekend brunches, and the Dubai Design Week scene.',
         keywords: ['non-smoker', 'professional', 'design', 'organised', 'quiet'],
@@ -186,6 +194,7 @@ export const users: User[] = [
     {
         id: 'roommate-6', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1992-00009', emiratesId: '784-1992-9012345-9',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'James Morrison', email: 'james.morrison@email.com', avatar: '',
         bio: 'Data analyst relocating from London to Dubai for a new role at an AI company in DIFC. Love long-distance cycling, dim sum, and quiet evenings. Looking for a tidy, professional household near the Metro.',
         keywords: ['non-smoker', 'quiet', 'professional', 'tidy', 'cyclist', 'reader'],
@@ -203,6 +212,7 @@ export const users: User[] = [
     {
         id: 'roommate-7', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1991-00010', emiratesId: '784-1991-0123456-0',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Aisha Patel', email: 'aisha.patel@email.com', avatar: '',
         bio: 'Strategy consultant at McKinsey. Previous NestMatch tenant in London with 18 months verified tenancy and an excellent GCC. Relocating to Dubai — looking for a quiet, premium household.',
         keywords: ['non-smoker', 'professional', 'quiet', 'experienced-tenant', 'long-term'],
@@ -221,6 +231,7 @@ export const users: User[] = [
     {
         id: 'roommate-8', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1989-00011', emiratesId: '784-1989-1234567-1',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'David Müller', email: 'david.muller@email.com', avatar: '',
         bio: 'German expat, senior engineer at a fintech company. Multi-year verified track record — 30 months total tenancy. Looking for a premium, well-managed property. I value transparency.',
         keywords: ['non-smoker', 'professional', 'elite-tenant', 'long-term', 'quiet', 'tech'],
@@ -239,6 +250,7 @@ export const users: User[] = [
     {
         id: 'roommate-9', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1994-00012', emiratesId: '784-1994-2345678-2',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Sophie Laurent', email: 'sophie.laurent@email.com', avatar: '',
         bio: 'French expat working in fashion PR at a Dubai Media City agency. First time on NestMatch — excited to find a vibrant, social household near the beach.',
         keywords: ['non-smoker', 'professional', 'creative', 'social', 'fashion'],
@@ -256,6 +268,7 @@ export const users: User[] = [
     {
         id: 'roommate-10', type: 'roommate', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-784-1990-00013', emiratesId: '784-1990-3456789-3',
+        isUaePassVerified: true, isIdVerified: false,
         name: 'Raj Krishnan', email: 'raj.krishnan@email.com', avatar: '',
         bio: 'NHS-trained doctor now working at Cleveland Clinic Abu Dhabi. Relocating to Dubai for a new role at Mediclinic. Calm, respectful, and adaptable to different routines.',
         keywords: ['non-smoker', 'professional', 'quiet', 'clean', 'vegetarian', 'doctor'],
@@ -272,7 +285,8 @@ export const users: User[] = [
     // ── Admin Users ───────────────────────────────────────────
     {
         id: 'admin-1', type: 'compliance', auth_method: 'uae_pass',
-        uaePassId: 'UAEPASS-ADMIN-001', name: 'Compliance Admin', email: 'compliance@nestmatch.ae', avatar: '',
+        uaePassId: 'UAEPASS-ADMIN-001', isUaePassVerified: true, isIdVerified: false,
+        name: 'Compliance Admin', email: 'compliance@nestmatch.ae', avatar: '',
         bio: 'NestMatch UAE compliance controller — UAE PASS verification and CBUAE regulatory oversight.',
         keywords: ['admin', 'compliance'], phone: '+971 4 123 4567',
         compliance: { kyc_status: 'completed', kyc_completed_date: '2024-01-01', aml_status: 'completed', aml_completed_date: '2024-01-01', pep_status: 'clear', pep_completed_date: '2024-01-01', verified: true },
@@ -281,7 +295,8 @@ export const users: User[] = [
     },
     {
         id: 'admin-2', type: 'finance', auth_method: 'uae_pass',
-        uaePassId: 'UAEPASS-ADMIN-002', name: 'Finance Admin', email: 'finance@nestmatch.ae', avatar: '',
+        uaePassId: 'UAEPASS-ADMIN-002', isUaePassVerified: true, isIdVerified: false,
+        name: 'Finance Admin', email: 'finance@nestmatch.ae', avatar: '',
         bio: 'NestMatch UAE financial controller — RERA escrow and rent reconciliation.',
         keywords: ['admin', 'finance'], phone: '+971 4 123 4568',
         compliance: { kyc_status: 'completed', kyc_completed_date: '2024-01-01', aml_status: 'completed', aml_completed_date: '2024-01-01', pep_status: 'clear', pep_completed_date: '2024-01-01', verified: true },
@@ -290,12 +305,44 @@ export const users: User[] = [
     },
     {
         id: 'admin-3', type: 'operations', auth_method: 'uae_pass',
-        uaePassId: 'UAEPASS-ADMIN-003', name: 'Operations Admin', email: 'operations@nestmatch.ae', avatar: '',
+        uaePassId: 'UAEPASS-ADMIN-003', isUaePassVerified: true, isIdVerified: false,
+        name: 'Operations Admin', email: 'operations@nestmatch.ae', avatar: '',
         bio: 'NestMatch UAE operations — CRM, property registry, and user management.',
         keywords: ['admin', 'operations'], phone: '+971 4 123 4569',
         compliance: { kyc_status: 'completed', kyc_completed_date: '2024-01-01', aml_status: 'completed', aml_completed_date: '2024-01-01', pep_status: 'clear', pep_completed_date: '2024-01-01', verified: true },
         is_verified: true, has_gcc: false, gccScore: 0, isPremium: false,
         created_at: '2024-01-01', updated_at: '2026-03-10',
+    },
+    // ── Tier 1 Demo Users (Email-only, no UAE PASS) ───────────
+    {
+        id: 'tier1-1', type: 'roommate', auth_method: 'email',
+        isUaePassVerified: false, isIdVerified: false,
+        name: 'New User (Tier 1)', email: 'newuser@gmail.com', avatar: '',
+        bio: 'Just arrived in Dubai — browsing shared living options before I get my Emirates ID sorted.',
+        keywords: ['new-arrival'], phone: '+971 50 000 0001',
+        compliance: { kyc_status: 'pending', aml_status: 'pending', pep_status: 'pending', verified: false },
+        is_verified: false, has_gcc: false, gccScore: 0, isPremium: false,
+        resident_role: 'searching',
+        preferences: { budget_min: 2000, budget_max: 4000, move_in_date: '2026-05-01', duration: 'flexible', schedule: 'varies' },
+        lifestyle_tags: ['gym-goer', 'social'],
+        personality_traits: ['extroverted', 'adventurous'],
+        hobbies: ['exploring', 'photography'],
+        created_at: '2026-03-12', updated_at: '2026-03-12',
+    },
+    {
+        id: 'tier1-2', type: 'roommate', auth_method: 'google',
+        isUaePassVerified: false, isIdVerified: true,  // Verified via Onfido (new expat fallback)
+        name: 'Onfido Verified (Tier 2 Alt)', email: 'verified.onfido@gmail.com', avatar: '',
+        bio: 'New expat — verified via passport + Onfido liveness check. No Emirates ID yet but fully verified for NestMatch.',
+        keywords: ['new-expat', 'onfido-verified'], phone: '+971 50 000 0002',
+        compliance: { kyc_status: 'completed', kyc_completed_date: '2026-03-10', aml_status: 'completed', aml_completed_date: '2026-03-10', pep_status: 'clear', pep_completed_date: '2026-03-10', verified: true },
+        is_verified: true, has_gcc: false, gccScore: 0, isPremium: false,
+        resident_role: 'searching',
+        preferences: { budget_min: 2500, budget_max: 4500, move_in_date: '2026-04-15', duration: '12_months', schedule: 'early_bird' },
+        lifestyle_tags: ['runner', 'yoga'],
+        personality_traits: ['introverted', 'calm'],
+        hobbies: ['reading', 'cooking'],
+        created_at: '2026-03-10', updated_at: '2026-03-12',
     },
 ];
 
@@ -319,7 +366,7 @@ export const listings: Listing[] = [
         ],
         tags: ['premium', 'sea-view', 'furnished', 'marina'],
         makaniNumber: '2567834901', trakheesiPermit: 'TRAK-2025-DM-78901',
-        municipalityPermit: 'DM-SH-2026-001234', maxLegalOccupancy: 3, currentOccupants: 2, isActive: true,
+        municipalityPermit: 'DM-SH-2026-001234', maxLegalOccupancy: 3, currentOccupants: 2, isActive: true, isApiVerified: true,
         transport_chips: [
             { label: 'DMCC Metro', type: 'metro', walk_time: '5m', lines: ['Red Line'], line_color: '#E21836' },
             { label: 'Dubai Marina Tram', type: 'tram', walk_time: '3m' },
@@ -356,7 +403,7 @@ export const listings: Listing[] = [
         ],
         tags: ['lake-view', 'metro-access', 'affordable', 'jlt'],
         makaniNumber: '3478912056', trakheesiPermit: 'TRAK-2025-JLT-56789',
-        municipalityPermit: 'DM-SH-2026-002345', maxLegalOccupancy: 3, currentOccupants: 2, isActive: true,
+        municipalityPermit: 'DM-SH-2026-002345', maxLegalOccupancy: 3, currentOccupants: 2, isActive: true, isApiVerified: true,
         transport_chips: [
             { label: 'DMCC Metro', type: 'metro', walk_time: '8m', lines: ['Red Line'], line_color: '#E21836' },
             { label: 'JLT Metro', type: 'metro', walk_time: '12m', lines: ['Red Line'], line_color: '#E21836' },
@@ -382,7 +429,7 @@ export const listings: Listing[] = [
         ],
         tags: ['premium', 'burj-view', 'downtown', 'luxury'],
         makaniNumber: '1234567890', trakheesiPermit: 'TRAK-2025-DT-34567',
-        municipalityPermit: 'DM-SH-2026-003456', maxLegalOccupancy: 2, currentOccupants: 1, isActive: true,
+        municipalityPermit: 'DM-SH-2026-003456', maxLegalOccupancy: 2, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [
             { label: 'Burj Khalifa/Dubai Mall Metro', type: 'metro', walk_time: '6m', lines: ['Red Line'], line_color: '#E21836' },
         ],
@@ -408,7 +455,7 @@ export const listings: Listing[] = [
         ],
         tags: ['canal-view', 'affordable', 'business-bay'],
         makaniNumber: '4567890123', trakheesiPermit: 'TRAK-2025-BB-45678',
-        municipalityPermit: 'DM-SH-2026-004567', maxLegalOccupancy: 3, currentOccupants: 3, isActive: false,
+        municipalityPermit: 'DM-SH-2026-004567', maxLegalOccupancy: 3, currentOccupants: 3, isActive: false, isApiVerified: true,
         transport_chips: [
             { label: 'Business Bay Metro', type: 'metro', walk_time: '7m', lines: ['Red Line'], line_color: '#E21836' },
         ],
@@ -434,7 +481,7 @@ export const listings: Listing[] = [
         ],
         tags: ['beachfront', 'premium', 'jbr', 'sea-view'],
         makaniNumber: '5678901234', trakheesiPermit: 'TRAK-2025-JBR-67890',
-        municipalityPermit: 'DM-SH-2026-005678', maxLegalOccupancy: 3, currentOccupants: 1, isActive: true,
+        municipalityPermit: 'DM-SH-2026-005678', maxLegalOccupancy: 3, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [
             { label: 'Dubai Marina Tram', type: 'tram', walk_time: '5m' },
             { label: 'JBR Tram Stop', type: 'tram', walk_time: '2m' },
@@ -461,7 +508,7 @@ export const listings: Listing[] = [
         ],
         tags: ['affordable', 'near-moe', 'metro-access'],
         makaniNumber: '6789012345', trakheesiPermit: 'TRAK-2025-AB-78901',
-        municipalityPermit: 'DM-SH-2026-006789', maxLegalOccupancy: 4, currentOccupants: 1, isActive: true,
+        municipalityPermit: 'DM-SH-2026-006789', maxLegalOccupancy: 4, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [
             { label: 'Mall of the Emirates Metro', type: 'metro', walk_time: '10m', lines: ['Red Line'], line_color: '#E21836' },
         ],

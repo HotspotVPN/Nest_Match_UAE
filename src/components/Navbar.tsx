@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 export default function Navbar() {
-    const { currentUser, logout, isAuthenticated } = useAuth();
+    const { currentUser, logout, isAuthenticated, verificationTier } = useAuth();
     const location = useLocation();
 
     const isActive = (path: string) => location.pathname === path ? 'active' : '';
@@ -78,7 +78,10 @@ export default function Navbar() {
                             <>
                                 <Link to="/profile" className={`btn btn-ghost btn-sm`} style={{ gap: '0.5rem' }}>
                                     <div className="avatar avatar-sm">{getInitials(currentUser.name)}</div>
-                                    <span style={{ fontSize: '0.8125rem' }}>{currentUser.name.split(' ')[0]}</span>
+                                    <span style={{ fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                        {currentUser.name.split(' ')[0]}
+                                        {verificationTier === 'tier2' && <ShieldCheck size={12} style={{ color: 'var(--uaepass-green)' }} />}
+                                    </span>
                                 </Link>
                                 <button onClick={() => { logout(); }} className="btn btn-ghost btn-icon" title="Sign out">
                                     <LogOut size={16} />

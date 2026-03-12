@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { listings, users, formatCurrency, getInitials, viewingBookings } from '@/data/mockData';
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
-    ChevronLeft, Check, AlertTriangle, Building2, Award,
+    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
 } from 'lucide-react';
 
 export default function ListingDetailPage() {
@@ -28,8 +28,11 @@ export default function ListingDetailPage() {
     const occupancyPercent = (listing.currentOccupants / listing.maxLegalOccupancy) * 100;
     const occupancyClass = occupancyPercent >= 100 ? 'full' : occupancyPercent >= 80 ? 'warning' : 'safe';
     const avgRating = listing.property_ratings?.length ? listing.property_ratings.reduce((sum, r) => sum + (r.acQuality + r.amenities + r.maintenanceSpeed) / 3, 0) / listing.property_ratings.length : 0;
+    
+    // Add verification Tier 2 check from context
+    const { isVerifiedForBooking } = useAuth();
 
-    const hasActiveViewing = currentUser && viewingBookings.some(v => v.property_id === listing.id && v.searcher_id === currentUser.id && !['COMPLETED', 'SEARCHER_NO_SHOW', 'LANDLORD_NO_SHOW'].includes(v.status));
+    const hasActiveViewing = currentUser && viewingBookings.some(v => v.property_id === listing.id && v.searcher_id === currentUser.id && !['COMPLETED', 'TENANT_NO_SHOW_PENALTY', 'LANDLORD_NO_SHOW_PENALTY'].includes(v.status));
 
     return (
         <div className="section" style={{ paddingTop: '2rem' }}>
@@ -51,7 +54,11 @@ export default function ListingDetailPage() {
                     <div>
                         {/* Compliance Badges */}
                         <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                            <span className="badge badge-green"><ShieldCheck size={12} /> Municipality Verified</span>
+                            {listing.isApiVerified ? (
+                                <span className="badge badge-green"><ShieldCheck size={12} /> DLD Municipality Verified</span>
+                            ) : (
+                                <span className="badge badge-orange"><ShieldCheck size={12} /> Verified</span>
+                            )}
                             <span className="badge badge-blue">RERA Escrow</span>
                             {listing.rera_escrow_verified && <span className="badge badge-uaepass">Escrow Active</span>}
                         </div>
@@ -205,14 +212,25 @@ export default function ListingDetailPage() {
                                         <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', textAlign: 'center' }}>
                                             <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>Viewing already booked</span>
                                         </div>
+                                    ) : !isVerifiedForBooking ? (
+                                        <>
+                                            <button onClick={() => {}} className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
+                                                <Lock size={18} /> Verify with UAE PASS to book
+                                            </button>
+                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                Tier 2 verification required to schedule viewings
+                                            </p>
+                                        </>
                                     ) : (
-                                        <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                                            <CalendarCheck size={18} /> Book Viewing
-                                        </button>
+                                        <>
+                                            <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
+                                                <CalendarCheck size={18} /> Book Viewing
+                                            </button>
+                                            <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                50 AED Platform Abuse Penalty Authorization required
+                                            </p>
+                                        </>
                                     )}
-                                    <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.5rem' }}>
-                                        50 AED refundable hold to confirm your attendance
-                                    </p>
                                 </>
                             )}
 
@@ -274,26 +292,26 @@ export default function ListingDetailPage() {
                                     <div style={{ padding: '1rem', borderRadius: 'var(--radius-md)', background: 'var(--warning-bg)', border: '1px solid rgba(251,146,60,0.3)', marginBottom: '1.5rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
                                             <AlertTriangle size={14} style={{ color: 'var(--warning)' }} />
-                                            <span style={{ fontWeight: 700, fontSize: '0.8125rem', color: 'var(--warning)' }}>Two-Way Commitment Hold</span>
+                                            <span style={{ fontWeight: 700, fontSize: '0.8125rem', color: 'var(--warning)' }}>Platform Abuse Penalty Authorization</span>
                                         </div>
                                         <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                                            A temporary <strong>50 AED hold</strong> will be placed on your card. You will only be charged
-                                            if you fail to attend. The landlord also agrees to a 50 AED penalty if they cancel.
-                                            This hold will be automatically released after a completed viewing.
+                                            A temporary <strong>50 AED authorization hold</strong> will be placed on your card. This is NOT a viewing fee.
+                                            You will only be charged a penalty if you fail to attend. The landlord also agrees to a 50 AED penalty if they cancel without notice.
+                                            This hold will be voided after a completed viewing.
                                         </p>
                                     </div>
 
                                     <button onClick={() => setBookingStep('payment')} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!bookingDate || !bookingTime}>
-                                        Continue to Payment Hold
+                                        Continue to Payment Authorization
                                     </button>
                                 </>
                             )}
 
                             {bookingStep === 'payment' && (
                                 <>
-                                    <h2 style={{ marginBottom: '0.5rem' }}>Confirm 50 AED Hold</h2>
+                                    <h2 style={{ marginBottom: '0.5rem' }}>Confirm 50 AED Pre-Auth</h2>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-                                        This is a temporary authorization, not a charge.
+                                        This is a manual-capture pre-authorization, not a charge.
                                     </p>
 
                                     {/* Simulated Stripe Card Input */}
@@ -318,12 +336,12 @@ export default function ListingDetailPage() {
                                     </div>
 
                                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem' }}>
-                                        <span>Authorization Hold</span>
+                                        <span>Penalty Authorization Hold</span>
                                         <span style={{ color: 'var(--warning)' }}>{formatCurrency(50)}</span>
                                     </div>
 
                                     <button onClick={() => setBookingStep('confirmation')} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                                        Authorize 50 AED Hold
+                                        Authorize 50 AED (No Immediate Charge)
                                     </button>
                                 </>
                             )}

@@ -8,7 +8,7 @@ export type ComplianceStatus = 'pending' | 'completed' | 'rejected';
 export type PepStatus = 'pending' | 'clear' | 'failed';
 export type Duration = '6_months' | '12_months' | 'flexible';
 export type Schedule = 'early_bird' | 'night_owl' | 'varies';
-export type AuthMethod = 'uae_pass'; // UAE PASS is the ONLY auth method
+export type AuthMethod = 'email' | 'google' | 'uae_pass'; // Tiered: email/google = Tier 1 (browse-only), uae_pass = Tier 2 (full access)
 
 export interface Compliance {
     kyc_status: ComplianceStatus;
@@ -51,8 +51,10 @@ export interface User {
     id: string;
     type: UserType;
     auth_method: AuthMethod;
-    uaePassId: string;         // Unique UAE PASS identity (source of truth)
-    emiratesId?: string;       // Emirates ID number
+    uaePassId?: string;         // Unique UAE PASS identity (Tier 2 only)
+    emiratesId?: string;        // Emirates ID number
+    isUaePassVerified: boolean; // Tier 2: verified via UAE PASS OAuth
+    isIdVerified: boolean;      // Tier 2 alt: verified via Onfido (new expats)
     name: string;
     email: string;
     avatar: string;
@@ -185,9 +187,10 @@ export interface Listing {
     makaniNumber: string;         // EXACTLY 10 digits
     trakheesiPermit: string;      // RERA advertising permit
     municipalityPermit: string;   // Shared housing permit
-    maxLegalOccupancy: number;    // Legal cap from municipality
+    maxLegalOccupancy: number;    // Fetched via Mock DLD API — NEVER manually entered
     currentOccupants: number;     // Must never exceed maxLegalOccupancy
     isActive: boolean;            // Auto-false when at capacity
+    isApiVerified: boolean;       // true = DLD Mock API validated the permit
     // ── Transport ─────────────────────────────────────────────
     transport_chips?: TransportChip[];
     // ── Fintech / Proptech ────────────────────────────────────
@@ -215,8 +218,8 @@ export type ViewingStatus =
     | 'PENDING_LANDLORD_APPROVAL'
     | 'CONFIRMED'
     | 'COMPLETED'
-    | 'SEARCHER_NO_SHOW'
-    | 'LANDLORD_NO_SHOW';
+    | 'TENANT_NO_SHOW_PENALTY'    // Platform Abuse Penalty — tenant ghosted
+    | 'LANDLORD_NO_SHOW_PENALTY'; // Platform Abuse Penalty — landlord ghosted
 
 export interface ViewingBooking {
     id: string;
