@@ -24,6 +24,11 @@ NestMatch UAE is designed to operate in strict compliance with UAE federal and e
 - **RERA Permits:** Requires valid DLD/RERA permits for every property listed to guarantee legality and prevent fraudulent advertising.
 - **Occupancy Regulations:** Automatically enforces limits based on Dubai Municipality and UAE federal housing occupancy laws.
 
+## Business & Commercial Features
+- **Commercial Leasing Terms:** Landlords and property managers can dictate granular terms including Accepted Cheque allocations (1, 2, 4, 6, 12), Utility distributions (DEWA & Wi-Fi), Ejari Registration handlers, and Maintenance responsibilities.
+- **Smart Rent Estimates:** Integrates with DLD data (Daleel) to provide immediate, Makani-level rental market value recommendations.
+- **Active CRM Enforcement:** Operations teams possess God Mode capabilities to monitor platform liquidity, track penalty revenues, perform DLD registry force-audits, and dynamically suspend non-compliant listings.
+
 ## Tech Stack
 - Frontend: React 19, TypeScript, Vite
 - Styling: Tailwind CSS / Custom styling
