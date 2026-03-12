@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 ## Product Summary
 NestMatch UAE is a specialized property and roommate matching platform designed exclusively for the United Arab Emirates market. Built with modern web technologies (React, Vite, TypeScript), the platform provides a safe, transparent, and legally compliant way for residents to find housing and roommates while adhering to local real estate laws.
