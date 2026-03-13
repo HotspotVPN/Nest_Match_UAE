@@ -1,95 +1,185 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { ShieldCheck, Building2, Users, CreditCard, Award, MapPin, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Building2, Users, Search, CheckCircle2, Award, ArrowRight, Shield, ScrollText, Wallet } from 'lucide-react';
 
 export default function HomePage() {
-    const { isAuthenticated } = useAuth();
-
     return (
-        <>
-            {/* Hero */}
-            <section className="hero">
-                <div className="hero-content">
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                        <span className="badge badge-uaepass">🇦🇪 UAE PASS Verified</span>
-                        <span className="badge badge-green">Law No. 4 Compliant</span>
-                        <span className="badge badge-blue">RERA Approved</span>
+        <div className="home-page">
+            {/* Hero Section */}
+            <section className="section hero-section" style={{ padding: '8rem 0 6rem', textAlign: 'center', background: 'radial-gradient(circle at top, rgba(99,102,241,0.08) 0%, transparent 70%)' }}>
+                <div className="container" style={{ maxWidth: '900px' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-subtle)', marginBottom: '2rem' }}>
+                        <ShieldCheck size={16} style={{ color: 'var(--uaepass-green)' }} />
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.02em', color: 'var(--text-muted)' }}>BUILT FOR LAW NO. 4 OF 2026 COMPLIANCE</span>
                     </div>
-                    <h1>
-                        Find Your Perfect Nest<br />
-                        <span className="gradient-text">In the UAE</span>
+                    
+                    <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
+                        Legal shared rooms in Dubai, <span className="text-gradient">without the grey-market risk.</span>
                     </h1>
-                    <p className="hero-subtitle">
-                        The region's first compliance-first co-living platform. Every listing is 100% legal,
-                        every user is government-verified via UAE PASS, and every viewing is backed by our
-                        Two-Way Commitment Hold.
+                    
+                    <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '3rem', lineHeight: 1.6 }}>
+                        NestMatch connects landlords with shared-housing permits to verified UAE PASS roommates. 
+                        We automate Ejari, contracts, rent ledgers, and compliance for the new regulatory regime.
                     </p>
-                    <div className="hero-cta-group">
-                        <Link to={isAuthenticated ? '/browse' : '/login'} className="btn btn-uaepass btn-lg">
-                            <ShieldCheck size={20} /> Get Started with UAE PASS
+
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <Link to="/browse" className="btn btn-primary btn-lg">
+                            <Building2 size={20} /> I'm a Landlord / Operator
                         </Link>
-                        <Link to="/how-it-works" className="btn btn-outline btn-lg">
-                            How It Works <ArrowRight size={16} />
+                        <Link to="/browse" className="btn btn-secondary btn-lg">
+                            <Search size={20} /> I'm looking for a room
                         </Link>
+                    </div>
+
+                    <div style={{ marginTop: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', opacity: 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <img src="https://www.uaepass.ae/assets/images/uae-pass-logo.png" alt="UAE PASS" style={{ height: '18px', filter: 'grayscale(1) invert(1)' }} />
+                            <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>Powered by UAE PASS</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Shield size={16} />
+                            <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>DLD & Municipality Aligned</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Features Grid */}
-            <section className="section">
+            {/* Who It's For Section */}
+            <section className="section" style={{ padding: '6rem 0' }}>
                 <div className="container">
-                    <h2 style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-                        Built for <span className="gradient-text">Dubai's New Reality</span>
-                    </h2>
-                    <p style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3rem' }}>
-                        Compliant with Dubai Law No. 4 of 2026 — protecting landlords from Dh500,000 fines
-                        and tenants from fake listings.
-                    </p>
-                    <div className="grid-3">
-                        {[
-                            { icon: ShieldCheck, title: 'UAE PASS KYC', desc: 'Every user verified through the official National Digital Identity. No fake landlords or scammer tenants — ever.', color: 'var(--uaepass-green)' },
-                            { icon: Building2, title: 'Makani + RERA Verified', desc: 'Every property requires a 10-digit Makani number, Trakheesi permit, and Municipality shared housing permit.', color: 'var(--brand-blue-light)' },
-                            { icon: Users, title: 'Occupancy Capped', desc: 'Properties are automatically hidden when occupancy reaches the legal maximum — zero risk of overcrowding fines.', color: 'var(--brand-purple-light)' },
-                            { icon: CreditCard, title: 'Two-Way Commitment Hold', desc: '50 AED hold prevents tenant no-shows. Landlord penalty prevents ghosting. Mutual accountability for every viewing.', color: 'var(--warning)' },
-                            { icon: Award, title: 'Good Conduct Certificate', desc: 'Build a portable, verified rental track record. Premium tenants with a GCC get priority from landlords across the UAE.', color: '#f59e0b' },
-                            { icon: MapPin, title: 'Anti-Discrimination Matching', desc: 'Landlords see lifestyle tags, not nationality. Blind matching promotes cross-cultural harmony in the world\'s most diverse country.', color: 'var(--success)' },
-                        ].map((f) => {
-                            const Icon = f.icon;
-                            return (
-                                <div key={f.title} className="glass-card" style={{ padding: '2rem' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: `${f.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-                                        <Icon size={24} style={{ color: f.color }} />
-                                    </div>
-                                    <h4 style={{ marginBottom: '0.5rem' }}>{f.title}</h4>
-                                    <p style={{ fontSize: '0.875rem' }}>{f.desc}</p>
-                                </div>
-                            );
-                        })}
+                    <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+                        <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Designed for Dubai's Housing Ecosystem</h2>
+                        <p style={{ color: 'var(--text-muted)' }}>A specialized platform for every stakeholder in shared living.</p>
                     </div>
-                </div>
-            </section>
 
-            {/* Roles Section */}
-            <section className="section" style={{ background: 'var(--gradient-surface)' }}>
-                <div className="container">
-                    <h2 style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                        Three Roles. <span className="gradient-text">One Ecosystem.</span>
-                    </h2>
-                    <div className="grid-3">
-                        {[
-                            { title: 'Searching Roommate', desc: 'Browse 100% verified, legal listings. Book viewings with the Two-Way Hold. Build your GCC for priority access.', badge: 'Demand Side' },
-                            { title: 'Residing Roommate', desc: 'Review anonymized lifestyle profiles of incoming applicants. Give your landlord a "vibe check" — no name, no photo, no bias.', badge: 'Community' },
-                            { title: 'Landlord / Agent', desc: 'Post compliant listings. AI-filter applicants by GCC score. Full legal protection with Municipality permits and occupancy caps.', badge: 'Supply Side' },
-                        ].map((r) => (
-                            <div key={r.title} className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-                                <span className="badge badge-purple" style={{ marginBottom: '1rem' }}>{r.badge}</span>
-                                <h3 style={{ marginBottom: '0.75rem' }}>{r.title}</h3>
-                                <p style={{ fontSize: '0.875rem' }}>{r.desc}</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                        {/* Landlords */}
+                        <div className="glass-card" style={{ padding: '2.5rem' }}>
+                            <div style={{ padding: '0.75rem', background: 'rgba(99,102,241,0.1)', borderRadius: 'var(--radius-lg)', width: 'fit-content', color: 'var(--brand-purple-light)', marginBottom: '1.5rem' }}>
+                                <Building2 size={32} />
                             </div>
-                        ))}
+                            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Landlords & Licensed Operators</h3>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                Convert your spare rooms and bedspaces into fully compliant shared housing. Permits, Ejari, contracts and rent tracking in one integrated platform.
+                            </p>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {[
+                                    'DLD Permit Verification',
+                                    'Automated Occupancy Caps',
+                                    'Wallet & Ledger Tracking',
+                                    'Legal Contract Builder'
+                                ].map(item => (
+                                    <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                                        <CheckCircle2 size={16} style={{ color: 'var(--uaepass-green)' }} /> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Residing Roommates */}
+                        <div className="glass-card" style={{ padding: '2.5rem' }}>
+                            <div style={{ padding: '0.75rem', background: 'rgba(34,197,94,0.1)', borderRadius: 'var(--radius-lg)', width: 'fit-content', color: 'var(--uaepass-green)', marginBottom: '1.5rem' }}>
+                                <Users size={32} />
+                            </div>
+                            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Roommates Already Residing</h3>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                Keep your lease legal, track payments and maintenance, and build a Good Conduct Certificate you can take to your next landlord.
+                            </p>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {[
+                                    'Ejari-aligned Sub-leases',
+                                    'Maintenance Ticketing',
+                                    'GCC Trust Score Building',
+                                    'Verified Payment History'
+                                ].map(item => (
+                                    <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                                        <CheckCircle2 size={16} style={{ color: 'var(--uaepass-green)' }} /> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Searching Roommates */}
+                        <div className="glass-card" style={{ padding: '2.5rem' }}>
+                            <div style={{ padding: '0.75rem', background: 'rgba(245,158,11,0.1)', borderRadius: 'var(--radius-lg)', width: 'fit-content', color: '#f59e0b', marginBottom: '1.5rem' }}>
+                                <Search size={32} />
+                            </div>
+                            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Roommates Searching</h3>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                Find verified rooms and flatmates in Dubai. No fake listings, no illegal partitions, no cash viewings with strangers.
+                            </p>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {[
+                                    '100% Verified DLD Listings',
+                                    'Identity-Verified Flatmates',
+                                    'Secure Deposit Escrow',
+                                    'Lifestyle Matching'
+                                ].map(item => (
+                                    <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                                        <CheckCircle2 size={16} style={{ color: 'var(--uaepass-green)' }} /> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </section>
-        </>
+
+            {/* Compliance Engine Section */}
+            <section className="section" style={{ padding: '6rem 0', background: 'var(--bg-surface-2)' }}>
+                <div className="container">
+                    <div className="glass-card" style={{ padding: '4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
+                        <div>
+                            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>The NestMatch <br/><span className="text-gradient">Compliance Engine</span></h2>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: 1.7 }}>
+                                We've digitized the legal requirements of Dubai's shared housing laws into a seamless experience. 
+                                Our platform acts as a neutral third-party ensuring every stay is documented and compliant.
+                            </p>
+                            <Link to="/how-it-works" className="btn btn-secondary">
+                                Learn about our Engine <ArrowRight size={18} />
+                            </Link>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            {[
+                                { icon: ShieldCheck, title: 'Identity', desc: 'UAE PASS verified Emirates ID anchors.' },
+                                { icon: Building2, title: 'Permits', desc: 'Real-time DLD shared housing permit checks.' },
+                                { icon: ScrollText, title: 'Contracts', desc: 'RERA-aligned digital tenancy agreements.' },
+                                { icon: Award, title: 'GCC & PDPL', desc: 'Behaviour-based scoring with data privacy.' }
+                            ].map(item => {
+                                const Icon = item.icon;
+                                return (
+                                    <div key={item.title} className="glass-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+                                        <Icon size={24} style={{ color: 'var(--brand-purple-light)', marginBottom: '0.75rem' }} />
+                                        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>{item.title}</div>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>{item.desc}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Final CTA */}
+            <section className="section" style={{ padding: '8rem 0', textAlign: 'center' }}>
+                <div className="container">
+                    <div className="glass-card" style={{ padding: '4rem', background: 'linear-gradient(135deg, var(--brand-purple) 0%, #4338ca 100%)', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <h2 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.5rem' }}>Ready for a more <br/>professional rental experience?</h2>
+                            <p style={{ fontSize: '1.125rem', opacity: 0.9, marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
+                                Join 5,000+ residents and 200+ property operators already using NestMatch to stay legal and secure in Dubai.
+                            </p>
+                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                                <Link to="/login" className="btn" style={{ background: 'white', color: 'var(--brand-purple)', padding: '1rem 2rem', fontWeight: 700 }}>
+                                    Launch Dashboard
+                                </Link>
+                                <Link to="/browse" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
+                                    Browse Legal Rooms
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     );
 }

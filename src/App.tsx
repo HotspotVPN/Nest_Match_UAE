@@ -31,8 +31,8 @@ export default function App() {
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/browse" element={<BrowsePage />} />
                         <Route path="/listing/:id" element={<ListingDetailPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/profile/:id" element={<ProfilePage />} />
+                        <Route path="/profile/:id?" element={<ProfilePage />} />
+
                         <Route path="/viewings" element={<ViewingsPage />} />
                         <Route path="/add-property" element={<AddPropertyPage />} />
                         <Route path="/residing-dashboard" element={<ResidingDashboardPage />} />
