@@ -18,6 +18,7 @@ import GccDashboardPage from '@/pages/GccDashboardPage';
 import ContractManagerPage from '@/pages/ContractManagerPage';
 import MaintenancePage from '@/pages/MaintenancePage';
 import RentLedgerPage from '@/pages/RentLedgerPage';
+import LandlordWalletPage from '@/pages/LandlordWalletPage';
 
 export default function App() {
     return (
@@ -44,6 +45,7 @@ export default function App() {
                         <Route path="/contracts/:viewingId" element={<ContractManagerPage />} />
                         <Route path="/maintenance" element={<MaintenancePage />} />
                         <Route path="/ledger" element={<RentLedgerPage />} />
+                        <Route path="/wallet" element={<LandlordWalletPage />} />
                     </Routes>
                 </main>
             </AuthProvider>

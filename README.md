@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 1.3.0  
+**Version:** 1.4.0  
 **Status:** Active Development
 
 ---
@@ -9,6 +9,7 @@
 
 | Version | Date | Summary |
 |---|---|---|
+| **1.4.0** | 2026-03-13 | Integrated Phase 20 (Landlord Wallet & Dual GCC), updated full project history, and finalized build walkthrough. |
 | **1.3.0** | 2026-03-13 | Full phase-wise README (Phase 0–19), committed all new pages: ContractManagerPage, GccDashboardPage, MaintenancePage, RentLedgerPage, ChatPage, ResidingDashboardPage updates |
 | **1.2.0** | 2026-03-12 | Added full phase-wise development history to README |
 | **1.1.0** | 2026-03-12 | Added Business & Commercial Features section, bumped version to reflect CRM and property management upgrades |
@@ -193,7 +194,7 @@ NestMatch UAE is a compliance-first PropTech platform designed exclusively for t
 - Created `RentLedgerPage.tsx` and registered `/ledger` route
 - Added "View Payment Schedule" button to `ProfilePage.tsx`
 - Tenant View: Next Payment Due card, chronological cheque/installment table, Stripe Pay simulation
-- Landlord/Agent View: Portfolio-wide ledger with "Send Reminder" toast
+- Landlord/Agent View: Portfolio-wide financial ledger showing payment status across all tenants and properties, with one-click "Send Reminder" toast
 
 ### Phase 19: UX Polish & Communication Fixes ✅
 - Implemented clickable participant dropdown in `ChatPage.tsx` header
@@ -202,9 +203,36 @@ NestMatch UAE is a compliance-first PropTech platform designed exclusively for t
 - Corrected Navbar: moved "Applicants" link from Tenant → Landlord/Agent section
 - Restored corrupted `mockData.ts` exports (`viewings`, `payments`)
 
+### Phase 20: Landlord Wallet & Dual-Sided GCC Trust Score ✅
+- Created `LandlordWalletPage.tsx` with KPI cards and ledger table.
+- Integrated `/wallet` route in `App.tsx`.
+- Added "Wallet" navigation link to `Navbar.tsx` for landlords/agents.
+- Upgrade `GccDashboardPage.tsx` with role-aware scoring criteria.
+- Aligned `LandlordWalletPage` with `User` type properties (using name vs firstName/lastName).
+
 ---
 
-## Tech Stack
+## Build Walkthrough
+
+### Tech Stack
+- Frontend: React 19, Vite 7.3.1, TypeScript 5.9
+- Routing: `react-router-dom`
+- Icons: `lucide-react`
+- Styling: Vanilla CSS (dark glassmorphism)
+
+### Key UAE Features Implemented
+- **UAE PASS-Only Auth:** No legacy identity methods.
+- **Occupancy Cap Filter:** Automatic listing suppression based on real-time population.
+- **Compliance Section:** Makani, Trakheesi, and Municipality Permit validation.
+- **Two-Way Commitment Hold:** 50 AED penalty system to prevent "ghosting".
+- **Star-Only Ratings:** Defamation-safe peer reviews.
+- **GCC Badge:** Gold certification for high-conduct tenants and landlords.
+- **Blind Match:** Anonymized discovery for cultural harmony.
+- **Dubai Metro Transport:** Color-coded transit proximity integrations.
+
+---
+
+## Tech Stack Summary
 
 | Layer | Technology |
 |---|---|

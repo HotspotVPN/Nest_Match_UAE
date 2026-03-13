@@ -59,6 +59,9 @@ export default function Navbar() {
                                     <Link to="/residing-dashboard" className={`navbar-link ${isActive('/residing-dashboard')}`}>
                                         <Users size={16} /> Applicants
                                     </Link>
+                                    <Link to="/wallet" className={`navbar-link ${isActive('/wallet')}`}>
+                                        <BarChart3 size={16} /> Wallet
+                                    </Link>
                                 
                                 </>
                             )}
