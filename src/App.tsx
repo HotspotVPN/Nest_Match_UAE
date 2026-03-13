@@ -14,6 +14,10 @@ import CompliancePage from '@/pages/CompliancePage';
 import CustomerDatabasePage from '@/pages/CustomerDatabasePage';
 import HowItWorksPage from '@/pages/HowItWorksPage';
 import ChatPage from '@/pages/ChatPage';
+import GccDashboardPage from '@/pages/GccDashboardPage';
+import ContractManagerPage from '@/pages/ContractManagerPage';
+import MaintenancePage from '@/pages/MaintenancePage';
+import RentLedgerPage from '@/pages/RentLedgerPage';
 
 export default function App() {
     return (
@@ -36,6 +40,10 @@ export default function App() {
                         <Route path="/customers" element={<CustomerDatabasePage />} />
                         <Route path="/how-it-works" element={<HowItWorksPage />} />
                         <Route path="/chat" element={<ChatPage />} />
+                        <Route path="/gcc" element={<GccDashboardPage />} />
+                        <Route path="/contracts/:viewingId" element={<ContractManagerPage />} />
+                        <Route path="/maintenance" element={<MaintenancePage />} />
+                        <Route path="/ledger" element={<RentLedgerPage />} />
                     </Routes>
                 </main>
             </AuthProvider>

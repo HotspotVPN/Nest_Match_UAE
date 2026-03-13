@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import {
     Home, Search, User, BarChart3, ShieldCheck, Users,
-    LogOut, Building2, CalendarCheck, MessageSquare, LayoutDashboard
+    LogOut, Building2, CalendarCheck, MessageSquare, LayoutDashboard, Wrench
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -37,11 +37,9 @@ export default function Navbar() {
                                     <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
                                         <MessageSquare size={16} /> Chat
                                     </Link>
-                                    {currentUser.resident_role === 'residing' && (
-                                        <Link to="/residing-dashboard" className={`navbar-link ${isActive('/residing-dashboard')}`}>
-                                            <Users size={16} /> Applicants
-                                        </Link>
-                                    )}
+                                    <Link to="/maintenance" className={`navbar-link ${isActive('/maintenance')}`}>
+                                        <Wrench size={16} /> Maintenance
+                                    </Link>
                                 </>
                             )}
                             {(currentUser.type === 'landlord' || currentUser.type === 'letting_agent') && (
@@ -55,6 +53,13 @@ export default function Navbar() {
                                     <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
                                         <MessageSquare size={16} /> Chat
                                     </Link>
+                                    <Link to="/maintenance" className={`navbar-link ${isActive('/maintenance')}`}>
+                                        <Wrench size={16} /> Maintenance
+                                    </Link>
+                                    <Link to="/residing-dashboard" className={`navbar-link ${isActive('/residing-dashboard')}`}>
+                                        <Users size={16} /> Applicants
+                                    </Link>
+                                
                                 </>
                             )}
                             {currentUser.type === 'compliance' && (

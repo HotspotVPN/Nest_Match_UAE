@@ -99,6 +99,12 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         )}
+
+                        {isOwnProfile && (
+                            <Link to="/gcc" className="btn btn-outline btn-sm" style={{ width: '100%', marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                                <Award size={14} /> View Full Dashboard
+                            </Link>
+                        )}
                     </div>
 
                     {/* Verification Status */}
@@ -181,7 +187,10 @@ export default function ProfilePage() {
                                     {displayUser.direct_debit?.status === 'active' && <span className="badge badge-green">Auto-Pay Active</span>}
                                 </div>
                             </div>
-                            <Link to={`/listing/${currentListing.id}`} className="btn btn-outline btn-sm">View</Link>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <Link to={`/listing/${currentListing.id}`} className="btn btn-outline btn-sm" style={{ width: '100%', textAlign: 'center', justifyContent: 'center' }}>View Property</Link>
+                                {isOwnProfile && <Link to="/ledger" className="btn btn-primary btn-sm" style={{ width: '100%', textAlign: 'center', justifyContent: 'center' }}>Payment Schedule</Link>}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -195,14 +204,46 @@ export default function ProfilePage() {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             {managedListings.map(l => (
-                                <Link to={`/listing/${l.id}`} key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', textDecoration: 'none', transition: 'all 0.2s' }}>
-                                    <MapPin size={20} style={{ color: 'var(--brand-purple-light)' }} />
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 600, fontSize: '0.9375rem' }}>{l.title}</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{l.district} · {l.currentOccupants}/{l.maxLegalOccupancy} occupants</div>
+                                <Link to={`/listing/${l.id}`} key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface-2)', border: '1px solid var(--border-subtle)', textDecoration: 'none', transition: 'all 0.2s' }}>
+                                    <div style={{ padding: '0.75rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: 'var(--radius-sm)', color: 'var(--brand-purple-light)' }}>
+                                        <Building2 size={24} />
                                     </div>
-                                    <span className={`badge ${l.isActive ? 'badge-green' : 'badge-red'}`}>{l.isActive ? 'Active' : 'At Capacity'}</span>
-                                    <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{formatCurrency(l.rent_per_room)}</span>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>{l.title}</div>
+                                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.75rem' }}>
+                                            <MapPin size={12} /> {l.district} · {l.currentOccupants}/{l.maxLegalOccupancy} occupants
+                                        </div>
+                                        
+                                        {/* Visually Linked Tenants */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                            {l.current_roommates.slice(0, 5).map(rmId => {
+                                                const rm = users.find(u => u.id === rmId);
+                                                return rm ? (
+                                                    <div 
+                                                        key={rmId} 
+                                                        className="avatar avatar-sm" 
+                                                        title={rm.name} 
+                                                        style={{ width: '28px', height: '28px', fontSize: '0.625rem', border: '2px solid var(--bg-surface-2)' }}
+                                                    >
+                                                        {getInitials(rm.name)}
+                                                    </div>
+                                                ) : null;
+                                            })}
+                                            {l.current_roommates.length > 5 && (
+                                                <div className="avatar avatar-sm" style={{ width: '28px', height: '28px', fontSize: '0.625rem', background: 'var(--bg-surface-3)', color: 'var(--text-muted)', border: '2px solid var(--bg-surface-2)' }}>
+                                                    +{l.current_roommates.length - 5}
+                                                </div>
+                                            )}
+                                            {l.current_roommates.length === 0 && (
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Completely Vacant</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                                        <span className={`badge ${l.isActive ? 'badge-green' : 'badge-red'}`}>{l.isActive ? 'Active' : 'At Capacity'}</span>
+                                        <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.125rem' }}>{formatCurrency(l.rent_per_room)}</span>
+                                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>/ room</span>
+                                    </div>
                                 </Link>
                             ))}
                         </div>

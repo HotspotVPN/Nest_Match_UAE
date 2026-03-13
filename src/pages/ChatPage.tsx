@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { chatChannels, chatMessages, users, listings, getInitials, formatTime, formatDate } from '@/data/mockData';
-import { Send, Users as UsersIcon, Home, CheckCircle2, Phone, Video, Search, Menu, X } from 'lucide-react';
+import { chatChannels, chatMessages, users, listings, viewingBookings, getInitials, formatTime, formatDate } from '@/data/mockData';
+import { Send, Users as UsersIcon, Home, CheckCircle2, Phone, Video, Search, Menu, X, ChevronDown } from 'lucide-react';
 
 export default function ChatPage() {
     const { currentUser } = useAuth();
@@ -11,6 +11,7 @@ export default function ChatPage() {
     const [newMessage, setNewMessage] = useState('');
     const [messages, setMessages] = useState(chatMessages);
     const [showSidebar, setShowSidebar] = useState(true);
+    const [showParticipantsMenu, setShowParticipantsMenu] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Filter channels where the current user is a participant
@@ -32,6 +33,10 @@ export default function ChatPage() {
     useEffect(() => {
         scrollToBottom();
     }, [channelMessages]);
+
+    useEffect(() => {
+        setShowParticipantsMenu(false);
+    }, [activeChannelId]);
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
@@ -148,12 +153,46 @@ export default function ChatPage() {
                                     <h3 style={{ fontSize: '1.125rem', marginBottom: '0.125rem' }}>
                                         {activeChannel.listing_id ? activeChannel.name : getParticipantNames(activeChannel.participants)}
                                     </h3>
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                        {activeChannel.participants.length} participants
-                                    </span>
+                                    <div style={{ position: 'relative' }}>
+                                        <button 
+                                            className="btn btn-ghost" 
+                                            style={{ fontSize: '0.75rem', color: 'var(--text-muted)', padding: 0, height: 'auto', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                                            onClick={() => setShowParticipantsMenu(!showParticipantsMenu)}
+                                        >
+                                            {activeChannel.participants.length} participants <ChevronDown size={12} />
+                                        </button>
+                                        
+                                        {showParticipantsMenu && (
+                                            <div style={{
+                                                position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', 
+                                                background: 'var(--bg-surface-1)', border: '1px solid var(--border-subtle)',
+                                                borderRadius: 'var(--radius-md)', padding: '0.5rem',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 50,
+                                                minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+                                            }}>
+                                                {activeChannel.participants.map(pId => {
+                                                    const p = users.find(u => u.id === pId);
+                                                    if (!p) return null;
+                                                    return (
+                                                        <a href={`/profile/${p.id}`} key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem', fontSize: '0.8125rem', textDecoration: 'none', color: 'inherit', borderRadius: 'var(--radius-sm)' }} className="hover-bg-surface-2">
+                                                            <div className="avatar avatar-sm" style={{ width: '28px', height: '28px', fontSize: '0.625rem' }}>
+                                                                {getInitials(p.name)}
+                                                            </div>
+                                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                                <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{p.name} {p.id === currentUser.id ? '(You)' : ''}</span>
+                                                                <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                                                                    {p.type === 'landlord' ? 'Landlord' : p.type === 'letting_agent' ? 'Agent' : 'Tenant'}
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                    )
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                 <button className="btn btn-ghost btn-icon"><Phone size={18} /></button>
                                 <button className="btn btn-ghost btn-icon"><Video size={18} /></button>
                             </div>

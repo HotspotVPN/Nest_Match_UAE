@@ -1,4 +1,4 @@
-import type { User, Listing, Payment, ViewingBooking, ChatChannel, ChatMessage, PropertyRating } from '@/types';
+import type { User, Listing, Payment, ViewingBooking, ChatChannel, ChatMessage, PropertyRating, MaintenanceTicket, RentLedger } from '@/types';
 
 // ─── Helpers ──────────────────────────────────────────────────
 export function getInitials(name: string): string {
@@ -626,7 +626,7 @@ export const viewingBookings: ViewingBooking[] = [
         status: 'PENDING', hold_amount: 50,
         landlord_agreed_penalty: false, created_at: '2026-03-12', updated_at: '2026-03-12',
     },
-    // ── Phase 12 Expanded Data: Viewings ─────────────────────────────────────
+    // -- Phase 12 Expanded Data: Viewings
     {
         id: 'view-5', property_id: 'listing-a', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-3',
         requested_date: '2026-03-20T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
@@ -659,32 +659,49 @@ export const viewingBookings: ViewingBooking[] = [
     },
 ];
 
-// ─── PAYMENTS ─────────────────────────────────────────────────
+// --- PAYMENTS ---
 export const payments: Payment[] = [
     { id: 'pay-1', listing_id: 'listing-1', payer_id: 'roommate-1', payee_id: 'landlord-1', type: 'rent', amount: 3500, due_date: '2026-03-15', paid_date: '2026-03-14', status: 'completed', method: 'direct_debit', reference: 'NM-AE-2026-03-001', rera_escrow_ref: 'RERA-ESC-001', rera_escrow_status: 'held', created_at: '2026-03-01', updated_at: '2026-03-14' },
     { id: 'pay-2', listing_id: 'listing-1', payer_id: 'roommate-2', payee_id: 'landlord-1', type: 'rent', amount: 3500, due_date: '2026-03-15', paid_date: '2026-03-15', status: 'completed', method: 'direct_debit', reference: 'NM-AE-2026-03-002', rera_escrow_ref: 'RERA-ESC-002', rera_escrow_status: 'held', created_at: '2026-03-01', updated_at: '2026-03-15' },
     { id: 'pay-3', listing_id: 'listing-2', payer_id: 'roommate-3', payee_id: 'landlord-2', type: 'rent', amount: 3000, due_date: '2026-03-15', status: 'pending', method: 'bank_transfer', reference: 'NM-AE-2026-03-003', created_at: '2026-03-01', updated_at: '2026-03-01' },
     { id: 'pay-4', listing_id: 'listing-1', payer_id: 'roommate-1', payee_id: 'landlord-1', type: 'deposit', amount: 3500, due_date: '2025-12-15', paid_date: '2025-12-15', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-001', rera_escrow_ref: 'RERA-DEP-001', rera_escrow_status: 'held', created_at: '2025-12-15', updated_at: '2025-12-15' },
-    // ── Phase 12 Expanded Data: Penalties Captured ─────────────────────────────────
     { id: 'pay-pen-1', listing_id: 'listing-a', payer_id: 'roommate-srch-2', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-001', created_at: '2026-03-18', updated_at: '2026-03-18' },
     { id: 'pay-pen-2', listing_id: 'listing-b', payer_id: 'roommate-srch-3', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-002', created_at: '2026-03-18', updated_at: '2026-03-18' },
     { id: 'pay-pen-3', listing_id: 'listing-d', payer_id: 'landlord-4', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-003', created_at: '2026-03-18', updated_at: '2026-03-18' },
     { id: 'pay-pen-4', listing_id: 'listing-a', payer_id: 'landlord-3', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-004', created_at: '2026-03-18', updated_at: '2026-03-18' },
 ];
 
-// ─── CHAT CHANNELS ────────────────────────────────────────────
+// --- CHAT CHANNELS ---
 export const chatChannels: ChatChannel[] = [
     {
-        id: 'ch-1', listing_id: 'listing-1', name: 'Princess Tower — Marina',
+        id: 'ch-1', listing_id: 'listing-1', name: 'Princess Tower - Marina',
         participants: ['roommate-1', 'roommate-2', 'landlord-1', 'agent-1'],
         created_at: '2025-12-15',
-        last_message: { id: 'msg-latest-1', channel_id: 'ch-1', sender_id: 'roommate-1', message_type: 'text', content: 'AC filter has been replaced. Thanks for the quick response! 👍', read_by: ['roommate-1', 'agent-1'], created_at: '2026-03-10T14:30:00Z' },
+        last_message: { id: 'msg-latest-1', channel_id: 'ch-1', sender_id: 'roommate-1', message_type: 'text', content: 'AC filter replaced. Quick response!', read_by: ['roommate-1', 'agent-1'], created_at: '2026-03-10T14:30:00Z' },
     },
     {
-        id: 'ch-2', listing_id: 'listing-2', name: 'JLT Cluster D — Lake View',
+        id: 'ch-2', listing_id: 'listing-2', name: 'JLT Cluster D - Lake View',
         participants: ['roommate-3', 'roommate-4', 'landlord-2'],
         created_at: '2026-01-15',
-        last_message: { id: 'msg-latest-2', channel_id: 'ch-2', sender_id: 'landlord-2', message_type: 'announcement', content: 'DEWA maintenance scheduled for Thursday 9AM-12PM. Water may be temporarily off.', read_by: ['landlord-2'], created_at: '2026-03-09T09:00:00Z' },
+        last_message: { id: 'msg-latest-2', channel_id: 'ch-2', sender_id: 'landlord-2', message_type: 'announcement', content: 'DEWA maintenance Thursday 9AM-12PM.', read_by: ['landlord-2'], created_at: '2026-03-09T09:00:00Z' },
+    },
+    {
+        id: 'ch-3', listing_id: 'listing-3', name: 'Executive Towers - Business Bay',
+        participants: ['roommate-5', 'landlord-1', 'agent-1'],
+        created_at: '2026-02-01',
+        last_message: { id: 'msg-latest-3', channel_id: 'ch-3', sender_id: 'landlord-1', message_type: 'text', content: 'Confirming your tenancy renewal for next month.', read_by: ['landlord-1', 'roommate-5'], created_at: '2026-03-11T10:00:00Z' },
+    },
+    {
+        id: 'ch-4', listing_id: 'listing-a', name: 'Al Rigga Sublease',
+        participants: ['roommate-srch-1', 'landlord-3'],
+        created_at: '2026-03-10',
+        last_message: { id: 'msg-latest-4', channel_id: 'ch-4', sender_id: 'roommate-srch-1', message_type: 'text', content: 'Hi, is this room still available?', read_by: ['landlord-3'], created_at: '2026-03-11T15:20:00Z' },
+    },
+    {
+        id: 'ch-5', listing_id: 'listing-d', name: 'International City V3',
+        participants: ['roommate-srch-0', 'landlord-4'],
+        created_at: '2026-03-12',
+        last_message: { id: 'msg-latest-5', channel_id: 'ch-5', sender_id: 'landlord-4', message_type: 'text', content: 'Let me know if you are coming for the viewing.', read_by: [], created_at: '2026-03-12T08:00:00Z' },
     },
 ];
 
@@ -703,4 +720,56 @@ export const propertyRatings: PropertyRating[] = [
     { id: 'pr-3', property_id: 'listing-2', tenant_id: 'roommate-3', acQuality: 4, amenities: 4, maintenanceSpeed: 3, created_at: '2026-03-01' },
     { id: 'pr-4', property_id: 'listing-2', tenant_id: 'roommate-4', acQuality: 3, amenities: 4, maintenanceSpeed: 4, created_at: '2026-03-05' },
     { id: 'pr-5', property_id: 'listing-3', tenant_id: 'roommate-5', acQuality: 5, amenities: 5, maintenanceSpeed: 5, created_at: '2026-02-28' },
+];
+
+// ─── Phase 17: MAINTENANCE TICKETS ────────────────────────────
+export const maintenanceTickets: MaintenanceTicket[] = [
+    { id: 'mt-1', property_id: 'listing-1', tenant_id: 'roommate-1', issue_type: 'AC/Cooling', urgency: 'Medium', status: 'In Progress', description: 'AC unit in living room is leaking water and making a noise.', created_at: '2026-03-08T09:00:00Z' },
+    { id: 'mt-2', property_id: 'listing-1', tenant_id: 'roommate-2', issue_type: 'Plumbing', urgency: 'Emergency', status: 'Reported', description: 'Master bathroom toilet is overflowing, water is spreading fast!', created_at: '2026-03-12T19:30:00Z' },
+    { id: 'mt-3', property_id: 'listing-2', tenant_id: 'roommate-3', issue_type: 'Appliances', urgency: 'Low', status: 'Resolved', description: 'Washing machine door gets stuck sometimes.', created_at: '2026-03-01T14:20:00Z' },
+];
+
+// ─── Phase 18: RENT LEDGERS ───────────────────────────────────
+export const rentLedgers: RentLedger[] = [
+    {
+        id: 'ledger-1',
+        property_id: 'listing-1',
+        tenant_id: 'roommate-1',
+        landlord_id: 'landlord-1',
+        total_rent: 42000,
+        installments: [
+            { id: 'inst-1a', due_date: '2025-12-15', amount: 10500, status: 'Paid', method: 'Cheque' },
+            { id: 'inst-1b', due_date: '2026-03-15', amount: 10500, status: 'Upcoming', method: 'Stripe' },
+            { id: 'inst-1c', due_date: '2026-06-15', amount: 10500, status: 'Upcoming', method: 'Cheque' },
+            { id: 'inst-1d', due_date: '2026-09-15', amount: 10500, status: 'Upcoming', method: 'Cheque' },
+        ],
+    },
+    {
+        id: 'ledger-2',
+        property_id: 'listing-1',
+        tenant_id: 'roommate-2',
+        landlord_id: 'landlord-1',
+        total_rent: 42000,
+        installments: [
+            { id: 'inst-2a', due_date: '2025-12-15', amount: 10500, status: 'Paid', method: 'Cheque' },
+            { id: 'inst-2b', due_date: '2026-03-15', amount: 10500, status: 'Upcoming', method: 'Stripe' },
+            { id: 'inst-2c', due_date: '2026-06-15', amount: 10500, status: 'Upcoming', method: 'Cheque' },
+            { id: 'inst-2d', due_date: '2026-09-15', amount: 10500, status: 'Upcoming', method: 'Cheque' },
+        ],
+    },
+    {
+        id: 'ledger-3',
+        property_id: 'listing-2',
+        tenant_id: 'roommate-3',
+        landlord_id: 'landlord-2',
+        total_rent: 36000,
+        installments: [
+            { id: 'inst-3a', due_date: '2026-01-15', amount: 6000, status: 'Paid', method: 'Cheque' },
+            { id: 'inst-3b', due_date: '2026-03-15', amount: 6000, status: 'Overdue', method: 'Cheque' },
+            { id: 'inst-3c', due_date: '2026-05-15', amount: 6000, status: 'Upcoming', method: 'Cheque' },
+            { id: 'inst-3d', due_date: '2026-07-15', amount: 6000, status: 'Upcoming', method: 'Stripe' },
+            { id: 'inst-3e', due_date: '2026-09-15', amount: 6000, status: 'Upcoming', method: 'Cheque' },
+            { id: 'inst-3f', due_date: '2026-11-15', amount: 6000, status: 'Upcoming', method: 'Cheque' },
+        ],
+    },
 ];

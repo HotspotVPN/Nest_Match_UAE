@@ -488,16 +488,20 @@ export default function ListingDetailPage() {
                                 <button className="btn btn-ghost btn-icon" onClick={() => setShowTenantsModal(false)}><X size={18} /></button>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                {users.filter(u => u.type === 'roommate' && viewingBookings.some(v => v.searcher_id === u.id && v.property_id === listing.id && ['CONFIRMED', 'COMPLETED'].includes(v.status))).slice(0, listing.currentOccupants).map((tenant, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)' }}>
-                                        <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{tenant.name}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 85}</div>
+                                {listing.current_roommates.map(tenantId => {
+                                    const tenant = users.find(u => u.id === tenantId);
+                                    if (!tenant) return null;
+                                    return (
+                                        <div key={tenant.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)' }}>
+                                            <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{tenant.name}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 85}</div>
+                                            </div>
+                                            <Link to={`/chat`} className="btn btn-ghost btn-sm"><MessageSquare size={14} /></Link>
                                         </div>
-                                        <Link to={`/chat`} className="btn btn-ghost btn-sm"><MessageSquare size={14} /></Link>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

@@ -359,3 +359,39 @@ export interface ResidentFinancialShare {
     has_rera_escrow: boolean;     // RERA escrow badge (replaces UK TDS)
     utility_status?: 'pending' | 'completed';
 }
+
+// ─── Phase 17: Maintenance Engine ────────────────────────
+export type MaintenanceCategory = 'AC/Cooling' | 'Plumbing' | 'Electrical' | 'Appliances' | 'General';
+export type MaintenanceUrgency = 'Low' | 'Medium' | 'Emergency';
+export type MaintenanceStatus = 'Reported' | 'In Progress' | 'Resolved';
+
+export interface MaintenanceTicket {
+    id: string;
+    property_id: string;
+    tenant_id: string;
+    issue_type: MaintenanceCategory;
+    urgency: MaintenanceUrgency;
+    status: MaintenanceStatus;
+    description: string;
+    created_at: string;
+}
+
+// ─── Phase 18: Rent Ledger ──────────────────────────────
+export type RentPaymentStatus = 'Paid' | 'Upcoming' | 'Overdue';
+
+export interface RentInstallment {
+    id: string;
+    due_date: string;
+    amount: number;
+    method: 'Cheque' | 'Stripe';
+    status: RentPaymentStatus;
+}
+
+export interface RentLedger {
+    id: string;
+    property_id: string;
+    tenant_id: string;
+    landlord_id: string;
+    total_rent: number;
+    installments: RentInstallment[];
+}

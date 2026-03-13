@@ -1,4 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import { viewingBookings, listings, users, formatCurrency, getInitials, formatDate } from '@/data/mockData';
 import { CalendarCheck, Clock, MapPin, CreditCard, CheckCircle2, XCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
@@ -181,11 +182,16 @@ export default function ViewingsPage() {
                                 )}
 
                                 {viewing.status === 'COMPLETED' && (
-                                    <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <CheckCircle2 size={16} style={{ color: 'var(--info)' }} />
-                                        <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>
-                                            Viewing completed — holds released on {viewing.resolution_date ? formatDate(viewing.resolution_date) : 'N/A'}
-                                        </span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <CheckCircle2 size={16} style={{ color: 'var(--info)' }} />
+                                            <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>
+                                                Viewing completed — holds released on {viewing.resolution_date ? formatDate(viewing.resolution_date) : 'N/A'}
+                                            </span>
+                                        </div>
+                                        <Link to={`/contracts/${viewing.id}`} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                                            Proceed to Lease Setup
+                                        </Link>
                                     </div>
                                 )}
                             </div>
