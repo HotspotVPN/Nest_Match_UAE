@@ -1,59 +1,56 @@
 # NestMatch UAE
 
-**Version:** 1.4.1  
-**Status:** Active Development | [Product History](docs/HISTORY.md) | [Technical Architecture](docs/ARCHITECTURE.md)
+**Version:** 1.4.2  
+**Status:** Active Development | [Product Narrative (User Guide)](docs/PRODUCT_GUIDE.md) | [Full Development Log](docs/DEVELOPMENT_LOG.md)
 
 ---
 
-## 🏛️ Project Vision
-NestMatch UAE is a **compliance-first PropTech platform** engineered specifically for the unique regulatory landscape of the United Arab Emirates. It solves the friction between high-density shared housing and strict legal enforcement by integrating identity, government data, and fintech commitments into a single, premium ecosystem.
+## 🏛️ Project Vision & Story
+NestMatch UAE is a **compliance-first PropTech platform** engineered specifically for the unique regulatory landscape of the United Arab Emirates.
+
+**New to the project?**  
+👉 [**Read our Non-Technical Product Story**](docs/PRODUCT_GUIDE.md) — This guide explains the vision, the problems we solve (overcrowding, ghosting, legal friction), and the journey from inception to a fully regulated UAE platform in plain English.
 
 ---
 
 ## 🚀 Key Ecosystem Features
 
 ### 🛡️ The Compliance Engine (God Mode)
-The platform features an **Operations CRM with "God Mode" capabilities**, allowing for active enforcement of UAE laws:
+The platform features an **Operations CRM with "God Mode" capabilities**:
 - **Direct DLD Sync:** Automatically fetches and locks `maxLegalOccupancy` via Makani validation.
 - **Dynamic Suspension:** One-click suspension of listings for compliance breaches.
 - **Legal Audit Rails:** Force-audits against the DLD registry to ensure data integrity.
 
 ### 👤 Blind Match & GCC Score
 To promote **cultural harmony** and eliminate bias, NestMatch UAE uses a "Blind Match" discovery flow:
-- **Anonymized Profiles:** Names, photos, and nationalities are hidden until a contract is requested.
-- **Good Conduct Certificate (GCC):** A performance-based trust score (0-100) calculated from payment reliability, long-term residency, and peer reviews.
+- **Anonymized Profiles:** Names and photos are hidden to ensure people are chosen for conduct, not origin.
+- **Good Conduct Certificate (GCC):** A performance-based trust score (0-100) calculated from verified residency conduct.
 
 ### 💳 Commitment Hold (Ghosting Prevention)
-The unique **Two-Way Commitment Hold** system (50 AED) protects both landlords and tenants:
-- **RERA-Compliant:** Framed as a "Platform Abuse Penalty Authorization" to ensure legality.
+The unique **Two-Way Commitment Hold** system (50 AED) protects everyone's time:
+- **RERA-Compliant:** Framed as a "Platform Abuse Penalty Authorization" to ensure strict legality.
 - **Stripe Integration:** Pre-authorized holds are voided automatically upon viewing completion.
-
-### 📄 Deal-Closing Hub
-A complete post-viewing lifecycle:
-- **Contract Wizard:** 3-step digital bridge (Terms → Ejari Verification → Deposit).
-- **Maintenance Kanban:** Institutional-grade ticketing for tenants and landlords.
-- **Rent Ledger:** Localized cheque-based payment tracking (ENBD, ADCB, Wio, etc.).
 
 ---
 
-## 🛠️ Tech Stack & Build Status
+## 📖 Complete Project Documentation
+Every task and decision made by **Antigravity** is preserved permanently in this repository for full transparency:
+
+- [**Full Project Record & Development Log**](docs/DEVELOPMENT_LOG.md): Every single technical task completed since inception (Phases 0-20).
+- [**Technical Architecture Deep-Dive**](docs/ARCHITECTURE.md): Detailed logic on regulatory rails, fintech code, and government integrations.
+- [**Build Walkthrough**](docs/WALKTHROUGH.md): Verification checkmarks and technical specs.
+
+---
+
+## 🛠️ Tech Stack Summary
 
 | Layer | Technology | Status |
 |---|---|---|
 | **Frontend** | React 19, TypeScript, Vite 7 | Active |
-| **Logic** | Role-Based Access (Landlord/Agent/Searching/Residing) | Verified |
-| **Integrations** | UAE PASS (Identity), DLD/Makani (Occupancy), Stripe (Hold) | Mocked/API-Ready |
-| **Database** | Prisma (Investor-Ready Schema), MockData v2.0 | Scaled |
+| **Logic** | Role-Based Access (Landlord/Agent/Roommate) | Verified |
+| **Integrations** | UAE PASS, DLD/Makani, Stripe | Mocked/API-Ready |
+| **Database** | Prisma (Investor-Ready Schema) | Scaled |
 | **Deployment** | Vercel (Auto-Sync) | Live |
-
----
-
-## 📖 Complete Project Record
-For the full chronological development history and technical deep-dives, please refer to the persistent records in our documentation folder:
-
-- [**Full Project History (Phases 0-20)**](docs/HISTORY.md): A step-by-step log of every milestone achieved.
-- [**Technical Architecture & Compliance Logic**](docs/ARCHITECTURE.md): Deep-dive into the regulatory rails and fintech logic.
-- [**Build Walkthrough**](docs/WALKTHROUGH.md): Verification checkmarks and technical specs.
 
 ---
 
