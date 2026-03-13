@@ -1,7 +1,18 @@
 # NestMatch UAE
 
-**Version:** 1.2.0  
+**Version:** 1.3.0  
 **Status:** Active Development
+
+---
+
+## Version History
+
+| Version | Date | Summary |
+|---|---|---|
+| **1.3.0** | 2026-03-13 | Full phase-wise README (Phase 0–19), committed all new pages: ContractManagerPage, GccDashboardPage, MaintenancePage, RentLedgerPage, ChatPage, ResidingDashboardPage updates |
+| **1.2.0** | 2026-03-12 | Added full phase-wise development history to README |
+| **1.1.0** | 2026-03-12 | Added Business & Commercial Features section, bumped version to reflect CRM and property management upgrades |
+| **1.0.0** | 2026-03-12 | Initial GitHub export. Core platform: authentication, browsing, viewings, compliance engine, treasury |
 
 ---
 
