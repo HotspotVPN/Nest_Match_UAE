@@ -1,220 +1,210 @@
-import type { Listing, User } from '@/types';
+import type { Listing, User, PropertyRating } from '@/types';
 
-// 1) Types that match your mock API JSON
+/**
+ * Robust JSON parser for SQLite fields which are stored as text.
+ */
+function safeJsonParse<T>(data: any, fallback: T): T {
+  if (!data) return fallback;
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.warn("MAPPING_ERROR: Failed to parse JSON string:", data);
+      return fallback;
+    }
+  }
+  return data as T;
+}
+
+// 1) Types that match your Cloudflare D1 (SQLite) Schema exactly
 export interface ApiRoomListing {
   id: string;
+  landlord_id: string;
+  agent_id?: string;
   title: string;
-  description?: string;
-  city: string;
-  district: string;
-  building_name?: string;
   address: string;
-  coordinates?: { lat: number; lng: number };
-  room_type: 'studio' | 'partition' | 'regular_room' | 'master_room' | 'bed_space';
-  rent_per_month_aed: number;
-  rent_frequency: 'monthly' | 'yearly' | 'flexible';
-  bills_included: boolean;
-  bills_breakdown?: string;
-  security_deposit_aed: number;
-  available_from: string;
-  minimum_contract_months: number;
-  gender_preference: 'any' | 'female_only' | 'male_only';
-  nationality_preference?: string;
-  amenities?: string[];
-  furnishing?: 'unfurnished' | 'semi_furnished' | 'fully_furnished';
-  current_roommate_count: number;
-  max_legal_occupancy: number;
-  roommate_ids: string[];
-  is_premium: boolean;
-  is_bookable: boolean;
-  listing_status: 'draft' | 'active' | 'at_capacity' | 'suspended';
-  makani_number?: string;
-  municipality_permit?: string;
+  district: string;
+  makani_number: string;
   trakheesi_permit?: string;
-  is_permit_verified?: boolean;
-  compliance_state?: 'compliant' | 'over_capacity' | 'missing_permit' | 'unverified_api';
+  municipality_permit?: string;
+  max_legal_occupancy: number;
+  current_occupants: number;
+  is_api_verified: number; // SQLite boolean (0 or 1)
+  is_active: number;
+  rent_per_room: number;
+  deposit: number;
+  total_rooms: number;
+  available_rooms: number;
+  description?: string;
+  amenities: string | string[];     // JSON Array in D1
+  house_rules: string | string[];   // JSON Array in D1
+  tags: string | string[];          // JSON Array in D1
+  bills_included: number;
+  bills_breakdown?: string;
+  transport_chips?: string | any[]; // JSON Array in D1
+  location_lat?: number;
+  location_lng?: number;
+  location_data?: string | any;     // JSON Object in D1
+  rera_escrow_verified: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ApiRoommateProfile {
   id: string;
-  full_name: string;
-  age?: number;
-  gender?: 'male' | 'female' | 'other';
-  occupation?: string;
-  company?: string;
-  budget_min_aed?: number;
-  budget_max_aed?: number;
-  preferred_districts?: string[];
-  lifestyle_tags?: string[];
-  sleep_schedule?: string;
-  guests_policy?: string;
-  gcc_score?: number;
-  gcc_tier?: 'Bronze' | 'Silver' | 'Gold';
-  uae_pass_verified?: boolean;
-  current_listing_id?: string | null;
+  email: string;
+  uae_pass_id?: string;
+  emirates_id?: string;
+  is_uae_pass_verified: number;
+  is_id_verified: number;
+  role: string;
+  name: string;
+  phone?: string;
+  avatar_key?: string;
+  bio?: string;
+  lifestyle_tags?: string | string[];     // JSON Array
+  personality_traits?: string | string[]; // JSON Array
+  hobbies?: string | string[];            // JSON Array
+  keywords?: string | string[];           // JSON Array
+  gcc_score: number;
+  is_premium: number;
+  bank_linked: number;
+  kyc_status: 'pending' | 'completed' | 'rejected';
+  aml_status: 'pending' | 'completed' | 'rejected';
+  pep_status: 'pending' | 'clear' | 'failed';
+  compliance_verified: number;
+  resident_role?: 'searching' | 'residing';
+  preferences?: string | any;             // JSON Object
+  current_property_id?: string;
+  rent_monthly?: number;
+  deposit?: number;
+  bank_details?: string | any;            // JSON Object
+  created_at: string;
+  updated_at: string;
 }
 
 /**
- * Map ApiRoomListing -> existing Listing type
- * NOTE: Fill fields your API doesn’t know about with safe defaults for demo.
+ * mapApiRoomListingToListing
+ * Precisely bridges D1 snake_case SQLite results to Frontend camelCase Listing type.
  */
 export function mapApiRoomListingToListing(api: ApiRoomListing): Listing {
-  const now = new Date().toISOString();
-
-  // Handle both the new API schema and existing mock data fields
-  const isAtCapacity = api.listing_status === 'at_capacity';
-  const isOverCapacity = api.compliance_state === 'over_capacity';
-  
-  const isActive = api.listing_status 
-    ? (api.listing_status === 'active' && !isAtCapacity && !isOverCapacity)
-    : ((api as any).isActive ?? true);
-
-  const currentOccupants = api.current_roommate_count ?? (api as any).currentOccupants ?? 0;
-  const maxLegalOccupancy = api.max_legal_occupancy ?? (api as any).maxLegalOccupancy ?? 2;
+  const images = (api as any).images || []; // Placeholder for R2 logic later
 
   return {
     id: api.id,
-    landlord_id: (api as any).landlord_id || 'landlord-1', // Fallback for demo
-    letting_agent_id: (api as any).letting_agent_id,
+    landlord_id: api.landlord_id,
+    letting_agent_id: api.agent_id,
 
     title: api.title,
     address: api.address,
-    district: api.district || (api as any).district,
+    district: api.district,
 
-    rent_per_room: api.rent_per_month_aed ?? (api as any).rent_per_room ?? 0,
-    total_rooms: Math.max(1, maxLegalOccupancy),
-    available_rooms: api.listing_status === 'at_capacity' ? 0 : (Math.max(0, maxLegalOccupancy - currentOccupants)),
+    rent_per_room: api.rent_per_room,
+    total_rooms: api.total_rooms,
+    available_rooms: api.available_rooms,
 
-    images: (api as any).images || [],
+    images: images,
 
-    description: api.description || (api as any).description || '',
-    amenities: api.amenities || (api as any).amenities || [],
-    house_rules: (api as any).house_rules || [],
+    description: api.description || '',
+    amenities: safeJsonParse<string[]>(api.amenities, []),
+    house_rules: safeJsonParse<string[]>(api.house_rules, []),
 
-    bills_included: api.bills_included ?? (api as any).bills_included ?? false,
-    bills_breakdown: api.bills_breakdown || (api as any).bills_breakdown,
-    deposit: api.security_deposit_aed ?? (api as any).deposit ?? 0,
+    bills_included: Boolean(api.bills_included),
+    bills_breakdown: api.bills_breakdown,
+    deposit: api.deposit,
 
-    current_roommates: api.roommate_ids || (api as any).current_roommates || [],
-    occupancy_status: (api as any).occupancy_status || [],
+    current_roommates: [], // To be populated via join/separate fetch
+    occupancy_status: [],
 
-    tags: api.room_type ? [api.room_type, api.furnishing || ''].filter(Boolean) : ((api as any).tags || []),
+    tags: safeJsonParse<string[]>(api.tags, []),
 
-    makaniNumber: api.makani_number || (api as any).makaniNumber || '',
-    trakheesiPermit: api.trakheesi_permit || (api as any).trakheesiPermit || '',
-    municipalityPermit: api.municipality_permit || (api as any).municipalityPermit || '',
-    maxLegalOccupancy,
-    currentOccupants,
-    isActive,
-    isApiVerified: !!(api.is_permit_verified ?? (api as any).isApiVerified),
+    makaniNumber: api.makani_number,
+    trakheesiPermit: api.trakheesi_permit || '',
+    municipalityPermit: api.municipality_permit || '',
+    maxLegalOccupancy: api.max_legal_occupancy,
+    currentOccupants: api.current_occupants,
+    isActive: Boolean(api.is_active),
+    isApiVerified: Boolean(api.is_api_verified),
 
-    transport_chips: (api as any).transport_chips || [],
+    transport_chips: safeJsonParse<any[]>(api.transport_chips, []),
 
-    financial_ledger: (api as any).financial_ledger,
-    rera_escrow_verified: !!(api as any).rera_escrow_verified,
+    financial_ledger: undefined,
+    rera_escrow_verified: Boolean(api.rera_escrow_verified),
 
-    location: api.coordinates
-      ? {
-          lat: api.coordinates.lat,
-          lng: api.coordinates.lng,
-          nearby_amenities: [],
-        }
-      : (api as any).location,
+    location: {
+      lat: api.location_lat || 25.07, // Marina default
+      lng: api.location_lng || 55.13,
+      nearby_amenities: [],
+      ...safeJsonParse<any>(api.location_data, {})
+    },
 
     rating: (api as any).rating,
     total_reviews: (api as any).total_reviews,
     property_ratings: (api as any).property_ratings || [],
 
-    created_at: (api as any).created_at || now,
-    updated_at: (api as any).updated_at || now,
+    created_at: api.created_at,
+    updated_at: api.updated_at,
   };
 }
 
 /**
- * Map ApiRoommateProfile -> existing User type (roommate)
- * This is a “thin” mapping for demo purposes.
+ * mapApiRoommateToUser
+ * Maps D1 User table row back to the Frontend User type.
  */
 export function mapApiRoommateToUser(api: ApiRoommateProfile): User {
-  const now = new Date().toISOString();
+  const prefs = safeJsonParse<any>(api.preferences, {});
 
   return {
     id: api.id,
-    type: (api as any).type || 'roommate',
-    auth_method: (api as any).auth_method || 'email',
-    uaePassId: (api as any).uaePassId,
-    emiratesId: (api as any).emiratesId,
-    isUaePassVerified: api.uae_pass_verified ?? (api as any).isUaePassVerified ?? false,
-    isIdVerified: (api as any).isIdVerified ?? false,
+    type: (api.role.includes('ADMIN') ? 'operations' : 
+          api.role === 'LANDLORD' ? 'landlord' : 
+          api.role === 'AGENT' ? 'letting_agent' : 'roommate') as any,
+    auth_method: api.uae_pass_id ? 'uae_pass' : 'email',
+    uaePassId: api.uae_pass_id,
+    emiratesId: api.emirates_id,
+    isUaePassVerified: Boolean(api.is_uae_pass_verified),
+    isIdVerified: Boolean(api.is_id_verified),
 
-    name: api.full_name,
-    email: `${api.id}@example.com`,
-    avatar: '',
-    bio: api.occupation
-      ? `${api.occupation} at ${api.company || 'UAE company'}.`
-      : 'Roommate looking for a compliant shared home in Dubai.',
-    keywords: [],
+    name: api.name,
+    email: api.email,
+    avatar: api.avatar_key || '', // R2 path
+    bio: api.bio || '',
+    keywords: safeJsonParse<string[]>(api.keywords, []),
 
     compliance: {
-      kyc_status: api.uae_pass_verified ? 'completed' : 'pending',
-      aml_status: api.uae_pass_verified ? 'completed' : 'pending',
-      pep_status: 'clear',
-      verified: !!api.uae_pass_verified,
+      kyc_status: api.kyc_status,
+      aml_status: api.aml_status,
+      pep_status: api.pep_status,
+      verified: Boolean(api.compliance_verified),
     },
 
-    phone: '+971500000000',
-    linkedin_url: undefined,
-    instagram_handle: undefined,
-    rating: undefined,
-    total_reviews: undefined,
-
-    is_verified: !!api.uae_pass_verified,
-    resident_role: 'searching',
-    has_gcc: (api.gcc_score || 0) >= 60,
-    gccScore: Math.round((api.gcc_score || 0) * 20), // convert 0–5 to 0–100 if needed
-    isPremium: api.gcc_tier === 'Gold',
-
-    tenancy_duration_months: undefined,
-    gcc_eligible_date: undefined,
+    phone: api.phone || '',
+    is_verified: Boolean(api.compliance_verified),
+    resident_role: api.resident_role || 'searching',
+    has_gcc: (api.gcc_score || 0) >= 80,
+    gccScore: api.gcc_score || 0,
+    isPremium: Boolean(api.is_premium),
 
     preferences: {
-      budget_min: api.budget_min_aed || 2000,
-      budget_max: api.budget_max_aed || 4000,
-      move_in_date: new Date().toISOString().slice(0, 10),
-      duration: '12_months',
-      schedule: 'varies',
-      location_keywords: api.preferred_districts || [],
-      lifestyle_keywords: api.lifestyle_tags || [],
+      budget_min: prefs.budget_min || 0,
+      budget_max: prefs.budget_max || 10000,
+      move_in_date: prefs.move_in_date || '',
+      duration: prefs.duration || 'flexible',
+      schedule: prefs.schedule || 'varies',
+      location_keywords: prefs.location_keywords || [],
+      lifestyle_keywords: prefs.lifestyle_keywords || [],
     },
 
-    current_house_id: api.current_listing_id || undefined,
-    rent_monthly: undefined,
-    deposit: undefined,
-    direct_debit: undefined,
-    good_conduct_certificate: undefined,
+    current_house_id: api.current_property_id,
+    rent_monthly: api.rent_monthly,
+    deposit: api.deposit,
+    bank_details: safeJsonParse<any>(api.bank_details, undefined),
 
-    lifestyle_tags: api.lifestyle_tags || [],
-    personality_traits: [],
-    hobbies: [],
-    local_recommendations: [],
+    lifestyle_tags: safeJsonParse<string[]>(api.lifestyle_tags, []),
+    personality_traits: safeJsonParse<string[]>(api.personality_traits, []),
+    hobbies: safeJsonParse<string[]>(api.hobbies, []),
 
-    bank_details: undefined,
-    deposits: undefined,
-    monthly_income: undefined,
-    managed_by_agent: undefined,
-
-    agency_name: undefined,
-    rera_license: undefined,
-    managed_landlords: undefined,
-    managed_properties: undefined,
-    commission_rate: undefined,
-
-    kyc_steps: [],
-    is_paid: false,
-    bank_linked: false,
-    has_secure_deposit: false,
-    verified_income: undefined,
-
-    created_at: now,
-    updated_at: now,
+    created_at: api.created_at || new Date().toISOString(),
+    updated_at: api.updated_at || new Date().toISOString(),
   };
 }
