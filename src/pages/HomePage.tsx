@@ -21,16 +21,29 @@ export default function HomePage() {
                         We automate Ejari, contracts, rent ledgers, and compliance for the new regulatory regime.
                     </p>
 
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <Link to="/browse" className="btn btn-primary btn-lg">
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Link to="/login?intent=landlord" className="btn btn-primary btn-lg">
                             <Building2 size={20} /> I'm a Landlord / Operator
                         </Link>
                         <Link to="/browse" className="btn btn-secondary btn-lg">
                             <Search size={20} /> I'm looking for a room
                         </Link>
+                        <Link to="/login?intent=roommate" className="btn btn-ghost" style={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                            Create Tenant Profile
+                        </Link>
                     </div>
 
-                    <div style={{ marginTop: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', opacity: 0.6 }}>
+                    {/* Engine Overview Strip */}
+                    <div style={{ marginTop: '4rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                        <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                           <span style={{ color: 'var(--brand-purple-light)' }}>NestMatch OS:</span> Search → Book (Hold) → Contract Hub → Residing Dashboard
+                        </div>
+                        <Link to="/how-it-works" className="btn btn-outline btn-sm" style={{ padding: '0.5rem 1rem' }}>
+                            See how it works <ArrowRight size={14} />
+                        </Link>
+                    </div>
+
+                    <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', opacity: 0.6 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <img src="https://www.uaepass.ae/assets/images/uae-pass-logo.png" alt="UAE PASS" style={{ height: '18px', filter: 'grayscale(1) invert(1)' }} />
                             <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>Powered by UAE PASS</span>
@@ -38,6 +51,41 @@ export default function HomePage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <Shield size={16} />
                             <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>DLD & Municipality Aligned</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Compliance Engine Section - MOVED UP */}
+            <section className="section" style={{ padding: '6rem 0', background: 'var(--bg-surface-2)' }}>
+                <div className="container">
+                    <div className="glass-card" style={{ padding: '4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
+                        <div>
+                            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>The NestMatch <br/><span className="text-gradient">Compliance Engine</span></h2>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: 1.7 }}>
+                                We've digitized the legal requirements of Dubai's shared housing laws into a seamless experience. 
+                                Our platform acts as a neutral third-party ensuring every stay is documented and compliant.
+                            </p>
+                            <Link to="/how-it-works" className="btn btn-secondary">
+                                Learn about our Engine <ArrowRight size={18} />
+                            </Link>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            {[
+                                { icon: ShieldCheck, title: 'Identity', desc: 'UAE PASS verified Emirates ID anchors.' },
+                                { icon: Building2, title: 'Permits', desc: 'Real-time DLD shared housing permit checks.' },
+                                { icon: ScrollText, title: 'Contracts', desc: 'RERA-aligned digital tenancy agreements.' },
+                                { icon: Award, title: 'GCC & PDPL', desc: 'Behaviour-based scoring with data privacy.' }
+                            ].map(item => {
+                                const Icon = item.icon;
+                                return (
+                                    <div key={item.title} className="glass-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+                                        <Icon size={24} style={{ color: 'var(--brand-purple-light)', marginBottom: '0.75rem' }} />
+                                        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>{item.title}</div>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>{item.desc}</p>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -119,41 +167,6 @@ export default function HomePage() {
                                     </li>
                                 ))}
                             </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Compliance Engine Section */}
-            <section className="section" style={{ padding: '6rem 0', background: 'var(--bg-surface-2)' }}>
-                <div className="container">
-                    <div className="glass-card" style={{ padding: '4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-                        <div>
-                            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>The NestMatch <br/><span className="text-gradient">Compliance Engine</span></h2>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: 1.7 }}>
-                                We've digitized the legal requirements of Dubai's shared housing laws into a seamless experience. 
-                                Our platform acts as a neutral third-party ensuring every stay is documented and compliant.
-                            </p>
-                            <Link to="/how-it-works" className="btn btn-secondary">
-                                Learn about our Engine <ArrowRight size={18} />
-                            </Link>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                            {[
-                                { icon: ShieldCheck, title: 'Identity', desc: 'UAE PASS verified Emirates ID anchors.' },
-                                { icon: Building2, title: 'Permits', desc: 'Real-time DLD shared housing permit checks.' },
-                                { icon: ScrollText, title: 'Contracts', desc: 'RERA-aligned digital tenancy agreements.' },
-                                { icon: Award, title: 'GCC & PDPL', desc: 'Behaviour-based scoring with data privacy.' }
-                            ].map(item => {
-                                const Icon = item.icon;
-                                return (
-                                    <div key={item.title} className="glass-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                        <Icon size={24} style={{ color: 'var(--brand-purple-light)', marginBottom: '0.75rem' }} />
-                                        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>{item.title}</div>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>{item.desc}</p>
-                                    </div>
-                                );
-                            })}
                         </div>
                     </div>
                 </div>

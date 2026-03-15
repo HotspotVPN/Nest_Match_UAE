@@ -41,7 +41,14 @@ The GCC Score is a weighted average calculated based on:
 - **Rent Ledger:** Simulates the UAE cheque-based payment cycle (1, 2, 4, 6 Cheque allocations).
 - **Ejari Closing:** A mock hook that validates a draft Ejari number with the DLD before allowing the final Security Deposit payment.
 
-## 4. UI/UX Design System
+## 4. Backend Infrastructure (Phase 21)
+
+### API Layer (`backend/`)
+- **Framework:** Hono (Node.js framework optimized for Cloudflare Workers/Edge).
+- **Persistence:** Cloudflare D1 (Distributed SQLite) for low-latency data access.
+- **Connectivity:** The frontend utilizes an `ApiClient` to interface with the REST API, ensuring a clean separation of concerns.
+
+## 5. UI/UX Design System
 
 - **Glassmorphism:** A premium, dark-mode design system utilizing HSL variables for color harmony.
 - **Dynamic Routing:** Segmented profile URLs (`/profile/:id`) for scalable sharing.

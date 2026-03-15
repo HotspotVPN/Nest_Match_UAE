@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 1.4.2  
+**Version:** 1.5.0  
 **Status:** Active Development | [Product Narrative (User Guide)](docs/PRODUCT_GUIDE.md) | [Full Development Log](docs/DEVELOPMENT_LOG.md)
 
 ---
@@ -48,8 +48,9 @@ Every task and decision made by **Antigravity** is preserved permanently in this
 |---|---|---|
 | **Frontend** | React 19, TypeScript, Vite 7 | Active |
 | **Logic** | Role-Based Access (Landlord/Agent/Roommate) | Verified |
+| **Backend** | Hono (Node.js/Cloudflare Workers Framework) | Active |
 | **Integrations** | UAE PASS, DLD/Makani, Stripe | Mocked/API-Ready |
-| **Database** | Prisma (Investor-Ready Schema) | Scaled |
+| **Database** | Cloudflare D1 (SQLite-based), Prisma | Scaled |
 | **Deployment** | Vercel (Auto-Sync) | Live |
 
 ---

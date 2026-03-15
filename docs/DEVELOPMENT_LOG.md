@@ -82,6 +82,13 @@ This document serves as the master record of all tasks initiated and executed by
 - [x] **Landlord Wallet:** Built-in financial wallet for owner income tracking.
 - [x] **Dual-Sided GCC:** Implement conduct scoring for Landlords (Maintenance/Repairs).
 
+### Phase 21: Backend & API Integration ✅
+- [x] **Project Setup:** Initialize Hono framework in `/backend`.
+- [x] **Database:** Configure Cloudflare D1 and Prisma ORM for edge-compatible persistence.
+- [x] **API Endpoints:** Build RESTful routes for User Auth, Property Listings, and Viewings.
+- [x] **Frontend Connection:** Develop `api.ts` and `apiMappers.ts` to bridge UI and live data.
+- [x] **Migrations:** Execute initial schema migration (`wrangler d1 migrations apply`).
+
 ---
 
 ## 🛠️ Build & Verification Audit

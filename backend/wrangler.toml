@@ -1,0 +1,30 @@
+name = "nestmatch-uae-api"
+main = "src/index.ts"
+compatibility_date = "2025-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "nestmatch-uae"
+# database_id will be auto-filled after `wrangler d1 create`
+migrations_dir = "migrations"
+
+# R2 Buckets
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "nestmatch-property-images"
+
+[[r2_buckets]]
+binding = "KYC_DOCS"
+bucket_name = "nestmatch-kyc-documents"
+
+[[r2_buckets]]
+binding = "AVATARS"
+bucket_name = "nestmatch-avatars"
+
+# Environment variables
+[vars]
+JWT_SECRET = "dev-secret-change-in-production"
+ALLOWED_ORIGIN = "https://nestmatch-uae.vercel.app"
+ENVIRONMENT = "development"

@@ -1,6 +1,11 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link, useParams } from "react-router-dom";
-import { listings, formatCurrency, getInitials, users } from "@/data/mockData";
+import { 
+    formatCurrency, 
+    getInitials 
+} from "@/data/mockData";
+import type { User, Listing } from "@/types";
 import {
   ShieldCheck,
   Award,
@@ -15,22 +20,73 @@ import {
   Plus,
   ChevronLeft
 } from "lucide-react";
+import { api } from "@/services/api";
 
 export default function ProfilePage() {
   const { currentUser, verificationTier } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
 
-  if (!currentUser) {
-    navigate("/login");
-    return null;
+  const [users, setUsers] = useState<User[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    // Parallel fetch for users and listings
+    Promise.all([
+        api.getUsers(),
+        api.getProperties()
+    ]).then(([fetchedUsers, fetchedListings]) => {
+        setUsers(fetchedUsers);
+        setListings(fetchedListings);
+        setLoading(false);
+    }).catch(err => {
+        console.error("Profile page fetch failure:", err);
+        setLoading(false);
+    });
+  }, [currentUser, navigate]);
+
+  const displayUser = id ? users.find((u) => u.id === id) : currentUser;
+
+  useEffect(() => {
+    if (!loading && !displayUser && !currentUser) {
+      navigate("/login");
+    }
+  }, [loading, displayUser, currentUser, navigate]);
+
+  const currentListing = displayUser?.current_house_id
+    ? listings.find((l) => l.id === displayUser.current_house_id)
+    : null;
+
+  const managedListings = listings.filter(
+    (l) => l.landlord_id === displayUser?.id || l.letting_agent_id === displayUser?.id
+  );
+
+  const isOwnProfile = displayUser?.id === currentUser?.id;
+  
+  // GCC logic based strictly on displayUser
+  const gccScore = (displayUser as any)?.gccScore ?? 0;
+  const gccQualified = gccScore >= 80;
+
+  if (loading) {
+    return (
+        <div className="section container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+            <div style={{ textAlign: 'center' }}>
+                <Building2 className="animate-pulse" size={48} style={{ color: 'var(--brand-purple-light)', marginBottom: '1rem', opacity: 0.5 }} />
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Loading verified profile...</p>
+            </div>
+        </div>
+    );
   }
 
-  // View own profile or /profile/:id
-  const displayUser = id ? users.find((u) => u.id === id) ?? currentUser : currentUser;
   if (!displayUser) {
     return (
-      <div className="section container">
+      <div className="section container" style={{ paddingTop: '2rem' }}>
         <Link to="/profile" className="btn btn-ghost btn-sm" style={{ marginBottom: '1.5rem' }}>
           <ChevronLeft size={16} /> Back to My Profile
         </Link>
@@ -38,19 +94,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const isOwnProfile = displayUser.id === currentUser.id;
-
-  const currentListing = displayUser.current_house_id
-    ? listings.find((l) => l.id === displayUser.current_house_id)
-    : null;
-
-  const managedListings = listings.filter(
-    (l) => l.landlord_id === displayUser.id || l.letting_agent_id === displayUser.id
-  );
-
-  // GCC badge eligibility for the profile being viewed
-  const gccQualified = (displayUser.gccScore ?? 0) >= 80;
 
   return (
     <div className="section" style={{ paddingTop: "2rem" }}>
@@ -103,7 +146,7 @@ export default function ProfilePage() {
 
               <p style={{ fontSize: "0.875rem", marginBottom: "0.75rem" }}>
                 {displayUser.type === "letting_agent"
-                  ? `RERA Agent — ${displayUser.agency_name ?? ""}`
+                  ? `RERA Agent ${displayUser.agency_name ? `— ${displayUser.agency_name}` : ""}`
                   : displayUser.type === "landlord"
                   ? "Property Owner"
                   : displayUser.resident_role === "residing"
@@ -184,7 +227,7 @@ export default function ProfilePage() {
                   color: gccQualified ? "#f59e0b" : "var(--text-primary)",
                 }}
               >
-                {displayUser.gccScore ?? 0}
+                {gccScore}
               </div>
               <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                 / 100
@@ -195,13 +238,13 @@ export default function ProfilePage() {
             <div className="occupancy-bar" style={{ height: "8px", marginBottom: "0.75rem" }}>
               <div
                 className={`occupancy-bar-fill ${
-                  (displayUser.gccScore ?? 0) >= 80
+                  gccScore >= 80
                     ? "safe"
-                    : (displayUser.gccScore ?? 0) >= 40
+                    : gccScore >= 40
                     ? "warning"
-                    : "full"
+                    : "critical"
                 }`}
-                style={{ width: `${displayUser.gccScore ?? 0}%` }}
+                style={{ width: `${gccScore}%` }}
               />
             </div>
 
@@ -230,8 +273,8 @@ export default function ProfilePage() {
               </div>
             ) : (
               <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                {displayUser.gccScore && displayUser.gccScore > 0
-                  ? `${80 - displayUser.gccScore} more points to Gold status. Complete your tenancy for +20 pts.`
+                {gccScore > 0
+                  ? `${80 - gccScore} more points to Gold status. Complete your tenancy for +20 pts.`
                   : "Start building your GCC score — complete a 12-month tenancy with zero complaints."}
               </p>
             )}
@@ -403,9 +446,9 @@ export default function ProfilePage() {
 
         {/* Lifestyle Tags (Roommates) */}
         {displayUser.type === "roommate" &&
-          (displayUser.lifestyle_tags ||
-            displayUser.personality_traits ||
-            displayUser.hobbies) && (
+          (displayUser.lifestyle_tags?.length ||
+            displayUser.personality_traits?.length ||
+            displayUser.hobbies?.length) && (
             <div
               className="glass-card"
               style={{ padding: "1.5rem", marginTop: "1.5rem" }}
