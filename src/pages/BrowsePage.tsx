@@ -13,7 +13,7 @@ import {
     Shield, Activity, TrendingUp, LayoutPanelLeft, Clock,
     CheckCircle2
 } from 'lucide-react';
-import { api } from '@/services/api';
+
 
 const DISTRICTS = ['All', 'Deira', 'International City', 'Al Qusais', 'Bur Dubai', 'Al Nahda', 'Discovery Gardens', 'JVC', 'Dubai Silicon Oasis', 'Al Barsha', 'Dubai Marina', 'JLT', 'Business Bay', 'Downtown Dubai', 'JBR'];
 const CONTRACT_LENGTHS = ['Any', '1 Month', '3 Months', '6 Months', '12 Months'];
@@ -31,17 +31,16 @@ export default function BrowsePage() {
     const [contractLength, setContractLength] = useState('Any');
     
     // Feature Toggles
-    const [filterVerified, setFilterVerified] = useState(true);
+    const [filterVerified, setFilterVerified] = useState(false);
     const [filterEarlyBird, setFilterEarlyBird] = useState(false);
     const [filterJustSelling, setFilterJustSelling] = useState(false);
     const [filterLowOccupancy, setFilterLowOccupancy] = useState(false);
     const [ownerCrmMode, setOwnerCrmMode] = useState(false);
 
     useEffect(() => {
-        // Fetch properties from the live Cloudflare Hono backend
-        api.getProperties().then(mappedData => {
-            setListings(mappedData);
-            // We'll keep mockUsers for now until the /users API is fully wired in the UI
+        // Use mock data directly (Cloudflare integration postponed)
+        import('@/data/mockData').then(({ listings: mockListings }) => {
+            setListings(mockListings as Listing[]);
             setUsers(mockUsers as User[]);
             setLoading(false);
         });
@@ -52,25 +51,16 @@ export default function BrowsePage() {
     // Advanced Filtering Logic
     const filteredListings = useMemo(() => {
         return listings.filter(l => {
-            // Compliance: Hide properties where current occupants exceed legal limit
-            if (l.currentOccupants > l.maxLegalOccupancy) return false; 
+            // Only hide if over legal capacity
+            if (l.currentOccupants > l.maxLegalOccupancy) return false;
             
-            // Basic Filters
+            // Basic filters only
             if (selectedDistrict !== 'All' && l.district !== selectedDistrict) return false;
-            if (l.rent_per_room < budgetMin || l.rent_per_room > budgetMax) return false;
             if (searchQuery && !l.title.toLowerCase().includes(searchQuery.toLowerCase()) && !l.address.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-            
-            // Advanced Filters
-            if (filterVerified && !l.isActive) return false;
-            if (filterLowOccupancy && (l.currentOccupants / l.maxLegalOccupancy) > 0.5) return false;
-            // Mock logic for early bird/just selling since the data doesn't have these flags explicitly
-            const idNum = parseInt(l.id.replace(/\D/g, '')) || 0;
-            if (filterEarlyBird && idNum % 2 !== 0) return false; 
-            if (filterJustSelling && idNum % 3 !== 0) return false;
             
             return true;
         });
-    }, [selectedDistrict, budgetMin, budgetMax, searchQuery, filterVerified, filterLowOccupancy, filterEarlyBird, filterJustSelling]);
+    }, [listings, selectedDistrict, searchQuery]);
 
     return (
         <div className="section" style={{ paddingTop: '3rem', minHeight: '100vh', background: 'var(--bg-app)' }}>

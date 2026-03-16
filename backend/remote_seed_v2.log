@@ -1,0 +1,14 @@
+﻿
+ Γ¢à∩╕Å wrangler 4.73.0
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Resource location: remote 
+
+≡ƒîÇ Executing on remote database nestmatch-uae (4fa9bd02-a8e2-4f25-8fae-d6d6c9073ebe):
+≡ƒîÇ To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+Γö£ Checking if file needs uploading
+Γöé
+Γö£ ≡ƒîÇ Uploading 4fa9bd02-a8e2-4f25-8fae-d6d6c9073ebe.f29da9e790a7117f.sql
+Γöé ≡ƒîÇ Uploading complete.
+Γöé
+

@@ -1,0 +1,12 @@
+﻿
+ Γ¢à∩╕Å wrangler 4.73.0
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Listing buckets...
+name:           nestmatch-avatars
+creation_date:  2026-03-15T16:31:16.971Z
+
+name:           nestmatch-kyc-documents
+creation_date:  2026-03-15T16:31:16.064Z
+
+name:           nestmatch-property-images
+creation_date:  2026-03-15T16:31:14.933Z

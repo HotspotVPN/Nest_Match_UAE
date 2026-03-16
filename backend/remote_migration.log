@@ -1,0 +1,49 @@
+﻿
+ Γ¢à∩╕Å wrangler 4.73.0
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Resource location: remote 
+
+≡ƒîÇ Executing on remote database nestmatch-uae (4fa9bd02-a8e2-4f25-8fae-d6d6c9073ebe):
+≡ƒîÇ To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+Γö£ Checking if file needs uploading
+Γöé
+Γö£ ≡ƒîÇ Uploading 4fa9bd02-a8e2-4f25-8fae-d6d6c9073ebe.53edfcc4e7c0c27c.sql
+Γöé ≡ƒîÇ Uploading complete.
+Γöé
+≡ƒîÇ Starting import...
+≡ƒîÇ Processed 28 queries.
+≡ƒÜú Executed 28 queries in 4.90ms (42 rows read, 66 rows written)
+   Database is currently at bookmark 00000005-00000009-0000502f-96cb6a1ee005bbad9b0e10ac416c92b7.
+[
+  {
+    "results": [
+      {
+        "Total queries executed": 28,
+        "Rows read": 42,
+        "Rows written": 66,
+        "Database size (MB)": "0.24"
+      }
+    ],
+    "success": true,
+    "finalBookmark": "00000005-00000009-0000502f-96cb6a1ee005bbad9b0e10ac416c92b7",
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "LHR",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 4.9023
+      },
+      "duration": 4.9023,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 241664,
+      "rows_read": 42,
+      "rows_written": 66,
+      "num_tables": 14,
+      "total_attempts": 1
+    }
+  }
+]

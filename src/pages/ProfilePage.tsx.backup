@@ -1,0 +1,188 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { ShieldCheck, MapPin, Award, Star, Building, CheckCircle2, User as UserIcon, Calendar } from 'lucide-react';
+import { getUserById, listings, viewingBookings, getInitials, formatCurrency, formatDate, users } from '@/data/mockData';
+import type { User, Listing } from '@/types';
+
+export default function ProfilePage() {
+    const { id } = useParams<{ id: string }>();
+    const [profileUser, setProfileUser] = useState<User | null>(null);
+    const [userListings, setUserListings] = useState<Listing[]>([]);
+    const [userViewings, setUserViewings] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!id) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchProfileData = async () => {
+            try {
+                const user = await getUserById(id);
+
+                if (!user) {
+                    setProfileUser(null);
+                    setLoading(false);
+                    return;
+                }
+
+                setProfileUser(user);
+
+                const role = user.role || user.type;
+                if (role === 'landlord' || role === 'letting_agent' || role === 'agent') {
+                    const activeListings = listings.filter(l => 
+                        l.landlord_id === user.id || l.letting_agent_id === user.id
+                    );
+                    setUserListings(activeListings);
+                } else if (role === 'roommate') {
+                    const myViewings = viewingBookings
+                        .filter(v => v.searcher_id === user.id || v.tenantId === user.id)
+                        .map(v => ({ 
+                            ...v, 
+                            property: listings.find(l => l.id === (v.property_id || v.propertyId)) 
+                        }));
+                    setUserViewings(myViewings);
+                }
+            } catch (error) {
+                console.error('Profile fetch error:', error);
+                setProfileUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, [id]);
+
+    if (loading) return <div className="section"><div className="container" style={{ textAlign: 'center' }}><p>Loading Profile...</p></div></div>;
+    if (!profileUser) return <div className="section"><div className="container" style={{ textAlign: 'center' }}><h2>Profile Not Found</h2></div></div>;
+
+    const role = profileUser.role || profileUser.type;
+    const isAgent = role === 'agent' || role === 'letting_agent';
+    const isLandlord = role === 'landlord';
+    const isRoommate = role === 'roommate';
+
+    return (
+        <div className="section" style={{ paddingTop: '2rem' }}>
+            <div className="container" style={{ maxWidth: '1100px' }}>
+                
+                <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    <div className="avatar avatar-lg" style={{ width: '100px', height: '100px', fontSize: '2.5rem' }}>
+                        {getInitials(profileUser.name)}
+                    </div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                            <h1 style={{ margin: 0, fontSize: '2rem' }}>{profileUser.name}</h1>
+                            {profileUser.isUaePassVerified && <span title="UAE PASS Verified"><ShieldCheck size={24} style={{ color: 'var(--uaepass-green)' }} /></span>}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <span className="badge badge-purple" style={{ textTransform: 'uppercase' }}>{role}</span>
+                            {isAgent && profileUser.rera_license && <span className="badge badge-orange">BRN: {profileUser.rera_license}</span>}
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', alignItems: 'flex-start' }}>
+                    
+                    <div>
+                        <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem' }}>
+                            <h3 style={{ marginBottom: '1rem' }}>About</h3>
+                            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>{profileUser.bio || "No bio added."}</p>
+                        </div>
+
+                        {isRoommate && (
+                            <>
+                                <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem' }}>
+                                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><UserIcon size={20} /> Lifestyle & Traits</h3>
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        {profileUser.keywords?.map(kw => <span key={kw} className="badge badge-blue">{kw}</span>) || "None added."}
+                                    </div>
+                                </div>
+                                <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem' }}>
+                                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Calendar size={20} /> Active Applications</h3>
+                                    {userViewings.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            {userViewings.map(v => (
+                                                <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 600 }}>{v.property?.title}</div>
+                                                        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Viewing: {formatDate(v.requested_date || v.date)}</div>
+                                                    </div>
+                                                    <span className={`badge ${v.status === 'ACCEPTED' ? 'badge-green' : 'badge-orange'}`}>{v.status}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : <p>No active applications.</p>}
+                                </div>
+                            </>
+                        )}
+
+                        {(isLandlord || isAgent) && (
+                            <div>
+                                <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Building size={20} /> Managed Properties ({userListings.length})</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                    {userListings.map(listing => (
+                                        <Link to={`/listing/${listing.id}`} key={listing.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <div className="glass-card listing-card" style={{ overflow: 'hidden' }}>
+                                                <div style={{ height: '180px', position: 'relative' }}>
+                                                    <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    {listing.isApiVerified && <div style={{ position: 'absolute', top: 10, right: 10 }}><span className="badge badge-green">DLD Verified</span></div>}
+                                                </div>
+                                                <div style={{ padding: '1.25rem' }}>
+                                                    <h4 style={{ margin: '0 0 0.5rem 0' }}>{listing.title}</h4>
+                                                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}><MapPin size={14}/> {listing.district}</div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <span style={{ fontWeight: 700 }}>{formatCurrency(listing.rent_per_room)}/mo</span>
+                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Makani: {listing.makaniNumber}</span>
+                                                    </div>
+
+                                                    {/* Inject this below the Rent / Makani number div inside the listing card */}
+                                                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Residents:</span>
+                                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                                                            {listing.occupancy_status?.filter(room => room.status === 'occupied').length > 0 ? (
+                                                                listing.occupancy_status.filter(room => room.status === 'occupied').map(room => {
+                                                                    const tenant = users.find(u => u.id === room.tenant_id);
+                                                                    return tenant ? (
+                                                                        <span key={room.room_number + room.tenant_id!} className="badge badge-purple" style={{ fontSize: '0.75rem' }}>
+                                                                            Verified Resident - Rm {room.room_number}
+                                                                        </span>
+                                                                    ) : null;
+                                                                })
+                                                            ) : (
+                                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Property is vacant</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={{ position: 'sticky', top: '80px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div className="glass-card" style={{ padding: '1.5rem' }}>
+                            <h4 style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><ShieldCheck size={18} /> Trust & Verification</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Identity</span>
+                                    {profileUser.isUaePassVerified ? <span className="badge badge-green"><CheckCircle2 size={12}/> UAE PASS</span> : <span className="badge badge-orange">Pending</span>}
+                                </div>
+                                {profileUser.gccScore ? (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>GCC Score</span>
+                                        <span className="badge" style={{ background: 'linear-gradient(45deg, #FFD700, #FDB931)', color: '#000', fontWeight: 700 }}><Award size={12}/> {profileUser.gccScore}/100</span>
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
