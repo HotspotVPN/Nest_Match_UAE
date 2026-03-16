@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.3.0 — Investor Demo (March 2026)
+## Current: v2.5.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -54,6 +54,16 @@
 - [x] PassportKycModal + ResidingDashboard wired to real API
 - [x] Backend state machines documented in CLAUDE.md
 - [x] wrangler.toml name synced with Cloudflare dashboard
+
+### Completed (Session 9 — Homepage Revamp)
+- [x] Homepage legal audit: removed all unlicensed capability claims
+- [x] Homepage rewritten to 2 scroll sections (hero + compliance/stakeholders)
+- [x] Search bar hero CTA with AI-powered search hint
+- [x] RegisterLandingPage (/register): split tenant/landlord signup
+- [x] TenantSignupPage (/register/tenant): UAE PASS + Google + email
+- [x] LandlordSignupPage (/register/landlord): UAE PASS primary + email
+- [x] Logged-out navbar: Browse Properties | How it Works | Sign Up
+- [x] All legally problematic badges and claims removed from homepage
 
 ---
 

@@ -3,6 +3,47 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.5.0] — 2026-03-16 · Homepage Revamp, Signup Funnel, Legal Cleanup
+
+### Session 9: Homepage rewrite, split signup pages, legal audit
+
+### Added
+- RegisterLandingPage (/register): two-column split signup landing with
+  tenant left / landlord right, OR divider, ?role= query param highlighting
+- TenantSignupPage (/register/tenant): UAE PASS + Google + email auth form
+  with tier progression info panel (Explorer → Verified → Gold)
+- LandlordSignupPage (/register/landlord): UAE PASS primary + email fallback
+  with requirements amber box (Trakheesi, Makani, Municipality permit)
+- Homepage search bar hero CTA: glass-effect input bar with "I'm looking
+  for a room in Dubai..." placeholder, "AI-powered search coming soon" hint
+- Homepage Section 2: compliance engine tiles + three stakeholder cards
+  (Landlords purple, Residents teal, Room Seekers amber)
+- Logged-out navbar: Browse Properties | How it Works | [Sign Up] button
+- LoginPage: "Don't have an account? Sign up →" link to /register
+
+### Removed — legal compliance
+- "We automate Ejari, contracts, rent ledgers" — no RERA broker licence
+- "Ejari-aligned Sub-leases" — not built, not licensed
+- "Legal Contract Builder" — not built, not licensed
+- "Verified Payment History" — no CBUAE licence
+- "Secure Deposit Escrow" — no CBUAE licence
+- "Wallet & Ledger Tracking" — no CBUAE licence
+- "Join 5,000+ residents and 200+ property operators" — aspirational
+- "Powered by UAE PASS" badge — no official endorsement received
+- "DLD & Municipality Aligned" badge — no attestation received
+- Purple gradient CTA section ("Ready for a more professional...")
+- "Launch Dashboard" and "Browse Legal Rooms" buttons
+
+### Changed
+- Homepage reduced from 4+ scroll sections to exactly 2
+- NestMatch OS flow: "Search → Verify Identity → Book Viewing →
+  Sign DLD Agreement → Move In" (legally accurate journey description)
+- Tenant signup now includes UAE PASS button alongside Google/email
+  (residents with Emirates ID use UAE PASS for Tier 3 — Gold)
+- Logged-out navbar: "Login with UAE PASS" replaced with "Sign Up"
+
+---
+
 ## [2.4.0] — 2026-03-16 · D1 State Machines, OAuth, KYC, Occupancy, GCC Score
 
 ### Session 6 (Backend): State machine tables, new API routes, frontend wiring

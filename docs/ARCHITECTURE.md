@@ -37,6 +37,9 @@ src/types/        — index.ts (single source of truth for all types)
 |---|---|---|
 | / | HomePage | Public |
 | /login | LoginPage | Public |
+| /register | RegisterLandingPage | Public |
+| /register/tenant | TenantSignupPage | Public |
+| /register/landlord | LandlordSignupPage | Public |
 | /browse | BrowsePage | Public |
 | /listing/:id | ListingDetailPage | Public |
 | /profile/:id? | ProfilePage | Authenticated |

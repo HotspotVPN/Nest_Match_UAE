@@ -106,3 +106,30 @@ Cloudflare Workers dashboard.
 **Reason:** Cloudflare auto-generates PRs to fix name mismatches
 on Wrangler v3.109+. Keeping them in sync prevents deployment
 confusion.
+
+---
+
+## DEC-010 — Homepage legal audit and badge removal
+**Date:** 2026-03-16 (Session 9)
+**Decision:** Removed "Powered by UAE PASS" and "DLD & Municipality
+Aligned" badges from homepage. Removed all claims about Ejari
+automation, contract building, payment processing, and escrow.
+**Reason:** NestMatch has NOT received official endorsement,
+approval, or compliance attestation from UAE PASS or DLD.
+Displaying these badges implies endorsement that does not exist.
+Claims about Ejari/contracts/payments imply capabilities that
+require RERA broker and CBUAE licences NestMatch does not hold.
+**What replaced it:** Factual descriptions only — "digitises
+the official DLD Property Viewing Agreement", "connects
+identity-verified tenants with permit-verified landlords".
+
+---
+
+## DEC-011 — Split signup funnel (tenant vs landlord)
+**Date:** 2026-03-16 (Session 9)
+**Decision:** Created separate /register/tenant and /register/landlord
+routes instead of a single signup form.
+**Reason:** Enables independent conversion tracking per marketplace
+side, targeted acquisition campaigns (landlord email → /register/landlord,
+tenant ad → /register/tenant), independent A/B testing, and SEO
+optimisation per persona. This is intentional product architecture.

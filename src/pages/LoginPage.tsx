@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ShieldCheck, Mail, LogIn, ChevronRight, Eye, EyeOff, LayoutPanelLeft, AlertTriangle, Globe } from 'lucide-react';
 import { getTierLabel, getTierColor } from '@/utils/accessControl';
@@ -210,7 +210,7 @@ export default function LoginPage() {
                 </div>
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                    Don't have an account? <span style={{ color: 'var(--brand-purple-light)', fontWeight: 600, cursor: 'pointer' }}>Register via UAE PASS</span>
+                    Don't have an account? <Link to="/register" style={{ color: 'var(--brand-purple-light)', fontWeight: 600 }}>Sign up &rarr;</Link>
                 </p>
             </div>
         </div>

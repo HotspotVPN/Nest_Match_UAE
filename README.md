@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.4.0
+**Version:** 2.5.0
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -24,6 +24,12 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 ---
 
 ## Key Features
+
+### Signup Funnel
+- Split signup: /register → /register/tenant or /register/landlord
+- Tenant path: UAE PASS + Google + email, tier progression display
+- Landlord path: UAE PASS primary, requirements checklist
+- Query param targeting: ?role=landlord highlights landlord column
 
 ### For Tenants
 - Browse 12+ verified Dubai listings across 15 districts

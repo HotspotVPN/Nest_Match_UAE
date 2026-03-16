@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import {
     User, ShieldCheck, Users,
-    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle
+    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -78,6 +78,9 @@ export default function Navbar() {
 
                     {!isAuthenticated && (
                         <div className="navbar-links">
+                            <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
+                                <Search size={16} /> Browse Properties
+                            </Link>
                             <Link to="/how-it-works" className={`navbar-link ${isActive('/how-it-works')}`}>
                                 <HelpCircle size={16} /> How it Works
                             </Link>
@@ -101,8 +104,8 @@ export default function Navbar() {
                                 </button>
                             </div>
                         ) : (
-                            <Link to="/login" className="btn btn-uaepass btn-sm">
-                                <ShieldCheck size={16} /> Login with UAE PASS
+                            <Link to="/register" className="btn btn-primary btn-sm">
+                                Sign Up
                             </Link>
                         )}
                     </div>
