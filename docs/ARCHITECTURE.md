@@ -1,58 +1,123 @@
-# NestMatch UAE — Technical Architecture & Compliance Logic
+# Architecture — NestMatch UAE
 
-This document details the "Under the Hood" logic of NestMatch UAE, explaining how the platform satisfies both user needs and UAE legal requirements.
+## System Overview
 
-## 1. Regulatory Compliance Layer
+NestMatch UAE is a compliance-first property discovery platform.
+It connects verified tenants with RERA-licensed landlords and agents,
+digitises the official DLD Property Viewing Agreement, and generates
+demand intelligence that DLD cannot obtain elsewhere.
 
-### DLD & Makani Integration (`mockDldService.ts`)
-The platform enforces occupancy limits directly via real-time data sync.
-- **Mechanism:** When a landlord enters a Makani number on the `AddPropertyPage`, the system queries the DLD mock API.
-- **Regulation:** Complies with Dubai Municipality and UAE Federal Housing laws.
-- **Logic:** The `maxLegalOccupancy` is a read-only field fetched from the DLD; landlords cannot artificially inflate it.
+## Frontend
 
-### Defamation Prevention (No-Text Ratings)
-- **Constraint:** UAE Cybercrime Law No. 34 of 2021 prohibits public defamation.
-- **Solution:** All peer reviews are star-slider based (numerical). There are **no text areas** for reviews, preventing accidental legal exposure for users or the platform.
+| Item | Detail |
+|---|---|
+| Framework | React 19 + TypeScript + Vite 7 |
+| Styling | Vanilla CSS + CSS variables (no Tailwind) |
+| Icons | lucide-react |
+| Routing | react-router-dom v7 |
+| Deployed | Vercel (auto-deploy on push to main) |
+| URL | https://nest-match-uae.vercel.app |
 
-### Platform Abuse Penalty (RERA Compliance)
-- **Mechanism:** Instead of a "Viewing Fee" (illegal under RERA), the platform implements a "Platform Abuse Penalty Authorization."
-- **Logic:** A 50 AED pre-authorization hold is placed on the tenant's card via Stripe (mocked). This is strictly a conduct-based hold that is voided immediately upon viewing completion.
+### Key directories
 
-## 2. Trust & Identity Layer
+```
+src/pages/        — one file per route (26 pages)
+src/components/   — reusable UI (Navbar, ChatPanel, ViewingsPanel,
+                    ViewingAgreementModal, LeaseHandoffCard)
+src/contexts/     — AuthContext (tiered auth state)
+src/data/         — mockData.ts (fallback when backend is down)
+src/services/     — api.ts (smart fallback), apiMappers.ts,
+                    mockDldService.ts
+src/types/        — index.ts (single source of truth for all types)
+```
 
-### UAE PASS OAuth Flow
-- **Identity:** All transacting users are verified via UAE PASS (`isUaePassVerified`).
-- **Tiers:** 
-    - **Tier 1 (Browse-Only):** Email/Google.
-    - **Tier 2 (Transact-Only):** UAE PASS.
-- **Privacy:** Names and photos are hidden during the "Blind Match" discovery phase to prevent bias and comply with PDPL (Personal Data Protection Law).
+### Routes
 
-### Good Conduct Certificate (GCC) Algorithm
-The GCC Score is a weighted average calculated based on:
-1. **Tenancy Duration:** Positive weight for long-term verified leases (12+ months).
-2. **Payment Reliability:** No bounced cheques or late rental payments.
-3. **Property Care:** High ratings from previous landlords (Amenities care, Noise levels).
-4. **Dispute Record:** Cross-referenced with mock RERA dispute registry.
+| Path | Page | Access |
+|---|---|---|
+| / | HomePage | Public |
+| /login | LoginPage | Public |
+| /browse | BrowsePage | Public |
+| /listing/:id | ListingDetailPage | Public |
+| /profile/:id? | ProfilePage | Authenticated |
+| /viewings | ViewingsPage | Authenticated |
+| /chat | ChatPage | Authenticated |
+| /dashboard | LandlordDashboardPage | Landlord/Agent |
+| /residing-dashboard | ResidingDashboardPage | Landlord/Agent |
+| /analytics | ViewingAnalyticsPage | Operations/Compliance admin |
+| /compliance | CompliancePage | Compliance admin |
+| /customers | CustomerDatabasePage | Operations admin |
+| /maintenance | MaintenancePage | Authenticated |
+| /gcc | GccDashboardPage | Authenticated |
 
-## 3. Financial Infrastructure
+## Backend
 
-### Escrow & Payments
-- **Treasury Dashboard:** Tracks platform "Commitment Holds" vs. Captured Penalties.
-- **Rent Ledger:** Simulates the UAE cheque-based payment cycle (1, 2, 4, 6 Cheque allocations).
-- **Ejari Closing:** A mock hook that validates a draft Ejari number with the DLD before allowing the final Security Deposit payment.
+| Item | Detail |
+|---|---|
+| Runtime | Cloudflare Workers |
+| Framework | Hono |
+| Database | Cloudflare D1 (SQLite at edge) |
+| Storage | Cloudflare R2 (S3-compatible) |
+| URL | https://nest-match-uae.pushkar-nagela.workers.dev |
 
-## 4. Backend Infrastructure (Phase 21)
+### R2 Buckets
 
-### API Layer (`backend/`)
-- **Framework:** Hono (Node.js framework optimized for Cloudflare Workers/Edge).
-- **Persistence:** Cloudflare D1 (Distributed SQLite) for low-latency data access.
-- **Connectivity:** The frontend utilizes an `ApiClient` to interface with the REST API, ensuring a clean separation of concerns.
+| Bucket | Purpose | Access |
+|---|---|---|
+| nestmatch-property-images | Public listing photos | Public |
+| nestmatch-kyc-documents | Passport/visa/Emirates ID | Private (admin only) |
+| nestmatch-avatars | User profile photos | Authenticated |
 
-## 5. UI/UX Design System
+### D1 Tables
 
-- **Glassmorphism:** A premium, dark-mode design system utilizing HSL variables for color harmony.
-- **Dynamic Routing:** Segmented profile URLs (`/profile/:id`) for scalable sharing.
-- **Role-Based Views:** Conditional rendering in `Navbar.tsx` and `App.tsx` ensures Landlords, Agents, and Tenants see only pertinent tools.
+users, properties, room_occupancy, viewing_bookings,
+property_ratings, maintenance_tickets, chat_channels,
+chat_messages, applications, rent_ledgers
 
----
-*Technical Lead Note: This architecture is designed for REES sandbox compliance.*
+### API Endpoints (15 total)
+
+| Category | Endpoints | Auth |
+|---|---|---|
+| Auth | POST /register, /login, /uaepass-callback, GET /me | Mixed |
+| Properties | GET / (filtered), GET /:id, POST / | Public read, Tier 2 write |
+| Users | GET /me, PATCH /me, GET /:id | Mixed |
+| Viewings | GET /, POST /, PATCH /:id/accept, PATCH /:id/decline | Tier 2 |
+| Ratings | GET /:propertyId/ratings, POST /:propertyId/ratings | Public read, Tier 2 write |
+| Payments | GET /, POST / | Authenticated |
+
+## API Fallback Pattern
+
+1. Frontend health-checks backend on first API call (3s timeout)
+2. Result cached for 30 seconds
+3. If backend live → real D1 data via apiMappers.ts
+4. If backend down → mock data from src/data/mockData.ts
+5. Zero UI disruption either way
+6. `api.isUsingBackend()` for runtime check
+7. `api.resetBackendCheck()` to force re-check
+
+## Authentication Tiers
+
+| Tier | Method | Identity | Access |
+|---|---|---|---|
+| 0 | Email/Google | Passport + visa in R2 | Browse, view, chat |
+| 1 | Email/Google | None | Browse only |
+| 2 | UAE PASS OAuth | Emirates ID anchor | Full access |
+
+## Legal Documents In Scope
+
+**DLD Property Viewing Agreement**
+Reference: DLD/RERA/RL/LP/P210/No.3/Vr.4 (August 2022)
+Parties: Broker (First Party) + Tenant (Second Party)
+Fields: ORN, BRN, Makani ID, Emirates ID or Passport No,
+        Approximate Rental Budget, Property Type, Use
+
+## Viewing Agreement Flow
+
+```
+PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED → FULLY_SIGNED
+                                                         ↓
+                                              COMPLETED / NO_SHOW_*
+```
+
+Digital signatures captured via HTML5 canvas, stored as base64 data URIs
+in the ViewingAgreementRecord alongside simulated IP addresses.
