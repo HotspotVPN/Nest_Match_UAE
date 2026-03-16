@@ -793,7 +793,12 @@ export function getListingById(id: string): Listing | undefined {
 }
 
 export function getViewingsForUser(userId: string): ViewingBooking[] {
-    return viewingBookings.filter(v => v.searcher_id === userId || v.landlord_id === userId);
+    return viewingBookings.filter(v => {
+        if (v.searcher_id === userId || v.landlord_id === userId) return true;
+        const listing = listings.find(l => l.id === v.property_id);
+        if (listing?.letting_agent_id === userId) return true;
+        return false;
+    });
 }
 
 export function getChatChannelsForUser(userId: string): ChatChannel[] {

@@ -23,9 +23,13 @@ export default function ViewingsPage() {
     const { currentUser } = useAuth();
     if (!currentUser) return null;
 
-    const myViewings = viewingBookings.filter(v =>
-        v.searcher_id === currentUser.id || v.landlord_id === currentUser.id
-    );
+    const myViewings = viewingBookings.filter(v => {
+        if (v.searcher_id === currentUser.id || v.landlord_id === currentUser.id) return true;
+        // Letting agents see viewings for properties they manage
+        const listing = listings.find(l => l.id === v.property_id);
+        if (listing?.letting_agent_id === currentUser.id) return true;
+        return false;
+    });
 
     const [viewings, setViewings] = useState(myViewings);
     const [statusFilter, setStatusFilter] = useState('All');
