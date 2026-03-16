@@ -20,6 +20,87 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 ## After every code change
 Run: `npx tsc --noEmit` — zero errors required.
 
+---
+
+## Git Rules — read carefully, never deviate
+
+### NEVER do these without explicit user confirmation:
+- git commit
+- git push
+- git add (as part of a commit flow)
+
+### ALWAYS do this instead:
+When a session's work is complete, present this summary
+and WAIT for the user to say "yes commit" or "commit and push":
+
+---
+READY TO COMMIT — please confirm
+
+Version bump: v[X.X.X] → v[X.X.X]
+Branch: [current branch]
+Remote: [git remote -v output]
+
+Files changed:
+  [list every modified/created/deleted file]
+
+Commit message:
+  "Session [N] — [feature]: [one line summary]"
+
+Docs that will be updated before committing:
+  - docs/CHANGELOG.md → [what will be added]
+  - docs/PRODUCT_ROADMAP.md → [what will be ticked]
+  - README.md → [what will change, if anything]
+
+Type "confirm commit" to proceed.
+Type "confirm commit and push" to commit + push to Vercel.
+---
+
+### When user confirms commit only:
+1. Update docs/CHANGELOG.md with this session's changes
+2. Update docs/PRODUCT_ROADMAP.md — tick completed items
+3. Update README.md if any of these changed:
+   - New routes added
+   - New demo login users added
+   - Tech stack changed
+   - Setup instructions changed
+4. Run npx tsc --noEmit — must be zero errors
+5. git add -A
+6. git commit -m "[message]"
+7. Report: "Committed. Run 'confirm push' when ready to deploy."
+
+### When user confirms commit AND push:
+1-6. Same as above
+7. git push origin [branch]
+8. Report: "Pushed. Vercel will auto-deploy —
+   check vercel.com/dashboard to confirm build passes."
+
+### Version numbering rule
+PATCH (v2.0.x) — bug fixes, copy changes, style tweaks
+MINOR (v2.x.0) — new feature, new page, new component
+MAJOR (vx.0.0) — phase unlock (e.g. wallet system, RERA licence)
+
+Current version: v2.1.0 (after Session 4)
+Next session starts at: v2.1.0
+
+### README.md update rules
+The README must always reflect:
+- Current version number at the top
+- Accurate demo login list (all tiers shown)
+- Correct live URLs (Vercel + Workers)
+- Accurate feature list (nothing removed from code
+  should appear as a feature)
+- Removed features listed under "Out of scope" section
+
+### Branch safety
+Before any commit, always run:
+  git remote -v
+  git branch --show-current
+Show the output to the user so they can confirm
+they are on the right branch before proceeding.
+Never push to main without user seeing the remote URL first.
+
+---
+
 ## Docs Maintenance — mandatory on every commit
 
 The `/docs` folder in this repo is a living product record.
