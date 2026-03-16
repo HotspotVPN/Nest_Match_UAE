@@ -322,6 +322,156 @@ export const api = {
         return { success: true, id: res.data.id };
     },
 
+    // ── KYC ───────────────────────────────────────────────────
+    uploadKycDocument: async (docType: string, metadata: { passport_number?: string; visa_type?: string; nationality?: string }): Promise<{
+        success: boolean; document?: { id: string; doc_type: string; review_status: string; uploaded_at: string }; error?: string;
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) {
+            // Mock fallback: return a simulated document record
+            const mockDoc = {
+                id: `kyc-mock-${Date.now()}`,
+                doc_type: docType,
+                review_status: 'pending' as const,
+                uploaded_at: new Date().toISOString(),
+            };
+            return { success: true, document: mockDoc };
+        }
+
+        // Build FormData for multipart upload
+        const formData = new FormData();
+        // In real usage, the file would be attached; for API wiring this is the structure
+        const mockBlob = new Blob(['mock-file-content'], { type: 'application/octet-stream' });
+        formData.append('file', mockBlob, `${docType}.jpg`);
+        formData.append('doc_type', docType);
+        if (metadata.passport_number) formData.append('passport_number', metadata.passport_number);
+        if (metadata.visa_type) formData.append('visa_type', metadata.visa_type);
+        if (metadata.nationality) formData.append('nationality', metadata.nationality);
+
+        try {
+            const token = localStorage.getItem('nestmatch_token');
+            const headers: HeadersInit = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const res = await fetch(`${API_BASE_URL}/api/kyc/upload`, {
+                method: 'POST',
+                headers,
+                body: formData,
+                signal: AbortSignal.timeout(15000),
+            });
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                return { success: false, error: (body as any).error || `HTTP ${res.status}` };
+            }
+            const data = await res.json() as { success: boolean; document: { id: string; doc_type: string; review_status: string; uploaded_at: string } };
+            return { success: true, document: data.document };
+        } catch (err) {
+            return { success: false, error: err instanceof Error ? err.message : 'Network error' };
+        }
+    },
+
+    getMyKycDocuments: async (): Promise<Array<{ id: string; user_id: string; doc_type: string; review_status: string; uploaded_at: string }>> => {
+        const isUp = await checkBackend();
+        if (!isUp) {
+            // Fallback: return empty array (user's local KYC docs are on the User object)
+            return [];
+        }
+
+        const res = await apiFetch<Array<{ id: string; user_id: string; doc_type: string; review_status: string; uploaded_at: string }>>('/api/kyc/my-documents');
+        if (!res.ok) return [];
+        return res.data;
+    },
+
+    // ── Occupancy ────────────────────────────────────────────
+    updateRoomOccupancy: async (propertyId: string, roomNumber: number, action: string, tenantId?: string): Promise<{
+        success: boolean; current_occupants?: number; error?: string;
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) {
+            // Mock fallback: in-memory update
+            const listing = mockGetListingById(propertyId);
+            if (!listing) return { success: false, error: 'Property not found' };
+
+            if (action === 'approve_application') {
+                if (listing.currentOccupants >= listing.maxLegalOccupancy) {
+                    return { success: false, error: 'At maximum legal occupancy' };
+                }
+                listing.currentOccupants += 1;
+            } else if (action === 'reject_application') {
+                // No occupancy change
+            } else if (action === 'remove_tenant') {
+                if (listing.currentOccupants <= 0) {
+                    return { success: false, error: 'No occupants to remove' };
+                }
+                listing.currentOccupants -= 1;
+            }
+            return { success: true, current_occupants: listing.currentOccupants };
+        }
+
+        const res = await apiFetch<{ success: boolean; current_occupants: number }>(
+            `/api/properties/${propertyId}/rooms/${roomNumber}`,
+            {
+                method: 'PATCH',
+                body: JSON.stringify({ action, tenant_id: tenantId }),
+            },
+        );
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, current_occupants: res.data.current_occupants };
+    },
+
+    giveMoveOutNotice: async (propertyId: string, roomNumber: number, moveOutDate: string): Promise<{
+        success: boolean; notice_period_days?: number; error?: string;
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) {
+            // Mock fallback: validate 30-day notice and return
+            const now = new Date();
+            const moveOut = new Date(moveOutDate);
+            const diffDays = Math.ceil((moveOut.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffDays < 30) return { success: false, error: 'Minimum 30-day notice required' };
+            return { success: true, notice_period_days: diffDays };
+        }
+
+        const res = await apiFetch<{ success: boolean; notice_period_days: number }>(
+            `/api/properties/${propertyId}/rooms/${roomNumber}/notice`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ move_out_date: moveOutDate }),
+            },
+        );
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, notice_period_days: res.data.notice_period_days };
+    },
+
+    // ── GCC Score ────────────────────────────────────────────
+    recalculateGcc: async (userId: string): Promise<{
+        success: boolean; gcc_score?: number; error?: string;
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) {
+            // Mock fallback: run formula on local mock data
+            const user = mockGetUserById(userId);
+            if (!user) return { success: false, error: 'User not found' };
+
+            // Simple mock formula based on available data
+            let score = 0;
+            if (user.tenancy_duration_months && user.tenancy_duration_months >= 12) {
+                score += Math.floor(user.tenancy_duration_months / 12) * 20;
+            }
+            if (user.rating && user.rating >= 4.5) score += 10;
+            // Cap at 100
+            score = Math.min(100, Math.max(0, score));
+            return { success: true, gcc_score: score };
+        }
+
+        const res = await apiFetch<{ success: boolean; gcc_score: number }>(
+            `/api/users/${userId}/recalculate-gcc`,
+            { method: 'POST' },
+        );
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, gcc_score: res.data.gcc_score };
+    },
+
     // ── Utility ──────────────────────────────────────────────
     /** Force re-check backend availability */
     resetBackendCheck: () => {

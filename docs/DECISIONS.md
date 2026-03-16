@@ -84,3 +84,25 @@ request per 30 seconds before fallback kicks in.
 creates liability for defamatory statements. Text reviews about
 landlords or properties could expose the platform. Star ratings
 are objective and not subject to defamation claims.
+
+---
+
+## DEC-008 — Backend state machine tables before routes
+**Date:** 2026-03-16 (Session 8)
+**Decision:** Create all 7 D1 audit/event tables before building
+any API routes that perform state transitions.
+**Reason:** Every entity (rooms, viewings, verification, tenancy)
+has a state machine. Without audit tables, state transitions are
+invisible and non-recoverable. The tables provide a complete audit
+trail for DLD/RERA inspection.
+
+---
+
+## DEC-009 — wrangler.toml name synced with Cloudflare
+**Date:** 2026-03-16 (Session 8)
+**Decision:** Changed backend/wrangler.toml `name` from
+`nestmatch-uae-api` to `nest-match-uae` to match the
+Cloudflare Workers dashboard.
+**Reason:** Cloudflare auto-generates PRs to fix name mismatches
+on Wrangler v3.109+. Keeping them in sync prevents deployment
+confusion.

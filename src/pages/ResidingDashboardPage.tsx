@@ -3,6 +3,7 @@ import { users, listings, viewingBookings, getInitials } from '@/data/mockData';
 import { Users as UsersIcon, Building2, ThumbsUp, ThumbsDown, Award, ShieldCheck, CalendarCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { api } from '@/services/api';
 
 export default function ResidingDashboardPage() {
     const { currentUser } = useAuth();
@@ -157,8 +158,17 @@ export default function ResidingDashboardPage() {
                                                     </div>
                                                 ) : (
                                                     <>
-                                                        <button onClick={() => setApprovedIds(prev => [...prev, applicant.id])} className="btn btn-primary btn-sm" style={{ flex: 1 }}><ThumbsUp size={14} /> Approve</button>
-                                                        <button onClick={() => setRejectedIds(prev => [...prev, applicant.id])} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--text-muted)' }}><ThumbsDown size={14} /> Reject</button>
+                                                        <button onClick={async () => {
+                                                            // Wire to API with fallback
+                                                            const roomNum = listing.occupancy_status?.findIndex(r => r.tenant_id === applicant.id || r.status === 'pending_approval') ?? 0;
+                                                            await api.updateRoomOccupancy(listing.id, roomNum + 1, 'approve_application', applicant.id);
+                                                            setApprovedIds(prev => [...prev, applicant.id]);
+                                                        }} className="btn btn-primary btn-sm" style={{ flex: 1 }}><ThumbsUp size={14} /> Approve</button>
+                                                        <button onClick={async () => {
+                                                            const roomNum = listing.occupancy_status?.findIndex(r => r.tenant_id === applicant.id || r.status === 'pending_approval') ?? 0;
+                                                            await api.updateRoomOccupancy(listing.id, roomNum + 1, 'reject_application', applicant.id);
+                                                            setRejectedIds(prev => [...prev, applicant.id]);
+                                                        }} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--text-muted)' }}><ThumbsDown size={14} /> Reject</button>
                                                     </>
                                                 )}
                                             </div>

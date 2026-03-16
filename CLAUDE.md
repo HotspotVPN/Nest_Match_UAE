@@ -167,3 +167,84 @@ Before marking any task complete:
 - grep for 'mockStripeService\|ContractManager\|Basic\|Tier 2'
   in src/ must return nothing
 - All three must pass or the task is not complete
+
+---
+
+## Backend Architecture — Cloudflare D1 State Machines
+
+The backend is NOT just CRUD. Every major entity has a state machine.
+Before building any backend route, read the relevant state machine here.
+
+### Room occupancy states
+available → pending_approval → occupied → notice_given → available
+available → viewing_confirmed → occupied
+occupied → removed_by_landlord → available
+
+Every state transition MUST:
+1. Write to room_occupancy (current state)
+2. Write to occupancy_events (audit log — never delete)
+3. Update properties.current_occupants count
+4. Never go below 0 or above maxLegalOccupancy
+
+### Viewing states
+PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED →
+FULLY_SIGNED → COMPLETED | NO_SHOW_TENANT | NO_SHOW_LANDLORD | CANCELLED
+
+Every state transition MUST:
+1. Write to viewing_bookings (current state)
+2. Write to viewing_events (audit log)
+3. If FULLY_SIGNED: trigger room_occupancy → pending_approval
+
+### User verification states
+explorer → verified (passport upload) → gold (UAE PASS)
+explorer → verified (emirates_id upload) → gold (UAE PASS)
+
+Every state transition MUST:
+1. Write to users.verification_tier
+2. Write to kyc_documents (if document uploaded)
+3. Write to verification_events (audit log)
+
+### Missing D1 tables (must be built before any live launch)
+- oauth_tokens (Google + UAE PASS tokens)
+- kyc_documents (passport, visa, emirates_id uploads)
+- occupancy_events (audit log for all room state changes)
+- viewing_agreements (DLD form data + signatures)
+- verification_events (tier change audit log)
+- tenancy_events (move-in, move-out, notice)
+
+### API routes that do NOT exist yet
+POST /api/auth/google          (Google OAuth callback)
+POST /api/auth/uae-pass        (UAE PASS OAuth callback)
+POST /api/kyc/upload           (passport/visa/eid upload to R2)
+PATCH /api/occupancy/:id       (landlord changes room state)
+POST /api/tenancy/move-out     (tenant gives notice)
+POST /api/tenancy/move-in      (confirm tenant moves in)
+POST /api/agreements           (create DLD viewing agreement)
+PATCH /api/agreements/:id/sign (sign agreement)
+
+### Rule for Claude Code
+Never build a frontend feature that requires one of the
+missing routes above. If a frontend action needs backend
+data that doesn't exist, either:
+A) Use mock data fallback (already implemented) and
+   add a // TODO: wire to [route] comment
+B) Ask the user before proceeding
+Never silently build a fake implementation that looks
+real but writes nowhere.
+
+### How Claude Code should handle ambiguous instructions
+When an instruction could be interpreted multiple ways,
+or when building it would require decisions that affect
+other parts of the system, STOP and ask before building.
+
+Examples that require clarification before proceeding:
+- Any change to room_occupancy must ask:
+  "Should this write to occupancy_events audit log?"
+- Any new API route must ask:
+  "Does this route need auth middleware?"
+- Any user state change must ask:
+  "Should this write to verification_events?"
+
+Never silently make these decisions.
+Never build a feature that looks complete but
+writes to no persistent storage.

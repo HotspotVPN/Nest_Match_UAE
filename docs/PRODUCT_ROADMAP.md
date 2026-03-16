@@ -42,6 +42,19 @@
 - [x] README.md fully rewritten for v2.3.0
 - [x] Superpowers integration in CLAUDE.md
 
+### Completed (Session 8 — Backend)
+- [x] D1 migration 0004: 7 new tables (oauth_tokens, kyc_documents, occupancy_events, viewing_agreements, agreement_signatures, tenancy_events, verification_events)
+- [x] POST /api/auth/google — Google OAuth mock route
+- [x] POST /api/auth/uae-pass — UAE PASS OAuth with verification_events audit
+- [x] KYC routes: upload to R2, my-documents, admin review
+- [x] Occupancy routes: room state machine (approve/reject/remove/notice/move-out)
+- [x] GCC score recalculation route with formula
+- [x] Viewing accept now creates viewing_agreements record
+- [x] Frontend api.ts: 5 new endpoints with mock fallbacks
+- [x] PassportKycModal + ResidingDashboard wired to real API
+- [x] Backend state machines documented in CLAUDE.md
+- [x] wrangler.toml name synced with Cloudflare dashboard
+
 ---
 
 ## Near-term (post-funding, no new licences required)

@@ -3,6 +3,46 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.4.0] — 2026-03-16 · D1 State Machines, OAuth, KYC, Occupancy, GCC Score
+
+### Session 6 (Backend): State machine tables, new API routes, frontend wiring
+
+### Added
+- D1 migration 0004_state_machines.sql: 7 new tables (oauth_tokens,
+  kyc_documents, occupancy_events, viewing_agreements, agreement_signatures,
+  tenancy_events, verification_events) with CHECK constraints and indexes
+- POST /api/auth/google — Google OAuth callback (mock), creates explorer users
+- POST /api/auth/uae-pass — UAE PASS OAuth callback, sets gold tier with
+  verification_events audit trail (only path to tier2_uae_pass)
+- POST /api/kyc/upload — Multipart KYC doc upload to R2 KYC_DOCS bucket,
+  auto-upgrades tier1_unverified to tier0_passport on passport+visa upload,
+  writes verification_events
+- GET /api/kyc/my-documents — Returns user's KYC docs (r2_key excluded)
+- PATCH /api/kyc/:id/review — Compliance admin approve/reject
+- PATCH /api/properties/:id/rooms/:roomNumber — Landlord/agent room state
+  changes (approve, reject, remove, add/remove room) with occupancy_events
+  audit log, occupancy bounds enforced (0 to maxLegalOccupancy)
+- POST /api/properties/:id/rooms/:roomNumber/notice — Tenant move-out notice
+  with 30-day minimum validation, writes tenancy_events + occupancy_events
+- POST /api/properties/:id/rooms/:roomNumber/move-out — Landlord confirms
+  move-out, decrements occupants, writes tenancy_events + occupancy_events
+- POST /api/users/:id/recalculate-gcc — GCC score formula: +20 per tenancy,
+  +10 if rating >= 4.5, +5 per completed viewing, -10 per no-show,
+  -20 per early termination, capped 0-100
+- Frontend api.ts: uploadKycDocument, getMyKycDocuments, updateRoomOccupancy,
+  giveMoveOutNotice, recalculateGcc — all with mock fallbacks
+
+### Changed
+- PATCH /api/viewings/:id/accept now creates viewing_agreements record with
+  status 'sent' and generated DLD agreement number
+- PassportKycModal wired to api.uploadKycDocument() with loading state
+- ResidingDashboardPage Approve/Reject buttons wired to
+  api.updateRoomOccupancy() with fallback
+- backend/src/index.ts: mounted 5 new route modules (auth-google,
+  auth-uae-pass, kyc, occupancy via /api/properties, gcc-score)
+
+---
+
 ## [2.3.0] — 2026-03-16 · Navbar, Tier Labels, CRM, Supply-Side
 
 ### Sessions 6-7: Navbar overhaul, tier naming, CRM restructure, public pages

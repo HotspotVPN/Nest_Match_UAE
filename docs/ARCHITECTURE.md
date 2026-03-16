@@ -70,18 +70,28 @@ src/types/        — index.ts (single source of truth for all types)
 
 ### D1 Tables
 
+**Core tables:**
 users, properties, room_occupancy, viewing_bookings,
 property_ratings, maintenance_tickets, chat_channels,
 chat_messages, applications, rent_ledgers
 
-### API Endpoints (15 total)
+**State machine tables (migration 0004):**
+oauth_tokens, kyc_documents, occupancy_events,
+viewing_agreements, agreement_signatures,
+tenancy_events, verification_events
+
+### API Endpoints (23 total)
 
 | Category | Endpoints | Auth |
 |---|---|---|
 | Auth | POST /register, /login, /uaepass-callback, GET /me | Mixed |
+| Auth OAuth | POST /auth/google, POST /auth/uae-pass | Public |
 | Properties | GET / (filtered), GET /:id, POST / | Public read, Tier 2 write |
 | Users | GET /me, PATCH /me, GET /:id | Mixed |
 | Viewings | GET /, POST /, PATCH /:id/accept, PATCH /:id/decline | Tier 2 |
+| KYC | POST /upload, GET /my-documents, PATCH /:id/review | Auth + admin |
+| Occupancy | PATCH /rooms/:num, POST /notice, POST /move-out | Landlord/tenant |
+| GCC | POST /users/:id/recalculate-gcc | Admin/system |
 | Ratings | GET /:propertyId/ratings, POST /:propertyId/ratings | Public read, Tier 2 write |
 | Payments | GET /, POST / | Authenticated |
 

@@ -73,7 +73,16 @@ viewings.patch('/:id/accept',
       "UPDATE viewing_bookings SET status = 'CONFIRMED', landlord_agreed_penalty = 1, updated_at = datetime('now') WHERE id = ?"
     ).bind(id).run();
 
-    return c.json({ success: true, landlordHoldStatus: landlordHold.status });
+    // Create viewing_agreements record with status 'sent'
+    const agreementId = crypto.randomUUID();
+    const agreementNumber = `DLD-VA-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+    await c.env.DB.prepare(
+      `INSERT INTO viewing_agreements (id, viewing_id, agreement_number, status)
+       VALUES (?, ?, ?, 'sent')`
+    ).bind(agreementId, id, agreementNumber).run();
+
+    return c.json({ success: true, landlordHoldStatus: landlordHold.status, agreement_id: agreementId, agreement_number: agreementNumber });
   }
 );
 
