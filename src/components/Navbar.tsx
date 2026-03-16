@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import {
     Home, Search, User, BarChart3, ShieldCheck, Users,
-    LogOut, Building2, CalendarCheck, MessageSquare, LayoutDashboard, Wrench
+    LogOut, Building2, CalendarCheck, MessageSquare, LayoutDashboard, Wrench, BarChart2
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -66,9 +66,14 @@ export default function Navbar() {
                                 </>
                             )}
                             {currentUser.type === 'compliance' && (
-                                <Link to="/compliance" className={`navbar-link ${isActive('/compliance')}`}>
-                                    <ShieldCheck size={16} /> Compliance
-                                </Link>
+                                <>
+                                    <Link to="/compliance" className={`navbar-link ${isActive('/compliance')}`}>
+                                        <ShieldCheck size={16} /> Compliance
+                                    </Link>
+                                    <Link to="/analytics" className={`navbar-link ${isActive('/analytics')}`}>
+                                        <BarChart2 size={16} /> Analytics
+                                    </Link>
+                                </>
                             )}
                             {currentUser.type === 'finance' && (
                                 <Link to="/treasury" className={`navbar-link ${isActive('/treasury')}`}>
@@ -76,9 +81,14 @@ export default function Navbar() {
                                 </Link>
                             )}
                             {currentUser.type === 'operations' && (
-                                <Link to="/customers" className={`navbar-link ${isActive('/customers')}`}>
-                                    <Users size={16} /> CRM
-                                </Link>
+                                <>
+                                    <Link to="/customers" className={`navbar-link ${isActive('/customers')}`}>
+                                        <Users size={16} /> CRM
+                                    </Link>
+                                    <Link to="/analytics" className={`navbar-link ${isActive('/analytics')}`}>
+                                        <BarChart2 size={16} /> Analytics
+                                    </Link>
+                                </>
                             )}
                         </div>
                     )}

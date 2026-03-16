@@ -594,7 +594,18 @@ export const viewingBookings: ViewingBooking[] = [
     {
         id: 'view-1', property_id: 'list-entry-12', searcher_id: 'roommate-6', landlord_id: 'landlord-1',
         requested_date: '2026-03-20T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
-        status: 'CONFIRMED', created_at: '2026-03-10', updated_at: '2026-03-11',
+        status: 'FULLY_SIGNED',
+        agreement: {
+            id: 'va-1', viewing_id: 'view-1', agreement_number: 'NM-VA-2026-IEW01',
+            generated_at: '2026-03-11T09:00:00Z',
+            broker_orn: 'ORN-54321', broker_company: 'Dubai Property Group', broker_brn: 'RERA-BRN-2025-12345',
+            signatures: [
+                { signer_id: 'agent-1', signer_name: 'Khalid Al Rashid', signer_role: 'broker', signed_at: '2026-03-11T10:00:00Z', signature_data: 'data:image/png;base64,demo_sig_1', ip_simulated: '192.168.1.42' },
+                { signer_id: 'roommate-6', signer_name: 'James Morrison', signer_role: 'tenant', signed_at: '2026-03-11T14:30:00Z', signature_data: 'data:image/png;base64,demo_sig_2', ip_simulated: '192.168.1.87' },
+            ],
+            status: 'fully_signed',
+        },
+        created_at: '2026-03-10', updated_at: '2026-03-11',
     },
     {
         id: 'view-2', property_id: 'list-entry-8', searcher_id: 'roommate-7', landlord_id: 'landlord-1',
@@ -615,12 +626,29 @@ export const viewingBookings: ViewingBooking[] = [
     {
         id: 'view-5', property_id: 'list-entry-1', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-3',
         requested_date: '2026-03-20T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
-        status: 'CONFIRMED', created_at: '2026-03-10', updated_at: '2026-03-11',
+        status: 'AGENT_SIGNED',
+        agreement: {
+            id: 'va-5', viewing_id: 'view-5', agreement_number: 'NM-VA-2026-IEW05',
+            generated_at: '2026-03-11T08:00:00Z',
+            broker_orn: 'ORN-33333', broker_company: 'Prime Real Estate',
+            signatures: [
+                { signer_id: 'landlord-3', signer_name: 'Saeed Sultan', signer_role: 'broker', signed_at: '2026-03-11T09:00:00Z', signature_data: 'data:image/png;base64,demo_sig_3', ip_simulated: '192.168.1.55' },
+            ],
+            status: 'agent_signed',
+        },
+        created_at: '2026-03-10', updated_at: '2026-03-11',
     },
     {
         id: 'view-6', property_id: 'list-entry-6', searcher_id: 'roommate-srch-1', landlord_id: 'landlord-3',
         requested_date: '2026-03-22T10:00:00Z', time_slot: '10:00 AM - 10:30 AM',
-        status: 'CONFIRMED', created_at: '2026-03-11', updated_at: '2026-03-11',
+        status: 'AGREEMENT_SENT',
+        agreement: {
+            id: 'va-6', viewing_id: 'view-6', agreement_number: 'NM-VA-2026-IEW06',
+            generated_at: '2026-03-12T10:00:00Z',
+            signatures: [],
+            status: 'sent',
+        },
+        created_at: '2026-03-11', updated_at: '2026-03-11',
     },
     {
         id: 'view-7', property_id: 'list-entry-1', searcher_id: 'roommate-srch-2', landlord_id: 'landlord-3',

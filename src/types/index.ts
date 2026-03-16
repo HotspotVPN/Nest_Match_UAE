@@ -206,8 +206,40 @@ export type ViewingStatus =
     | 'PENDING'
     | 'PENDING_LANDLORD_APPROVAL'
     | 'CONFIRMED'
+    | 'AGREEMENT_SENT'
+    | 'AGENT_SIGNED'
+    | 'FULLY_SIGNED'
     | 'COMPLETED'
+    | 'NO_SHOW_TENANT'
+    | 'NO_SHOW_LANDLORD'
     | 'CANCELLED';
+
+export interface DigitalSignature {
+    signer_id: string;
+    signer_name: string;
+    signer_role: 'broker' | 'tenant';
+    signed_at: string;
+    signature_data: string;
+    ip_simulated: string;
+}
+
+export interface ViewingAgreementRecord {
+    id: string;
+    viewing_id: string;
+    agreement_number: string;
+    generated_at: string;
+    broker_orn?: string;
+    broker_company?: string;
+    broker_brn?: string;
+    commercial_license?: string;
+    plot_number?: string;
+    building_number?: string;
+    signatures: DigitalSignature[];
+    status: 'draft' | 'sent' | 'agent_signed' | 'fully_signed';
+    outcome?: 'attended' | 'no_show_tenant' | 'no_show_landlord';
+    outcome_recorded_at?: string;
+    outcome_recorded_by?: string;
+}
 
 export interface ViewingBooking {
     id: string;
@@ -218,6 +250,8 @@ export interface ViewingBooking {
     time_slot: string;
     status: ViewingStatus;
     resolution_date?: string;
+    agreement?: ViewingAgreementRecord;
+    outcome_notes?: string;
     created_at: string;
     updated_at: string;
 }

@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { users, listings, viewingBookings, getInitials } from '@/data/mockData';
-import { Users as UsersIcon, Building2, ThumbsUp, ThumbsDown, Award, ShieldCheck, Eye, EyeOff, CalendarCheck } from 'lucide-react';
+import { Users as UsersIcon, Building2, ThumbsUp, ThumbsDown, Award, ShieldCheck, CalendarCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -53,12 +53,6 @@ export default function ResidingDashboardPage() {
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                         Verified applicants who have confirmed a viewing at your properties.
                     </p>
-                    <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', background: 'rgba(45,159,79,0.08)', border: '1px solid rgba(45,159,79,0.2)', marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <EyeOff size={16} style={{ color: 'var(--uaepass-green-light)' }} />
-                        <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                            <strong style={{ color: 'var(--uaepass-green-light)' }}>Blind Match Active</strong> — Names, photos, and nationalities are anonymized to prevent bias. You see lifestyle & compliance data only.
-                        </span>
-                    </div>
                 </div>
 
                 {applicantsByListing.length === 0 ? (
@@ -95,14 +89,13 @@ export default function ResidingDashboardPage() {
                                         <div key={applicant.id} className="glass-card" style={{ padding: '1.5rem' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                                                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                                                    {/* Anonymized avatar */}
-                                                    <div className="avatar avatar-lg" style={{ background: 'var(--bg-surface-3)', fontSize: '1rem' }}>
-                                                        <Eye size={24} style={{ color: 'var(--text-muted)' }} />
+                                                    <div className="avatar avatar-lg" style={{ fontSize: '1rem' }}>
+                                                        {getInitials(applicant.name)}
                                                     </div>
                                                     <div>
-                                                        <h4 style={{ marginBottom: '0.25rem' }}>Applicant #{i + 1}</h4>
+                                                        <h4 style={{ marginBottom: '0.25rem' }}>{applicant.name}</h4>
                                                         <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                                                            <span className="badge badge-uaepass" style={{ fontSize: '0.5625rem' }}><ShieldCheck size={10} /> UAE PASS</span>
+                                                            {applicant.isUaePassVerified && <span className="badge badge-uaepass" style={{ fontSize: '0.5625rem' }}><ShieldCheck size={10} /> UAE PASS</span>}
                                                             {gccQualified && <span className="gcc-badge" style={{ fontSize: '0.5625rem', padding: '0.125rem 0.5rem' }}><Award size={10} /> GCC {applicant.gccScore}</span>}
                                                             {!gccQualified && applicant.gccScore > 0 && <span className="badge badge-orange" style={{ fontSize: '0.5625rem' }}>GCC: {applicant.gccScore}</span>}
                                                             {applicant.isPremium && <span className="badge badge-gold" style={{ fontSize: '0.5625rem' }}>⭐ Premium</span>}

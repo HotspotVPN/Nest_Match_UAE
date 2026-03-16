@@ -5,10 +5,12 @@ import {
 } from '@/data/mockData';
 import {
     Calendar, Clock, MapPin, CheckCircle2, XCircle, RefreshCw,
-    Plus, User as UserIcon, ShieldCheck,
+    Plus, User as UserIcon, ShieldCheck, FileText,
 } from 'lucide-react';
-import type { ViewingStatus } from '@/types';
+import type { ViewingStatus, ViewingBooking } from '@/types';
 import type { User } from '@/types';
+import ViewingAgreementModal from '@/components/ViewingAgreementModal';
+import LeaseHandoffCard from '@/components/LeaseHandoffCard';
 
 const timeSlots = [
     '09:00 - 09:30', '09:30 - 10:00', '10:00 - 10:30', '10:30 - 11:00',
@@ -22,23 +24,30 @@ const statusLabel = (s: ViewingStatus) => {
         'PENDING': 'Pending',
         'PENDING_LANDLORD_APPROVAL': 'Awaiting Approval',
         'CONFIRMED': 'Confirmed',
+        'AGREEMENT_SENT': 'Agreement Sent',
+        'AGENT_SIGNED': 'Agent Signed',
+        'FULLY_SIGNED': 'Fully Signed',
         'COMPLETED': 'Completed',
+        'NO_SHOW_TENANT': 'No-Show (Tenant)',
+        'NO_SHOW_LANDLORD': 'No-Show (Landlord)',
         'CANCELLED': 'Cancelled',
     };
     return map[s] || s;
 };
 
 const statusColor = (s: ViewingStatus) => {
-    if (s === 'CONFIRMED') return 'badge-green';
-    if (s === 'PENDING' || s === 'PENDING_LANDLORD_APPROVAL') return 'badge-orange';
-    if (s === 'CANCELLED') return 'badge-red';
+    if (['CONFIRMED', 'FULLY_SIGNED', 'COMPLETED'].includes(s)) return 'badge-green';
+    if (['PENDING', 'PENDING_LANDLORD_APPROVAL'].includes(s)) return 'badge-orange';
+    if (['CANCELLED', 'NO_SHOW_TENANT', 'NO_SHOW_LANDLORD'].includes(s)) return 'badge-red';
+    if (['AGREEMENT_SENT', 'AGENT_SIGNED'].includes(s)) return 'badge-purple';
     if (s === 'COMPLETED') return 'badge-blue';
     return 'badge-purple';
 };
 
 const statusIcon = (s: ViewingStatus) => {
-    if (s === 'CONFIRMED' || s === 'COMPLETED') return <CheckCircle2 size={14} />;
-    if (s === 'CANCELLED') return <XCircle size={14} />;
+    if (['CONFIRMED', 'COMPLETED', 'FULLY_SIGNED'].includes(s)) return <CheckCircle2 size={14} />;
+    if (['CANCELLED', 'NO_SHOW_TENANT', 'NO_SHOW_LANDLORD'].includes(s)) return <XCircle size={14} />;
+    if (['AGREEMENT_SENT', 'AGENT_SIGNED'].includes(s)) return <FileText size={14} />;
     return <Clock size={14} />;
 };
 
@@ -50,9 +59,16 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
     const [respondingTo, setRespondingTo] = useState<string | null>(null);
     const [counterDate, setCounterDate] = useState('');
     const [counterTime, setCounterTime] = useState('');
+    const [agreementModalViewing, setAgreementModalViewing] = useState<ViewingBooking | null>(null);
+    const [localViewings, setLocalViewings] = useState<ViewingBooking[]>(() => getViewingsForUser(currentUser.id));
 
     const isLandlord = currentUser.type === 'landlord' || currentUser.type === 'letting_agent';
-    const userViewings = getViewingsForUser(currentUser.id);
+    const userViewings = localViewings;
+
+    const handleAgreementUpdate = (updated: ViewingBooking) => {
+        setLocalViewings(prev => prev.map(v => v.id === updated.id ? updated : v));
+        setAgreementModalViewing(updated);
+    };
 
     const today = new Date();
     const calendarDays = Array.from({ length: 30 }, (_, i) => {
@@ -102,12 +118,12 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                     })}
                 </div>
                 <div style={{ marginTop: '1.25rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    {(['CONFIRMED', 'PENDING', 'PENDING_LANDLORD_APPROVAL', 'COMPLETED'] as ViewingStatus[]).map((s) => {
+                    {(['CONFIRMED', 'PENDING', 'PENDING_LANDLORD_APPROVAL', 'FULLY_SIGNED', 'COMPLETED'] as ViewingStatus[]).map((s) => {
                         const count = userViewings.filter((v) => v.status === s).length;
                         if (count === 0) return null;
                         return (
                             <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s === 'CONFIRMED' ? 'var(--success)' : s === 'COMPLETED' ? 'var(--brand-blue)' : 'var(--warning)' }} />
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s === 'CONFIRMED' ? 'var(--success)' : s === 'COMPLETED' ? 'var(--brand-blue)' : s === 'FULLY_SIGNED' ? '#22c55e' : 'var(--warning)' }} />
                                 {statusLabel(s)} ({count})
                             </div>
                         );
@@ -192,6 +208,33 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                                 )}
                                             </div>
                                         )}
+
+                                        {/* View Agreement button for viewings with agreements */}
+                                        {v.agreement && (
+                                            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
+                                                <button
+                                                    onClick={() => setAgreementModalViewing(v)}
+                                                    className="btn btn-ghost btn-sm" style={{ fontSize: '0.75rem' }}
+                                                >
+                                                    <FileText size={12} /> View Agreement ({v.agreement.agreement_number})
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* COMPLETED: LeaseHandoffCard */}
+                                        {v.status === 'COMPLETED' && listing && (() => {
+                                            const tenantUser = getUserById(v.searcher_id);
+                                            const agentUser = getUserById(v.landlord_id);
+                                            if (!tenantUser || !agentUser) return null;
+                                            return (
+                                                <LeaseHandoffCard
+                                                    viewing={v}
+                                                    property={listing}
+                                                    tenant={tenantUser}
+                                                    agent={agentUser}
+                                                />
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 
@@ -265,6 +308,24 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                     </div>
                 </div>
             )}
+
+            {/* Agreement Modal */}
+            {agreementModalViewing && (() => {
+                const listing = getListingById(agreementModalViewing.property_id);
+                const tenantUser = getUserById(agreementModalViewing.searcher_id);
+                const agentUser = getUserById(agreementModalViewing.landlord_id);
+                if (!listing || !tenantUser || !agentUser) return null;
+                return (
+                    <ViewingAgreementModal
+                        viewing={agreementModalViewing}
+                        property={listing}
+                        tenant={tenantUser}
+                        agent={agentUser}
+                        onClose={() => setAgreementModalViewing(null)}
+                        onAgreementUpdate={handleAgreementUpdate}
+                    />
+                );
+            })()}
         </div>
     );
 }

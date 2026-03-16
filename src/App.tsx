@@ -15,7 +15,7 @@ import CustomerDatabasePage from '@/pages/CustomerDatabasePage';
 import HowItWorksPage from '@/pages/HowItWorksPage';
 import ChatPage from '@/pages/ChatPage';
 import GccDashboardPage from '@/pages/GccDashboardPage';
-import ContractManagerPage from '@/pages/ContractManagerPage';
+import ViewingAnalyticsPage from '@/pages/ViewingAnalyticsPage';
 import MaintenancePage from '@/pages/MaintenancePage';
 import RentLedgerPage from '@/pages/RentLedgerPage';
 import LandlordWalletPage from '@/pages/LandlordWalletPage';
@@ -43,7 +43,7 @@ export default function App() {
                         <Route path="/how-it-works" element={<HowItWorksPage />} />
                         <Route path="/chat" element={<ChatPage />} />
                         <Route path="/gcc" element={<GccDashboardPage />} />
-                        <Route path="/contracts/:viewingId" element={<ContractManagerPage />} />
+                        <Route path="/analytics" element={<ViewingAnalyticsPage />} />
                         <Route path="/maintenance" element={<MaintenancePage />} />
                         <Route path="/ledger" element={<RentLedgerPage />} />
                         <Route path="/wallet" element={<LandlordWalletPage />} />

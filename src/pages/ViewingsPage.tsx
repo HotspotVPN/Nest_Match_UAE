@@ -1,15 +1,21 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import { viewingBookings, listings, users, formatCurrency, getInitials, formatDate } from '@/data/mockData';
-import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
+import { viewingBookings, listings, users, getInitials, formatDate } from '@/data/mockData';
+import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-import type { ViewingStatus } from '@/types';
+import type { ViewingStatus, ViewingBooking } from '@/types';
+import ViewingAgreementModal from '@/components/ViewingAgreementModal';
+import LeaseHandoffCard from '@/components/LeaseHandoffCard';
 
 const STATUS_CONFIG: Record<ViewingStatus, { label: string; badge: string; color: string }> = {
     PENDING: { label: 'Pending', badge: 'badge-orange', color: 'var(--warning)' },
     PENDING_LANDLORD_APPROVAL: { label: 'Awaiting Landlord', badge: 'badge-blue', color: 'var(--info)' },
     CONFIRMED: { label: 'Confirmed', badge: 'badge-green', color: 'var(--success)' },
+    AGREEMENT_SENT: { label: 'Agreement Sent', badge: 'badge-purple', color: 'var(--brand-purple)' },
+    AGENT_SIGNED: { label: 'Agent Signed', badge: 'badge-purple', color: 'var(--brand-purple)' },
+    FULLY_SIGNED: { label: 'Fully Signed', badge: 'badge-green', color: 'var(--success)' },
     COMPLETED: { label: 'Completed', badge: 'badge-green', color: 'var(--success)' },
+    NO_SHOW_TENANT: { label: 'No-Show (Tenant)', badge: 'badge-red', color: 'var(--error)' },
+    NO_SHOW_LANDLORD: { label: 'No-Show (Landlord)', badge: 'badge-red', color: 'var(--error)' },
     CANCELLED: { label: 'Cancelled', badge: 'badge-red', color: 'var(--error)' },
 };
 
@@ -23,16 +29,43 @@ export default function ViewingsPage() {
 
     const [viewings, setViewings] = useState(myViewings);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [agreementModalViewing, setAgreementModalViewing] = useState<ViewingBooking | null>(null);
+    const [noShowPicker, setNoShowPicker] = useState<string | null>(null);
 
     const updateViewingStatus = (id: string, newStatus: ViewingStatus) => {
-        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus } : v));
+        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus, updated_at: new Date().toISOString() } : v));
+    };
+
+    const handleAgreementUpdate = (updated: ViewingBooking) => {
+        setViewings(prev => prev.map(v => v.id === updated.id ? updated : v));
+        setAgreementModalViewing(updated);
+    };
+
+    const handleOutcomeCompleted = (id: string) => {
+        setViewings(prev => prev.map(v => v.id === id ? {
+            ...v,
+            status: 'COMPLETED' as ViewingStatus,
+            resolution_date: new Date().toISOString().split('T')[0],
+            updated_at: new Date().toISOString(),
+        } : v));
+    };
+
+    const handleNoShow = (id: string, party: 'tenant' | 'landlord') => {
+        const newStatus: ViewingStatus = party === 'tenant' ? 'NO_SHOW_TENANT' : 'NO_SHOW_LANDLORD';
+        setViewings(prev => prev.map(v => v.id === id ? {
+            ...v,
+            status: newStatus,
+            resolution_date: new Date().toISOString().split('T')[0],
+            updated_at: new Date().toISOString(),
+        } : v));
+        setNoShowPicker(null);
     };
 
     const filteredViewings = viewings.filter(v => {
         if (statusFilter === 'All') return true;
-        if (statusFilter === 'Upcoming') return ['PENDING', 'PENDING_LANDLORD_APPROVAL', 'CONFIRMED'].includes(v.status);
+        if (statusFilter === 'Upcoming') return ['PENDING', 'PENDING_LANDLORD_APPROVAL', 'CONFIRMED', 'AGREEMENT_SENT', 'AGENT_SIGNED', 'FULLY_SIGNED'].includes(v.status);
         if (statusFilter === 'Completed') return v.status === 'COMPLETED';
-        if (statusFilter === 'Cancelled') return v.status === 'CANCELLED';
+        if (statusFilter === 'Cancelled') return ['CANCELLED', 'NO_SHOW_TENANT', 'NO_SHOW_LANDLORD'].includes(v.status);
         return true;
     });
 
@@ -48,7 +81,7 @@ export default function ViewingsPage() {
                         <option value="All">All Viewings</option>
                         <option value="Upcoming">Upcoming</option>
                         <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
+                        <option value="Cancelled">Cancelled / No-Show</option>
                     </select>
                 </div>
 
@@ -56,7 +89,7 @@ export default function ViewingsPage() {
                 <div className="grid-4" style={{ marginBottom: '2rem' }}>
                     {[
                         { label: 'Total', value: myViewings.length, color: 'var(--text-primary)' },
-                        { label: 'Confirmed', value: myViewings.filter(v => v.status === 'CONFIRMED').length, color: 'var(--success)' },
+                        { label: 'Confirmed', value: myViewings.filter(v => ['CONFIRMED', 'AGREEMENT_SENT', 'AGENT_SIGNED', 'FULLY_SIGNED'].includes(v.status)).length, color: 'var(--success)' },
                         { label: 'Pending', value: myViewings.filter(v => ['PENDING', 'PENDING_LANDLORD_APPROVAL'].includes(v.status)).length, color: 'var(--warning)' },
                         { label: 'Completed', value: myViewings.filter(v => v.status === 'COMPLETED').length, color: 'var(--info)' },
                     ].map(s => (
@@ -145,6 +178,75 @@ export default function ViewingsPage() {
                                     </div>
                                 )}
 
+                                {/* Agreement-stage statuses */}
+                                {(['AGREEMENT_SENT', 'AGENT_SIGNED'] as ViewingStatus[]).includes(viewing.status) && (
+                                    <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(124,58,237,0.2)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <FileText size={16} style={{ color: 'var(--brand-purple)' }} />
+                                                <span style={{ fontSize: '0.8125rem', color: 'var(--brand-purple)', fontWeight: 600 }}>
+                                                    {viewing.status === 'AGREEMENT_SENT' ? 'Agreement sent, awaiting signatures' : 'Agent signed, awaiting tenant'}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => setAgreementModalViewing(viewing)}
+                                                className="btn btn-primary btn-sm"
+                                            >
+                                                <FileText size={14} /> View Agreement
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* FULLY_SIGNED: Outcome tracking */}
+                                {viewing.status === 'FULLY_SIGNED' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <CheckCircle2 size={16} style={{ color: 'var(--success)' }} />
+                                                <span style={{ fontSize: '0.8125rem', color: 'var(--success)', fontWeight: 600 }}>
+                                                    Agreement fully signed
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => setAgreementModalViewing(viewing)}
+                                                className="btn btn-ghost btn-sm" style={{ fontSize: '0.75rem' }}
+                                            >
+                                                <FileText size={12} /> View Agreement
+                                            </button>
+                                        </div>
+
+                                        {/* Outcome question */}
+                                        <div style={{ padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
+                                            <p style={{ fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.75rem' }}>Did this viewing take place?</p>
+                                            {noShowPicker === viewing.id ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>Which party did not attend?</p>
+                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        <button onClick={() => handleNoShow(viewing.id, 'tenant')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', fontSize: '0.75rem', flex: 1 }}>
+                                                            <AlertTriangle size={12} /> Tenant No-Show
+                                                        </button>
+                                                        <button onClick={() => handleNoShow(viewing.id, 'landlord')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', fontSize: '0.75rem', flex: 1 }}>
+                                                            <AlertTriangle size={12} /> Landlord No-Show
+                                                        </button>
+                                                        <button onClick={() => setNoShowPicker(null)} className="btn btn-ghost btn-sm" style={{ fontSize: '0.75rem' }}>Cancel</button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                    <button onClick={() => handleOutcomeCompleted(viewing.id)} className="btn btn-primary btn-sm" style={{ flex: 1 }}>
+                                                        <CheckCircle2 size={14} /> Viewing Completed
+                                                    </button>
+                                                    <button onClick={() => setNoShowPicker(viewing.id)} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--error)' }}>
+                                                        <XCircle size={14} /> No-show
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* COMPLETED: LeaseHandoffCard */}
                                 {viewing.status === 'COMPLETED' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                         <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -153,9 +255,36 @@ export default function ViewingsPage() {
                                                 Viewing completed {viewing.resolution_date ? `on ${formatDate(viewing.resolution_date)}` : ''}
                                             </span>
                                         </div>
-                                        <Link to={`/contracts/${viewing.id}`} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                                            Proceed to Lease Setup
-                                        </Link>
+                                        {listing && searcher && landlord && (
+                                            <LeaseHandoffCard
+                                                viewing={viewing}
+                                                property={listing}
+                                                tenant={searcher}
+                                                agent={landlord}
+                                            />
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* View Agreement button for any viewing with agreement (non-active statuses) */}
+                                {viewing.agreement && !['AGREEMENT_SENT', 'AGENT_SIGNED', 'FULLY_SIGNED'].includes(viewing.status) && viewing.status !== 'CONFIRMED' && (
+                                    <div style={{ marginTop: '0.75rem' }}>
+                                        <button
+                                            onClick={() => setAgreementModalViewing(viewing)}
+                                            className="btn btn-ghost btn-sm" style={{ fontSize: '0.75rem' }}
+                                        >
+                                            <FileText size={12} /> View Agreement
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* No-show status display */}
+                                {(viewing.status === 'NO_SHOW_TENANT' || viewing.status === 'NO_SHOW_LANDLORD') && (
+                                    <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <AlertTriangle size={16} style={{ color: 'var(--error)' }} />
+                                        <span style={{ fontSize: '0.8125rem', color: 'var(--error)', fontWeight: 600 }}>
+                                            {viewing.status === 'NO_SHOW_TENANT' ? 'Tenant did not attend' : 'Landlord did not attend'}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -171,6 +300,24 @@ export default function ViewingsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Agreement Modal */}
+            {agreementModalViewing && (() => {
+                const listing = listings.find(l => l.id === agreementModalViewing.property_id);
+                const tenantUser = users.find(u => u.id === agreementModalViewing.searcher_id);
+                const agentUser = users.find(u => u.id === agreementModalViewing.landlord_id);
+                if (!listing || !tenantUser || !agentUser) return null;
+                return (
+                    <ViewingAgreementModal
+                        viewing={agreementModalViewing}
+                        property={listing}
+                        tenant={tenantUser}
+                        agent={agentUser}
+                        onClose={() => setAgreementModalViewing(null)}
+                        onAgreementUpdate={handleAgreementUpdate}
+                    />
+                );
+            })()}
         </div>
     );
 }
