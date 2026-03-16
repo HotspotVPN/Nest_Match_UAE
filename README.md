@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.5.0
+**Version:** 2.6.0
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -19,7 +19,7 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 |---|---|---|---|
 | **Tier 0** | Explorer | Email/Google, no documents | Browse listings only |
 | **Tier 1** | Verified | Passport + UAE visa uploaded | Browse, request viewings, chat, sign DLD viewing agreements |
-| **Tier 3** | Gold | UAE PASS (Emirates ID) | Full access — tenancy applications, contracts, GCC tracking |
+| **Tier 2** | Gold | UAE PASS (Emirates ID) | Full access — tenancy applications, contracts, GCC tracking |
 
 ---
 

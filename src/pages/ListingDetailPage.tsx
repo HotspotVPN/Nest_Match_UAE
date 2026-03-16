@@ -1,29 +1,63 @@
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import { useDemoState } from '@/contexts/DemoStateContext';
 import { listings, users, formatCurrency, getInitials, viewingBookings, propertyRatings } from '@/data/mockData';
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
     ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
-    MessageSquare, Edit2, X, CheckCircle2
+    MessageSquare, Edit2, X, CheckCircle2, Home, Wrench, LogOut, Loader2, ArrowRight
 } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { canRequestViewing } from '@/utils/accessControl';
 import PassportKycModal from '@/components/PassportKycModal';
+
+// Generate next 7 days as date chips
+function getNextDays(count: number): { label: string; value: string }[] {
+    const days: { label: string; value: string }[] = [];
+    const today = new Date();
+    for (let i = 1; i <= count; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const dayName = d.toLocaleDateString('en-AE', { weekday: 'short' });
+        const dayNum = d.getDate();
+        const month = d.toLocaleDateString('en-AE', { month: 'short' });
+        days.push({
+            label: `${dayName} ${dayNum} ${month}`,
+            value: d.toISOString().split('T')[0],
+        });
+    }
+    return days;
+}
+
+const TIME_SLOTS = ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '6:00 PM'];
 
 export default function ListingDetailPage() {
     const { id } = useParams();
     const { currentUser, isVerifiedForBooking } = useAuth();
-    const listing = listings.find(l => l.id === id);
+    const { showToast } = useToast();
+    const { setDemoState } = useDemoState();
+    const listing = listings.find(l => l.slug === id || l.id === id);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [bookingDate, setBookingDate] = useState('');
     const [bookingTime, setBookingTime] = useState('');
-    const [bookingStep, setBookingStep] = useState<'details' | 'confirmation'>('details');
+    const [bookingMessage, setBookingMessage] = useState('');
+    const [bookingStep, setBookingStep] = useState<'details' | 'loading' | 'confirmation'>('details');
     const [isEditingRent, setIsEditingRent] = useState(false);
     const [rentAmount, setRentAmount] = useState(listing?.rent_per_room || 0);
     const [activeBills, setActiveBills] = useState<string[]>(listing?.bills_included ? ['Water', 'Wi-Fi', 'DEWA', 'Building Maintenance'] : []);
     const [activeAmenities, setActiveAmenities] = useState<string[]>(listing?.amenities || []);
     const [showTenantsModal, setShowTenantsModal] = useState(false);
     const [showKycModal, setShowKycModal] = useState(false);
+    const [showNoticeDialog, setShowNoticeDialog] = useState(false);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const navigate = useNavigate();
+    const dateChips = getNextDays(7);
+
+    // Detect if current user lives here
+    const isResident = currentUser?.current_house_id === listing?.id;
+    const residentRoom = isResident && listing ? listing.occupancy_status.find(r => r.tenant_id === currentUser?.id) : null;
 
     if (!listing) return (
         <div className="section container" style={{ textAlign: 'center', paddingTop: '4rem' }}>
@@ -289,34 +323,62 @@ export default function ListingDetailPage() {
 
                             <hr className="divider" />
 
-                            {/* Book Viewing CTA */}
-                            {listing.available_rooms > 0 && currentUser?.type === 'roommate' && (
-                                <>
-                                    {!canBook ? (
-                                        <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', textAlign: 'center' }}>
-                                            <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>Viewing already booked</span>
+                            {/* Resident UI — shown if current user lives here */}
+                            {isResident && currentUser ? (
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '1rem' }}>
+                                        <Home size={16} style={{ color: 'var(--success)' }} />
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--success)' }}>You live here</span>
+                                    </div>
+                                    {residentRoom && (
+                                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1rem', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                                            Room {residentRoom.room_number} · Status: <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{residentRoom.status.replace('_', ' ')}</span>
                                         </div>
-                                    ) : canRequestViewing(currentUser) ? (
-                                        <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                                            <CalendarCheck size={18} /> Request Viewing
+                                    )}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <Link to="/chat" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                                            <MessageSquare size={16} /> Chat with Landlord
+                                        </Link>
+                                        <Link to="/maintenance" className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
+                                            <Wrench size={16} /> Submit Maintenance Request
+                                        </Link>
+                                        <button onClick={() => setShowNoticeDialog(true)} className="btn btn-outline" style={{ width: '100%', justifyContent: 'center', opacity: 0.7, fontSize: '0.8125rem' }}>
+                                            <LogOut size={14} /> Give Notice
                                         </button>
-                                    ) : currentUser?.verification_tier === 'tier1_unverified' ? (
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Book Viewing CTA */}
+                                    {listing.available_rooms > 0 && currentUser?.type === 'roommate' && (
                                         <>
-                                            <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={() => setShowKycModal(true)}>
-                                                <ShieldCheck size={18} /> Upload Passport to Book
-                                            </button>
-                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
-                                                Upload passport + visa to unlock viewing requests
-                                            </p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
-                                                <Lock size={18} /> Verify to book a viewing
-                                            </button>
-                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
-                                                Verification required to schedule viewings
-                                            </p>
+                                            {!canBook ? (
+                                                <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', textAlign: 'center' }}>
+                                                    <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>Viewing already booked</span>
+                                                </div>
+                                            ) : canRequestViewing(currentUser) ? (
+                                                <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
+                                                    <CalendarCheck size={18} /> Request Viewing
+                                                </button>
+                                            ) : currentUser?.verification_tier === 'tier1_unverified' ? (
+                                                <>
+                                                    <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={() => setShowUpgradeModal(true)}>
+                                                        <ShieldCheck size={18} /> Request Viewing
+                                                    </button>
+                                                    <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                        Identity verification required
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
+                                                        <Lock size={18} /> Verify to book a viewing
+                                                    </button>
+                                                    <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                        Verification required to schedule viewings
+                                                    </p>
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </>
@@ -326,7 +388,7 @@ export default function ListingDetailPage() {
                             {landlord && (
                                 <div style={{ marginTop: '1rem', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                                        <Link to={`/profile/${landlord.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <Link to={`/profile/${landlord.slug || landlord.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                             <div className="avatar avatar-md">{getInitials(landlord.name)}</div>
                                             <div>
                                                 <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{landlord.name}</div>
@@ -358,31 +420,98 @@ export default function ListingDetailPage() {
                     </div>
                 </div>
 
-                {/* Booking Modal — Simple: date/time → confirmation */}
+                {/* Booking Modal — Date chips, time chips, message, loading */}
                 {showBookingModal && (
                     <div className="modal-overlay" onClick={() => setShowBookingModal(false)}>
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
                             {bookingStep === 'details' && (
                                 <>
-                                    <h2 style={{ marginBottom: '0.5rem' }}>Request a Viewing</h2>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <h2 style={{ margin: 0 }}>Request a Viewing</h2>
+                                        <button onClick={() => setShowBookingModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={18} /></button>
+                                    </div>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>{listing.title}</p>
 
-                                    <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                        <label className="form-label">Preferred Date</label>
-                                        <input type="date" className="form-input" value={bookingDate} onChange={e => setBookingDate(e.target.value)} />
-                                    </div>
-                                    <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                                        <label className="form-label">Preferred Time</label>
-                                        <select className="form-input form-select" value={bookingTime} onChange={e => setBookingTime(e.target.value)}>
-                                            <option value="">Select a time slot</option>
-                                            {['10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
+                                    {/* Date chips */}
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block', letterSpacing: '0.05em' }}>Preferred Date</label>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                                            {dateChips.map(d => (
+                                                <button
+                                                    key={d.value}
+                                                    onClick={() => setBookingDate(d.value)}
+                                                    style={{
+                                                        padding: '0.5rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600,
+                                                        background: bookingDate === d.value ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)',
+                                                        border: `1px solid ${bookingDate === d.value ? 'rgba(124,58,237,0.4)' : 'var(--border-subtle)'}`,
+                                                        color: bookingDate === d.value ? 'var(--brand-purple-light)' : 'var(--text-secondary)',
+                                                        cursor: 'pointer', transition: 'all 0.15s',
+                                                    }}
+                                                >
+                                                    {d.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
 
-                                    <button onClick={() => setBookingStep('confirmation')} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!bookingDate || !bookingTime}>
-                                        Request Viewing
+                                    {/* Time chips */}
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block', letterSpacing: '0.05em' }}>Preferred Time</label>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                                            {TIME_SLOTS.map(t => (
+                                                <button
+                                                    key={t}
+                                                    onClick={() => setBookingTime(t)}
+                                                    style={{
+                                                        padding: '0.5rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600,
+                                                        background: bookingTime === t ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)',
+                                                        border: `1px solid ${bookingTime === t ? 'rgba(124,58,237,0.4)' : 'var(--border-subtle)'}`,
+                                                        color: bookingTime === t ? 'var(--brand-purple-light)' : 'var(--text-secondary)',
+                                                        cursor: 'pointer', transition: 'all 0.15s',
+                                                    }}
+                                                >
+                                                    {t}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Message */}
+                                    <div style={{ marginBottom: '1.5rem' }}>
+                                        <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block', letterSpacing: '0.05em' }}>Message (optional)</label>
+                                        <textarea
+                                            className="form-input"
+                                            placeholder="Introduce yourself or ask a question..."
+                                            value={bookingMessage}
+                                            onChange={e => setBookingMessage(e.target.value)}
+                                            rows={3}
+                                            style={{ resize: 'vertical', width: '100%' }}
+                                        />
+                                    </div>
+
+                                    <button
+                                        onClick={() => {
+                                            setBookingStep('loading');
+                                            setTimeout(() => {
+                                                setBookingStep('confirmation');
+                                                showToast('Viewing requested!', 'success');
+                                            }, 1000);
+                                        }}
+                                        className="btn btn-primary btn-lg"
+                                        style={{ width: '100%' }}
+                                        disabled={!bookingDate || !bookingTime}
+                                    >
+                                        <CalendarCheck size={16} /> Confirm Viewing Request
                                     </button>
                                 </>
+                            )}
+
+                            {bookingStep === 'loading' && (
+                                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                                    <Loader2 size={40} style={{ color: 'var(--brand-purple-light)', animation: 'spin 1s linear infinite', marginBottom: '1rem' }} />
+                                    <p style={{ fontWeight: 600 }}>Submitting request...</p>
+                                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                                </div>
                             )}
 
                             {bookingStep === 'confirmation' && (
@@ -392,14 +521,14 @@ export default function ListingDetailPage() {
                                     </div>
                                     <h2 style={{ marginBottom: '0.5rem' }}>Viewing Requested!</h2>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.875rem' }}>
-                                        {bookingDate} at {bookingTime}
+                                        {dateChips.find(d => d.value === bookingDate)?.label || bookingDate} at {bookingTime}
                                     </p>
                                     <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                                         The landlord will review your request and confirm. You'll be notified once it's accepted.
                                     </p>
                                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                                         <Link to="/viewings" className="btn btn-primary" style={{ flex: 1 }}>View My Bookings</Link>
-                                        <button onClick={() => { setShowBookingModal(false); setBookingStep('details'); }} className="btn btn-secondary" style={{ flex: 1 }}>Close</button>
+                                        <button onClick={() => { setShowBookingModal(false); setBookingStep('details'); setBookingDate(''); setBookingTime(''); setBookingMessage(''); }} className="btn btn-secondary" style={{ flex: 1 }}>Close</button>
                                     </div>
                                 </div>
                             )}
@@ -407,13 +536,93 @@ export default function ListingDetailPage() {
                     </div>
                 )}
 
-                {/* Passport KYC Modal */}
+                {/* Passport KYC Modal — with auto-approve */}
                 {showKycModal && currentUser && (
                     <PassportKycModal
                         user={currentUser}
                         onClose={() => setShowKycModal(false)}
-                        onUpdate={() => setShowKycModal(false)}
+                        onUpdate={() => {
+                            setShowKycModal(false);
+                            // Auto-approve after 3 seconds
+                            setTimeout(() => {
+                                setDemoState(prev => ({
+                                    ...prev,
+                                    tierOverrides: { ...prev.tierOverrides, [currentUser.id]: 'tier0_passport' },
+                                    kycSubmissions: { ...prev.kycSubmissions, [currentUser.id]: 'approved' },
+                                }));
+                                showToast('Identity verified! You\'re now Tier 1 — Verified.', 'success', 6000);
+                            }, 3000);
+                        }}
                     />
+                )}
+
+                {/* Tier 0 Upgrade Modal */}
+                {showUpgradeModal && (
+                    <div className="modal-overlay" onClick={() => setShowUpgradeModal(false)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px', textAlign: 'center', padding: '2rem' }}>
+                            <button onClick={() => setShowUpgradeModal(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                                <X size={18} />
+                            </button>
+
+                            {/* Shield icon */}
+                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', margin: '0 auto 1.25rem', background: 'rgba(124,58,237,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <ShieldCheck size={32} style={{ color: 'var(--brand-purple-light)' }} />
+                            </div>
+
+                            <h2 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>Verify your identity to book viewings</h2>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                Upload your passport or Emirates ID — takes under 2 minutes.
+                            </p>
+
+                            {/* Tier progression visual */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                                <div style={{ padding: '0.375rem 0.75rem', borderRadius: '999px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', fontSize: '0.75rem', fontWeight: 600, color: '#22c55e' }}>
+                                    Explorer <CheckCircle2 size={12} style={{ display: 'inline', verticalAlign: 'middle' }} />
+                                </div>
+                                <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
+                                <div style={{ padding: '0.375rem 0.75rem', borderRadius: '999px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b' }}>
+                                    Verified — unlock
+                                </div>
+                                <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
+                                <div style={{ padding: '0.375rem 0.75rem', borderRadius: '999px', background: 'rgba(156,163,175,0.1)', border: '1px solid rgba(156,163,175,0.2)', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                                    Gold
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => { setShowUpgradeModal(false); setShowKycModal(true); }}
+                                className="btn btn-primary btn-lg"
+                                style={{ width: '100%', marginBottom: '0.75rem' }}
+                            >
+                                <ShieldCheck size={16} /> Upload Documents &rarr;
+                            </button>
+
+                            <Link to="/how-it-works" style={{ fontSize: '0.8125rem', color: 'var(--brand-purple-light)' }}>
+                                Learn about verification &rarr;
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
+                {/* Give Notice Confirmation Dialog */}
+                {showNoticeDialog && (
+                    <div className="modal-overlay" onClick={() => setShowNoticeDialog(false)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
+                            <LogOut size={40} style={{ color: 'var(--warning)', marginBottom: '1rem' }} />
+                            <h2 style={{ marginBottom: '0.5rem' }}>Give Notice</h2>
+                            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
+                                Are you sure you want to give notice at this property? This action will be recorded in your tenancy history.
+                            </p>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button onClick={() => { setShowNoticeDialog(false); navigate('/profile'); }} className="btn btn-primary" style={{ flex: 1 }}>
+                                    Confirm Notice
+                                </button>
+                                <button onClick={() => setShowNoticeDialog(false)} className="btn btn-secondary" style={{ flex: 1 }}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* Residing Tenants Modal (Landlord Only) */}

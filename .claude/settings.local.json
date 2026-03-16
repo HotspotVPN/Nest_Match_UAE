@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Bash(cd:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

@@ -1,22 +1,38 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ShieldCheck, Mail, Lock, AlertTriangle, CheckCircle2, Building2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShieldCheck, Mail, Lock, AlertTriangle, CheckCircle2, Building2, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import UAEPassOverlay from '@/components/UAEPassOverlay';
 
 export default function LandlordSignupPage() {
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
+    const [showUaePass, setShowUaePass] = useState(false);
+    const [emailLoading, setEmailLoading] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => navigate('/login'), 1500);
+        if (!email.trim() || !password.trim()) return;
+        setEmailLoading(true);
+        setTimeout(() => {
+            login('landlord-2'); // Fatima Hassan
+            setEmailLoading(false);
+            setSubmitted(true);
+            showToast('Welcome to NestMatch!', 'success');
+            setTimeout(() => navigate('/dashboard'), 800);
+        }, 1200);
     };
 
-    const handleUaePass = () => {
-        // Demo-only: navigate to login
-        navigate('/login');
+    const handleUaePassComplete = () => {
+        login('landlord-1'); // Ahmed Al Maktoum
+        setShowUaePass(false);
+        showToast('Welcome Ahmed. UAE PASS verified.', 'success');
+        navigate('/dashboard');
     };
 
     return (
@@ -59,7 +75,7 @@ export default function LandlordSignupPage() {
                             'Valid shared-housing permit from Dubai Municipality',
                             'Trakheesi advertising permit number',
                             'Title deed or tenancy contract for the property',
-                            'UAE PASS authentication (Tier 3 — Gold)',
+                            'UAE PASS authentication (Tier 2 — Gold)',
                         ].map(r => (
                             <li key={r} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                                 <CheckCircle2 size={12} style={{ color: '#f59e0b', flexShrink: 0 }} /> {r}
@@ -76,7 +92,7 @@ export default function LandlordSignupPage() {
                         <div style={{ textAlign: 'center' }}>
                             <ShieldCheck size={48} style={{ color: 'var(--success)', marginBottom: '1rem' }} />
                             <h2 style={{ marginBottom: '0.5rem' }}>Account created</h2>
-                            <p style={{ color: 'var(--text-secondary)' }}>Redirecting to sign in...</p>
+                            <p style={{ color: 'var(--text-secondary)' }}>Redirecting to dashboard...</p>
                         </div>
                     ) : (
                         <>
@@ -84,12 +100,12 @@ export default function LandlordSignupPage() {
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '2rem' }}>UAE PASS recommended for fastest verification.</p>
 
                             {/* UAE PASS — Primary */}
-                            <button onClick={handleUaePass} className="btn" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '0.875rem', marginBottom: '0.75rem', background: 'linear-gradient(135deg, #14b8a6, #0d9488)', color: 'white', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '0.875rem', border: 'none' }}>
+                            <button onClick={() => setShowUaePass(true)} className="btn" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '0.875rem', marginBottom: '0.75rem', background: 'linear-gradient(135deg, #14b8a6, #0d9488)', color: 'white', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}>
                                 <ShieldCheck size={18} /> Register with UAE PASS
                             </button>
                             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                                 <span className="badge badge-green" style={{ fontSize: '0.5625rem' }}>
-                                    <ShieldCheck size={10} /> Tier 3 — Gold
+                                    <ShieldCheck size={10} /> Tier 2 — Gold
                                 </span>
                                 <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>Instant full access</span>
                             </div>
@@ -115,8 +131,15 @@ export default function LandlordSignupPage() {
                                     </label>
                                     <input type="password" className="form-control form-input" placeholder="--------" value={password} onChange={e => setPassword(e.target.value)} required />
                                 </div>
-                                <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.875rem', justifyContent: 'center', display: 'flex', gap: '0.5rem' }}>
-                                    Create Landlord Account <ArrowRight size={16} />
+                                <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.875rem', justifyContent: 'center', display: 'flex', gap: '0.5rem' }} disabled={emailLoading}>
+                                    {emailLoading ? (
+                                        <>
+                                            <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                            Creating account...
+                                        </>
+                                    ) : (
+                                        <>Create Landlord Account <ArrowRight size={16} /></>
+                                    )}
                                 </button>
                             </form>
 
@@ -135,6 +158,19 @@ export default function LandlordSignupPage() {
                     )}
                 </div>
             </div>
+
+            {/* UAE PASS Overlay */}
+            {showUaePass && (
+                <UAEPassOverlay
+                    onComplete={handleUaePassComplete}
+                    onClose={() => setShowUaePass(false)}
+                    userName="Ahmed Al Maktoum"
+                />
+            )}
+
+            <style>{`
+                @keyframes spin { to { transform: rotate(360deg); } }
+            `}</style>
         </div>
     );
 }

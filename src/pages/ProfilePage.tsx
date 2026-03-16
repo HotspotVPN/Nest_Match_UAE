@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
+import { useDemoState } from "@/contexts/DemoStateContext";
 import { useNavigate, Link, useParams } from "react-router-dom";
-import { 
-    formatCurrency, 
-    getInitials 
+import {
+    formatCurrency,
+    getInitials,
+    viewingBookings,
+    listings as mockListings2,
 } from "@/data/mockData";
 import type { User, Listing } from "@/types";
 import {
@@ -21,11 +25,128 @@ import {
   ChevronLeft,
   AlertTriangle,
   Upload,
-  Lock
+  Lock,
+  FileText,
+  CalendarCheck,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { api } from "@/services/api";
 import { getTierLabel, getTierColor } from "@/utils/accessControl";
 import PassportKycModal from "@/components/PassportKycModal";
+import UAEPassOverlay from "@/components/UAEPassOverlay";
+
+// ─── GCC Score Factors (expandable) ──────────────────────────
+function GccScoreFactors({ displayUser }: { displayUser: User }) {
+    const [expanded, setExpanded] = useState(false);
+
+    // Compute score factors from user data
+    const userViewings = viewingBookings.filter(v => v.searcher_id === displayUser.id || v.landlord_id === displayUser.id);
+    const completedViewings = userViewings.filter(v => v.status === 'COMPLETED').length;
+    const noShows = userViewings.filter(v => v.status === 'NO_SHOW_TENANT' || v.status === 'NO_SHOW_LANDLORD').length;
+    const gcc = displayUser.good_conduct_certificate;
+    const propertyCareMap: Record<string, number> = { 'excellent': 5, 'good': 4, 'average': 3, 'poor': 2 };
+    const propertyCareRating = gcc ? propertyCareMap[gcc.property_care] || 0 : 0;
+
+    return (
+        <div style={{ marginTop: '1rem' }}>
+            <button
+                onClick={() => setExpanded(!expanded)}
+                style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '0.375rem',
+                    fontSize: '0.75rem', color: 'var(--text-muted)', padding: 0, width: '100%',
+                }}
+            >
+                {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                Score Factors
+            </button>
+            {expanded && (
+                <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.375rem', fontSize: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                        <span>Tenancy duration</span>
+                        <span style={{ fontWeight: 600 }}>{displayUser.tenancy_duration_months || 0} months</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                        <span>Completed viewings</span>
+                        <span style={{ fontWeight: 600 }}>{completedViewings}</span>
+                    </div>
+                    {noShows > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--error)' }}>
+                            <span>No-shows</span>
+                            <span style={{ fontWeight: 600 }}>-{noShows}</span>
+                        </div>
+                    )}
+                    {gcc && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                            <span>Property care rating</span>
+                            <span style={{ fontWeight: 600 }}>{propertyCareRating}/5</span>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ─── Viewing History ─────────────────────────────────────────
+function ViewingHistory({ displayUser }: { displayUser: User }) {
+    const userViewings = viewingBookings.filter(v => v.searcher_id === displayUser.id || v.landlord_id === displayUser.id);
+    if (userViewings.length === 0) return null;
+
+    const STATUS_BADGES: Record<string, { label: string; badge: string }> = {
+        PENDING: { label: 'Pending', badge: 'badge-orange' },
+        PENDING_LANDLORD_APPROVAL: { label: 'Awaiting Landlord', badge: 'badge-blue' },
+        CONFIRMED: { label: 'Confirmed', badge: 'badge-green' },
+        AGREEMENT_SENT: { label: 'Agreement Sent', badge: 'badge-purple' },
+        AGENT_SIGNED: { label: 'Agent Signed', badge: 'badge-purple' },
+        FULLY_SIGNED: { label: 'Fully Signed', badge: 'badge-green' },
+        COMPLETED: { label: 'Completed', badge: 'badge-green' },
+        NO_SHOW_TENANT: { label: 'No-Show (Tenant)', badge: 'badge-red' },
+        NO_SHOW_LANDLORD: { label: 'No-Show (Landlord)', badge: 'badge-red' },
+        CANCELLED: { label: 'Cancelled', badge: 'badge-red' },
+    };
+
+    return (
+        <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem' }}>
+            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <CalendarCheck size={20} style={{ color: 'var(--brand-purple-light)' }} /> Viewing History
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {userViewings.map(v => {
+                    const listing = mockListings2.find(l => l.id === v.property_id);
+                    const st = STATUS_BADGES[v.status] || { label: v.status, badge: '' };
+                    return (
+                        <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface-2)', border: '1px solid var(--border-subtle)' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <Link to={`/listing/${listing?.slug || v.property_id}`} style={{ fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none', color: 'var(--text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {listing?.title || 'Unknown Property'}
+                                </Link>
+                                <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '0.125rem' }}>
+                                    {new Date(v.requested_date).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' })} · {v.time_slot}
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                                <span className={`badge ${st.badge}`} style={{ fontSize: '0.5625rem' }}>{st.label}</span>
+                                {v.agreement && (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.5625rem', color: 'var(--brand-purple-light)' }}>
+                                        <FileText size={10} /> {v.agreement.agreement_number}
+                                    </span>
+                                )}
+                                {v.status === 'COMPLETED' && (
+                                    <CheckCircle2 size={14} style={{ color: 'var(--success)' }} />
+                                )}
+                                {(v.status === 'NO_SHOW_TENANT' || v.status === 'NO_SHOW_LANDLORD') && (
+                                    <AlertTriangle size={14} style={{ color: 'var(--error)' }} />
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
 
 export default function ProfilePage() {
   const { currentUser } = useAuth();
@@ -56,7 +177,7 @@ export default function ProfilePage() {
     });
   }, [currentUser, navigate]);
 
-  const displayUser = id ? users.find((u) => u.id === id) : currentUser;
+  const displayUser = id ? users.find((u) => u.slug === id || u.id === id) : currentUser;
 
   useEffect(() => {
     if (!loading && !displayUser && !currentUser) {
@@ -74,6 +195,9 @@ export default function ProfilePage() {
 
   const isOwnProfile = displayUser?.id === currentUser?.id;
   const [showKycModal, setShowKycModal] = useState(false);
+  const [showUaePassOverlay, setShowUaePassOverlay] = useState(false);
+  const { showToast } = useToast();
+  const { setDemoState } = useDemoState();
   
   // GCC logic based strictly on displayUser
   const gccScore = displayUser?.gccScore ?? 0;
@@ -252,8 +376,8 @@ export default function ProfilePage() {
                   <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)' }}><strong>To unlock full access:</strong> Complete UAE PASS verification to sign tenancy contracts and apply for rooms</div>
                 </div>
 
-                <button className="btn btn-uaepass btn-sm" style={{ width: '100%' }}>
-                  <ShieldCheck size={14} /> Upgrade to UAE PASS (Tier 3 — Gold)
+                <button className="btn btn-uaepass btn-sm" style={{ width: '100%' }} onClick={() => setShowUaePassOverlay(true)}>
+                  <ShieldCheck size={14} /> Upgrade with UAE PASS (Tier 2 — Gold)
                 </button>
               </>
             )}
@@ -271,8 +395,8 @@ export default function ProfilePage() {
                   <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => setShowKycModal(true)}>
                     <Upload size={14} /> Upload Passport (Tier 1 — Verified)
                   </button>
-                  <button className="btn btn-uaepass btn-sm" style={{ flex: 1 }}>
-                    <ShieldCheck size={14} /> UAE PASS (Tier 3 — Gold)
+                  <button className="btn btn-uaepass btn-sm" style={{ flex: 1 }} onClick={() => setShowUaePassOverlay(true)}>
+                    <ShieldCheck size={14} /> UAE PASS (Tier 2 — Gold)
                   </button>
                 </div>
               </>
@@ -299,7 +423,34 @@ export default function ProfilePage() {
           <PassportKycModal
             user={displayUser}
             onClose={() => setShowKycModal(false)}
-            onUpdate={() => setShowKycModal(false)}
+            onUpdate={() => {
+              setShowKycModal(false);
+              // Auto-approve after 3 seconds
+              setTimeout(() => {
+                setDemoState(prev => ({
+                  ...prev,
+                  tierOverrides: { ...prev.tierOverrides, [displayUser.id]: 'tier0_passport' },
+                  kycSubmissions: { ...prev.kycSubmissions, [displayUser.id]: 'approved' },
+                }));
+                showToast('Identity verified! You\'re now Tier 1 — Verified.', 'success', 6000);
+              }, 3000);
+            }}
+          />
+        )}
+
+        {/* UAE PASS Overlay */}
+        {showUaePassOverlay && displayUser && (
+          <UAEPassOverlay
+            userName={displayUser.name}
+            onClose={() => setShowUaePassOverlay(false)}
+            onComplete={() => {
+              setShowUaePassOverlay(false);
+              setDemoState(prev => ({
+                ...prev,
+                tierOverrides: { ...prev.tierOverrides, [displayUser.id]: 'gold' },
+              }));
+              showToast('Tier 2 — Gold unlocked!', 'success');
+            }}
           />
         )}
 
@@ -477,6 +628,9 @@ export default function ProfilePage() {
                 <Award size={14} /> View Full Dashboard
               </Link>
             )}
+
+            {/* GCC Score Factors */}
+            <GccScoreFactors displayUser={displayUser} />
           </div>
 
           {/* Verification Status */}
@@ -562,7 +716,7 @@ export default function ProfilePage() {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  Upgrade to Tier 1 — Verified or Tier 3 — Gold to unlock chat and bookings.
+                  Upgrade to Tier 1 — Verified or Tier 2 — Gold to unlock chat and bookings.
                 </p>
                 <button
                   className="btn btn-primary btn-sm"
@@ -725,7 +879,7 @@ export default function ProfilePage() {
                 }}
               >
                 <Link
-                  to={`/listing/${currentListing.id}`}
+                  to={`/listing/${currentListing.slug || currentListing.id}`}
                   className="btn btn-outline btn-sm"
                   style={{
                     width: "100%",
@@ -789,7 +943,7 @@ export default function ProfilePage() {
             >
               {managedListings.map((l) => (
                 <Link
-                  to={`/listing/${l.id}`}
+                  to={`/listing/${l.slug || l.id}`}
                   key={l.id}
                   style={{
                     display: "flex",
@@ -988,6 +1142,9 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        {/* Viewing History */}
+        <ViewingHistory displayUser={displayUser} />
 
         {/* RERA License (Agents) */}
         {displayUser.rera_license && (

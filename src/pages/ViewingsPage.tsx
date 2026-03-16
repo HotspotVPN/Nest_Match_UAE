@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { viewingBookings, listings, users, getInitials, formatDate } from '@/data/mockData';
-import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
+import { viewingBookings, listings, users, getInitials, formatDate, getOrCreateChatChannel } from '@/data/mockData';
+import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import type { ViewingStatus, ViewingBooking } from '@/types';
 import ViewingAgreementModal from '@/components/ViewingAgreementModal';
@@ -21,6 +22,7 @@ const STATUS_CONFIG: Record<ViewingStatus, { label: string; badge: string; color
 
 export default function ViewingsPage() {
     const { currentUser } = useAuth();
+    const { showToast } = useToast();
     if (!currentUser) return null;
 
     const myViewings = viewingBookings.filter(v => {
@@ -35,9 +37,27 @@ export default function ViewingsPage() {
     const [statusFilter, setStatusFilter] = useState('All');
     const [agreementModalViewing, setAgreementModalViewing] = useState<ViewingBooking | null>(null);
     const [noShowPicker, setNoShowPicker] = useState<string | null>(null);
+    const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
     const updateViewingStatus = (id: string, newStatus: ViewingStatus) => {
-        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus, updated_at: new Date().toISOString() } : v));
+        setLoadingAction(`${id}-${newStatus}`);
+        setTimeout(() => {
+            setViewings(prev => prev.map(v => {
+                if (v.id !== id) return v;
+                // Auto-create chat channel when confirming a viewing
+                if (newStatus === 'CONFIRMED') {
+                    getOrCreateChatChannel(v.searcher_id, v.landlord_id, v.property_id);
+                }
+                return { ...v, status: newStatus, updated_at: new Date().toISOString() };
+            }));
+            setLoadingAction(null);
+            const labels: Record<string, string> = {
+                CONFIRMED: 'Viewing accepted!',
+                CANCELLED: 'Viewing declined.',
+                COMPLETED: 'Viewing marked as completed.',
+            };
+            showToast(labels[newStatus] || `Status updated to ${newStatus}`, newStatus === 'CANCELLED' ? 'warning' : 'success');
+        }, 1000);
     };
 
     const handleAgreementUpdate = (updated: ViewingBooking) => {
@@ -46,23 +66,33 @@ export default function ViewingsPage() {
     };
 
     const handleOutcomeCompleted = (id: string) => {
-        setViewings(prev => prev.map(v => v.id === id ? {
-            ...v,
-            status: 'COMPLETED' as ViewingStatus,
-            resolution_date: new Date().toISOString().split('T')[0],
-            updated_at: new Date().toISOString(),
-        } : v));
+        setLoadingAction(`${id}-outcome`);
+        setTimeout(() => {
+            setViewings(prev => prev.map(v => v.id === id ? {
+                ...v,
+                status: 'COMPLETED' as ViewingStatus,
+                resolution_date: new Date().toISOString().split('T')[0],
+                updated_at: new Date().toISOString(),
+            } : v));
+            setLoadingAction(null);
+            showToast('Viewing completed! GCC score updated.', 'success');
+        }, 1000);
     };
 
     const handleNoShow = (id: string, party: 'tenant' | 'landlord') => {
-        const newStatus: ViewingStatus = party === 'tenant' ? 'NO_SHOW_TENANT' : 'NO_SHOW_LANDLORD';
-        setViewings(prev => prev.map(v => v.id === id ? {
-            ...v,
-            status: newStatus,
-            resolution_date: new Date().toISOString().split('T')[0],
-            updated_at: new Date().toISOString(),
-        } : v));
-        setNoShowPicker(null);
+        setLoadingAction(`${id}-noshow`);
+        setTimeout(() => {
+            const newStatus: ViewingStatus = party === 'tenant' ? 'NO_SHOW_TENANT' : 'NO_SHOW_LANDLORD';
+            setViewings(prev => prev.map(v => v.id === id ? {
+                ...v,
+                status: newStatus,
+                resolution_date: new Date().toISOString().split('T')[0],
+                updated_at: new Date().toISOString(),
+            } : v));
+            setNoShowPicker(null);
+            setLoadingAction(null);
+            showToast(`No-show recorded for ${party}.`, 'warning');
+        }, 1000);
     };
 
     const filteredViewings = viewings.filter(v => {
@@ -157,8 +187,12 @@ export default function ViewingsPage() {
                                             </p>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                                            <button onClick={() => updateViewingStatus(viewing.id, 'CONFIRMED')} className="btn btn-primary btn-sm"><CheckCircle2 size={14} /> Accept</button>
-                                            <button onClick={() => updateViewingStatus(viewing.id, 'CANCELLED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}><XCircle size={14} /> Decline</button>
+                                            <button onClick={() => updateViewingStatus(viewing.id, 'CONFIRMED')} className="btn btn-primary btn-sm" disabled={!!loadingAction}>
+                                                {loadingAction === `${viewing.id}-CONFIRMED` ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <CheckCircle2 size={14} />} Accept
+                                            </button>
+                                            <button onClick={() => updateViewingStatus(viewing.id, 'CANCELLED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }} disabled={!!loadingAction}>
+                                                {loadingAction === `${viewing.id}-CANCELLED` ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <XCircle size={14} />} Decline
+                                            </button>
                                         </div>
                                     </div>
                                 )}
@@ -175,8 +209,9 @@ export default function ViewingsPage() {
                                             <button
                                                 onClick={() => updateViewingStatus(viewing.id, 'COMPLETED')}
                                                 className="btn btn-primary btn-sm"
+                                                disabled={!!loadingAction}
                                             >
-                                                <CheckCircle2 size={14} /> Mark Completed
+                                                {loadingAction === `${viewing.id}-COMPLETED` ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <CheckCircle2 size={14} />} Mark Completed
                                             </button>
                                         </div>
                                     </div>
@@ -238,10 +273,10 @@ export default function ViewingsPage() {
                                                 </div>
                                             ) : (
                                                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                                    <button onClick={() => handleOutcomeCompleted(viewing.id)} className="btn btn-primary btn-sm" style={{ flex: 1 }}>
-                                                        <CheckCircle2 size={14} /> Viewing Completed
+                                                    <button onClick={() => handleOutcomeCompleted(viewing.id)} className="btn btn-primary btn-sm" style={{ flex: 1 }} disabled={!!loadingAction}>
+                                                        {loadingAction === `${viewing.id}-outcome` ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <CheckCircle2 size={14} />} Viewing Completed
                                                     </button>
-                                                    <button onClick={() => setNoShowPicker(viewing.id)} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--error)' }}>
+                                                    <button onClick={() => setNoShowPicker(viewing.id)} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--error)' }} disabled={!!loadingAction}>
                                                         <XCircle size={14} /> No-show
                                                     </button>
                                                 </div>
@@ -304,6 +339,8 @@ export default function ViewingsPage() {
                     </div>
                 )}
             </div>
+
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
             {/* Agreement Modal */}
             {agreementModalViewing && (() => {

@@ -133,3 +133,16 @@ routes instead of a single signup form.
 side, targeted acquisition campaigns (landlord email → /register/landlord,
 tenant ad → /register/tenant), independent A/B testing, and SEO
 optimisation per persona. This is intentional product architecture.
+
+---
+
+## DEC-012 — Sequential tier numbering (Tier 3 → Tier 2)
+**Date:** 2026-03-16
+**Decision:** Renamed Tier 3 — Gold to Tier 2 — Gold. System is
+now sequential: Tier 0 (Explorer), Tier 1 (Verified), Tier 2 (Gold).
+**Reason:** The gap from 1 to 3 (with Tier 2 reserved for a future
+intermediate state) created confusion in investor demos and required
+explanation. The string enum values ('explorer', 'verified', 'gold')
+are unchanged — only display numbers were updated. If an intermediate
+tier is needed later, it can be inserted with a new string value
+without renumbering.

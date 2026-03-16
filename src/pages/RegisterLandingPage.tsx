@@ -41,7 +41,7 @@ export default function RegisterLandingPage() {
                             <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', alignSelf: 'center' }}>&rarr;</span>
                             <span className="badge badge-blue" style={{ fontSize: '0.6875rem' }}>Tier 1 — Verified</span>
                             <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', alignSelf: 'center' }}>&rarr;</span>
-                            <span className="badge badge-green" style={{ fontSize: '0.6875rem' }}>Tier 3 — Gold</span>
+                            <span className="badge badge-green" style={{ fontSize: '0.6875rem' }}>Tier 2 — Gold</span>
                         </div>
 
                         {/* Steps */}
@@ -49,7 +49,7 @@ export default function RegisterLandingPage() {
                             {[
                                 { step: '1', title: 'Create account', desc: 'Sign up with Google or email. You start at Tier 0 — Explorer.' },
                                 { step: '2', title: 'Verify identity', desc: 'Upload passport or Emirates ID to reach Tier 1. Book viewings and chat with landlords.' },
-                                { step: '3', title: 'Connect UAE PASS', desc: 'Authenticate via UAE PASS to unlock Tier 3 — Gold. Full access to apply for rooms.' },
+                                { step: '3', title: 'Connect UAE PASS', desc: 'Authenticate via UAE PASS to unlock Tier 2 — Gold. Full access to apply for rooms.' },
                             ].map(s => (
                                 <div key={s.step} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                                     <div style={{ width: 28, height: 28, borderRadius: 'var(--radius-full)', background: 'rgba(99,102,241,0.15)', color: 'var(--brand-purple-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8125rem', flexShrink: 0 }}>{s.step}</div>
@@ -92,7 +92,7 @@ export default function RegisterLandingPage() {
 
                         <div style={{ marginBottom: '2rem' }}>
                             <span className="badge badge-green" style={{ fontSize: '0.6875rem' }}>
-                                <ShieldCheck size={12} /> Tier 3 — Gold Required
+                                <ShieldCheck size={12} /> Tier 2 — Gold Required
                             </span>
                         </div>
 
@@ -124,7 +124,7 @@ export default function RegisterLandingPage() {
                                     'Valid shared-housing permit from Dubai Municipality',
                                     'Trakheesi advertising permit number',
                                     'Title deed or tenancy contract for the property',
-                                    'UAE PASS authentication (Tier 3 — Gold)',
+                                    'UAE PASS authentication (Tier 2 — Gold)',
                                 ].map(r => (
                                     <li key={r} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                                         <CheckCircle2 size={12} style={{ color: '#f59e0b', flexShrink: 0 }} /> {r}

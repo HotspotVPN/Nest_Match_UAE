@@ -57,6 +57,7 @@ export interface BankDetails {
 
 export interface User {
     id: string;
+    slug?: string;
     type: UserType;
     auth_method: AuthMethod;
     uaePassId?: string;         // Unique UAE PASS identity (Tier 2 only)
@@ -178,6 +179,7 @@ export interface LocationData {
 
 export interface Listing {
     id: string;
+    slug?: string;
     landlord_id: string;
     letting_agent_id?: string;
     title: string;

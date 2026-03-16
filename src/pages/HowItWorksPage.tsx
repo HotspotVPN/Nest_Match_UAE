@@ -42,7 +42,7 @@ export default function HowItWorksPage() {
                 {/* ─── SECTION 2 — Three Identity Tiers ─── */}
                 <div style={{ marginBottom: '6rem' }}>
                     <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                        <h2 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>Tier 0. Tier 1. Tier 3. Your level unlocks your access.</h2>
+                        <h2 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>Tier 0. Tier 1. Tier 2. Your level unlocks your access.</h2>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
                             No other platform in the UAE meets new arrivals before they have their Emirates ID.
                         </p>
@@ -111,10 +111,10 @@ export default function HowItWorksPage() {
                             </div>
                         </div>
 
-                        {/* Card 3 — Tier 3 Gold */}
+                        {/* Card 3 — Tier 2 Gold */}
                         <div className="glass-card" style={{ padding: '2rem', borderLeft: '4px solid var(--success)' }}>
                             <span style={{ display: 'inline-block', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', background: 'rgba(20,184,166,0.15)', color: 'var(--success)', fontSize: '0.75rem', fontWeight: 700, marginBottom: '1rem' }}>
-                                Tier 3 — Gold
+                                Tier 2 — Gold
                             </span>
                             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.75rem' }}>UAE Resident with Emirates ID?</h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.25rem' }}>
@@ -277,7 +277,7 @@ export default function HowItWorksPage() {
 
                             <div style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.5rem' }}>What you need</div>
                             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                {['UAE PASS verification (Tier 3 — Gold)', 'Valid Trakheesi advertising permit', 'Municipality shared-housing permit', "Property's 10-digit Makani number"].map(item => (
+                                {['UAE PASS verification (Tier 2 — Gold)', 'Valid Trakheesi advertising permit', 'Municipality shared-housing permit', "Property's 10-digit Makani number"].map(item => (
                                     <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
                                         <Check size={14} style={{ color: 'var(--success)', flexShrink: 0 }} /> {item}
                                     </li>
@@ -315,7 +315,7 @@ export default function HowItWorksPage() {
 
                             <div style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.5rem' }}>What you need</div>
                             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                {['UAE PASS (Tier 3 — Gold)', 'Active RERA BRN', "Client landlord's Trakheesi permit", 'Makani number for each managed property', 'Agency ORN'].map(item => (
+                                {['UAE PASS (Tier 2 — Gold)', 'Active RERA BRN', "Client landlord's Trakheesi permit", 'Makani number for each managed property', 'Agency ORN'].map(item => (
                                     <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
                                         <Check size={14} style={{ color: 'var(--success)', flexShrink: 0 }} /> {item}
                                     </li>

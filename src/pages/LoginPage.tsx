@@ -65,7 +65,7 @@ export default function LoginPage() {
             ],
         },
         {
-            label: 'Tenants — Tier 3 — Gold (UAE PASS Verified)',
+            label: 'Tenants — Tier 2 — Gold (UAE PASS Verified)',
             color: 'var(--success)',
             entries: [
                 { email: 'priya.sharma@email.com', name: 'Priya Sharma', desc: 'Residing · JLT · GCC 85', tier: 'tier2_uae_pass' as VerificationTier },
@@ -167,7 +167,7 @@ export default function LoginPage() {
                             </div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                                 <div>You can: browse listings, request viewings, chat with landlords, sign viewing agreements</div>
-                                <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)' }}>You cannot: sign tenancy contracts or apply for rooms (requires UAE PASS / Tier 3 — Gold)</div>
+                                <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)' }}>You cannot: sign tenancy contracts or apply for rooms (requires UAE PASS / Tier 2 — Gold)</div>
                             </div>
                         </div>
                     </div>

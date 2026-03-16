@@ -29,7 +29,7 @@ export function getTierLabel(tier: VerificationTier): string {
     switch(tier) {
         case 'tier0_passport': return 'Tier 0 — Explorer';
         case 'tier1_unverified': return 'Tier 1 — Verified';
-        case 'tier2_uae_pass': return 'Tier 3 — Gold';
+        case 'tier2_uae_pass': return 'Tier 2 — Gold';
     }
 }
 

@@ -170,7 +170,7 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                                             <div>
-                                                <Link to={`/listing/${v.property_id}`} style={{ fontWeight: 800, fontSize: '1.0625rem', textDecoration: 'none', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
+                                                <Link to={`/listing/${listing?.slug || v.property_id}`} style={{ fontWeight: 800, fontSize: '1.0625rem', textDecoration: 'none', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
                                                     {listing?.title || 'Property'}
                                                 </Link>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>

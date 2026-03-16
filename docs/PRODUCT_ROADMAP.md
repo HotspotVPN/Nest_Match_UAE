@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.5.0 — Investor Demo (March 2026)
+## Current: v2.6.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -54,6 +54,21 @@
 - [x] PassportKycModal + ResidingDashboard wired to real API
 - [x] Backend state machines documented in CLAUDE.md
 - [x] wrangler.toml name synced with Cloudflare dashboard
+
+### Completed (Sessions 10-11 — Demo Journeys + Tier Rename)
+- [x] DemoStateContext: mutable state layer over mockData for demo flows
+- [x] Toast notification system (success/error/info/warning)
+- [x] DemoControls floating persona switcher with quick actions
+- [x] UAEPassOverlay reusable mock authentication modal
+- [x] Tenant/landlord signup wiring with loading states
+- [x] PassportKycModal: simulated upload with 3s auto-approve
+- [x] URL slugs on all listings and users with slug-based routing
+- [x] Browse vacancy filtering: hide fully occupied, vacancy badges
+- [x] Chat auto-creation on viewing confirmation
+- [x] Landlord maintenance tab on dashboard with ticket management
+- [x] Tenant listing awareness ("You live here" badge + shortcuts)
+- [x] Viewing history + GCC score factors on profile
+- [x] Tier 3 → Tier 2 rename: sequential 0, 1, 2
 
 ### Completed (Session 9 — Homepage Revamp)
 - [x] Homepage legal audit: removed all unlicensed capability claims

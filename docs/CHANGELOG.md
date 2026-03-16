@@ -3,6 +3,36 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.6.0] — 2026-03-16 · Tier Renumbering + Demo Journeys
+
+### Tier 3 → Tier 2 rename
+- Renamed "Tier 3 — Gold" to "Tier 2 — Gold" across entire codebase
+- Sequential tier system: 0 (Explorer) → 1 (Verified) → 2 (Gold)
+- Removed reserved Tier 2 concept — no gap in numbering
+- String enum values unchanged ('explorer', 'verified', 'gold')
+- Access control logic unchanged — display numbers only
+
+### Demo journey wiring
+- DemoStateContext: mutable state layer over mockData for demo flows
+- ToastContext + Toast component: success/error/info/warning notifications
+- DemoControls: floating persona switcher with quick actions
+- UAEPassOverlay: reusable UAE PASS mock authentication modal
+- TenantSignupPage: Google mock picker + email form with loading states
+- LandlordSignupPage: UAE PASS overlay + email fallback
+- PassportKycModal: simulated upload with 3s auto-approve
+- ListingDetailPage: Tier 0 block modal with upgrade invitation
+- ViewingsPage: loading states on all action buttons
+- ProfilePage: UAE PASS upgrade via overlay
+
+### Files changed (23 replacements across 10 source files)
+- src/utils/accessControl.ts: getTierLabel 'gold' → "Tier 2 — Gold"
+- src/components/DemoControls.tsx, UAEPassOverlay.tsx
+- src/pages/HowItWorksPage.tsx, LandlordSignupPage.tsx, LoginPage.tsx,
+  ProfilePage.tsx, RegisterLandingPage.tsx, TenantSignupPage.tsx
+- docs/CHANGELOG.md, DECISIONS.md
+
+---
+
 ## [2.5.0] — 2026-03-16 · Homepage Revamp, Signup Funnel, Legal Cleanup
 
 ### Session 9: Homepage rewrite, split signup pages, legal audit
@@ -39,7 +69,7 @@ Format: ## [version] — date · what changed · why
 - NestMatch OS flow: "Search → Verify Identity → Book Viewing →
   Sign DLD Agreement → Move In" (legally accurate journey description)
 - Tenant signup now includes UAE PASS button alongside Google/email
-  (residents with Emirates ID use UAE PASS for Tier 3 — Gold)
+  (residents with Emirates ID use UAE PASS for Tier 2 — Gold)
 - Logged-out navbar: "Login with UAE PASS" replaced with "Sign Up"
 
 ---
@@ -101,7 +131,7 @@ Format: ## [version] — date · what changed · why
 
 ### Changed
 - Tier display labels: "New Arrival" → "Explorer" (Tier 0),
-  "Browse Only" → "Verified" (Tier 1), "Fully Verified" → "Gold" (Tier 3)
+  "Browse Only" → "Verified" (Tier 1), "Fully Verified" → "Gold" (Tier 2)
 - Navbar: dropdown removed, Profile + Sign Out always visible
 - Browse removed from all authenticated navbars
 - Role-based nav: roommate/landlord/agent/compliance/operations each see

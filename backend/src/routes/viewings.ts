@@ -82,6 +82,30 @@ viewings.patch('/:id/accept',
        VALUES (?, ?, ?, 'sent')`
     ).bind(agreementId, id, agreementNumber).run();
 
+    // Auto-create chat channel if one doesn't exist for this tenant+landlord+property combo
+    const existingChannel = await c.env.DB.prepare(
+      `SELECT id FROM chat_channels WHERE property_id = ? AND id IN (
+        SELECT channel_id FROM chat_participants WHERE user_id = ?
+        INTERSECT
+        SELECT channel_id FROM chat_participants WHERE user_id = ?
+      )`
+    ).bind(viewing.property_id, viewing.tenant_id, user.sub).first<any>();
+
+    if (!existingChannel) {
+      const channelId = crypto.randomUUID();
+      const channelNow = new Date().toISOString();
+      await c.env.DB.prepare(
+        `INSERT INTO chat_channels (id, property_id, name, created_at) VALUES (?, ?, 'Viewing Chat', ?)`
+      ).bind(channelId, viewing.property_id, channelNow).run();
+      // Add both participants
+      await c.env.DB.prepare(
+        `INSERT INTO chat_participants (channel_id, user_id) VALUES (?, ?)`
+      ).bind(channelId, viewing.tenant_id).run();
+      await c.env.DB.prepare(
+        `INSERT INTO chat_participants (channel_id, user_id) VALUES (?, ?)`
+      ).bind(channelId, user.sub).run();
+    }
+
     return c.json({ success: true, landlordHoldStatus: landlordHold.status, agreement_id: agreementId, agreement_number: agreementNumber });
   }
 );

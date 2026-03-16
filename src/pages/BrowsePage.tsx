@@ -28,13 +28,14 @@ const TRANSPORT_FILTERS = [
     { label: 'Bus', color: '#6366f1' },
 ];
 
-type SortOption = 'top-rated' | 'price-low' | 'price-high' | 'newest' | 'available';
+type SortOption = 'top-rated' | 'price-low' | 'price-high' | 'newest' | 'available' | 'most-available';
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
     { value: 'top-rated', label: 'Top Rated' },
     { value: 'price-low', label: 'Price: Low → High' },
     { value: 'price-high', label: 'Price: High → Low' },
     { value: 'newest', label: 'Newest' },
     { value: 'available', label: 'Available First' },
+    { value: 'most-available', label: 'Most Available' },
 ];
 
 // District colour map for hero gradients
@@ -61,6 +62,7 @@ export default function BrowsePage() {
     const [availableOnly, setAvailableOnly] = useState(false);
     const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
     const [selectedTransport, setSelectedTransport] = useState<string[]>([]);
+    const [showFullyOccupied, setShowFullyOccupied] = useState(false);
     const [sortBy, setSortBy] = useState<SortOption>('top-rated');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [showFilters, setShowFilters] = useState(true);
@@ -91,6 +93,8 @@ export default function BrowsePage() {
     const filteredListings = useMemo(() => {
         let result = listings.filter(l => {
             if (l.currentOccupants > l.maxLegalOccupancy) return false;
+            // Hide fully occupied by default unless toggle is on
+            if (!showFullyOccupied && l.available_rooms === 0) return false;
             if (selectedDistricts.length > 0 && !selectedDistricts.includes(l.district)) return false;
             if (l.rent_per_room < budgetMin || l.rent_per_room > budgetMax) return false;
             if (billsIncluded && !l.bills_included) return false;
@@ -118,10 +122,11 @@ export default function BrowsePage() {
             case 'top-rated': result.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
             case 'newest': result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
             case 'available': result.sort((a, b) => b.available_rooms - a.available_rooms); break;
+            case 'most-available': result.sort((a, b) => b.available_rooms - a.available_rooms); break;
         }
 
         return result;
-    }, [listings, selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, selectedAmenities, selectedTransport, searchQuery, sortBy]);
+    }, [listings, selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, showFullyOccupied, selectedAmenities, selectedTransport, searchQuery, sortBy]);
 
     const toggleDistrict = (d: string) => setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
     const toggleAmenity = (a: string) => setSelectedAmenities(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
@@ -282,6 +287,7 @@ export default function BrowsePage() {
                                                 { label: 'Bills Included', active: billsIncluded, toggle: () => setBillsIncluded(!billsIncluded) },
                                                 { label: 'DLD Verified Only', active: verifiedOnly, toggle: () => setVerifiedOnly(!verifiedOnly) },
                                                 { label: 'Available Rooms Only', active: availableOnly, toggle: () => setAvailableOnly(!availableOnly) },
+                                                { label: 'Show Fully Occupied', active: showFullyOccupied, toggle: () => setShowFullyOccupied(!showFullyOccupied) },
                                             ].map(f => (
                                                 <button key={f.label} onClick={f.toggle} style={{
                                                     display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem',
@@ -371,7 +377,7 @@ export default function BrowsePage() {
                                     if (viewMode === 'list') {
                                         // ─── List View Card ─────────────────
                                         return (
-                                            <Link to={`/listing/${listing.id}`} key={listing.id} style={{ textDecoration: 'none' }}>
+                                            <Link to={`/listing/${listing.slug || listing.id}`} key={listing.id} style={{ textDecoration: 'none' }}>
                                                 <div className="glass-card hover-card" style={{ display: 'flex', gap: '1.25rem', padding: '1.25rem', alignItems: 'center' }}>
                                                     {/* Mini image */}
                                                     <div style={{ width: '140px', minWidth: '140px', height: '100px', borderRadius: 'var(--radius-md)', background: `linear-gradient(135deg, ${districtColor}20, ${districtColor}08)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
@@ -415,7 +421,7 @@ export default function BrowsePage() {
 
                                     // ─── Grid View Card ─────────────────
                                     return (
-                                        <Link to={`/listing/${listing.id}`} key={listing.id} style={{ textDecoration: 'none' }}>
+                                        <Link to={`/listing/${listing.slug || listing.id}`} key={listing.id} style={{ textDecoration: 'none' }}>
                                             <div className="listing-card">
                                                 {/* Hero Image */}
                                                 <div className="listing-card-image" style={{
@@ -458,6 +464,41 @@ export default function BrowsePage() {
                                                             ★ {listing.rating.toFixed(1)}
                                                         </span>
                                                     )}
+
+                                                    {/* Vacancy badges */}
+                                                    {listing.available_rooms === 1 && listing.available_rooms < listing.total_rooms && (
+                                                        <span style={{
+                                                            position: 'absolute', bottom: '8px', right: '8px',
+                                                            background: 'rgba(245,158,11,0.9)', backdropFilter: 'blur(4px)',
+                                                            borderRadius: '4px', padding: '3px 8px',
+                                                            fontSize: '0.625rem', fontWeight: 700, color: 'white',
+                                                        }}>
+                                                            Almost Full
+                                                        </span>
+                                                    )}
+                                                    {listing.available_rooms === listing.total_rooms && listing.total_rooms > 0 && (
+                                                        <span style={{
+                                                            position: 'absolute', bottom: '8px', right: '8px',
+                                                            background: 'rgba(34,197,94,0.9)', backdropFilter: 'blur(4px)',
+                                                            borderRadius: '4px', padding: '3px 8px',
+                                                            fontSize: '0.625rem', fontWeight: 700, color: 'white',
+                                                        }}>
+                                                            Fully Available
+                                                        </span>
+                                                    )}
+                                                    {(() => {
+                                                        const createdDays = Math.floor((Date.now() - new Date(listing.created_at).getTime()) / (1000 * 60 * 60 * 24));
+                                                        return createdDays <= 7 ? (
+                                                            <span style={{
+                                                                position: 'absolute', top: '8px', right: listing.rating ? '70px' : '8px',
+                                                                background: 'rgba(34,197,94,0.9)', backdropFilter: 'blur(4px)',
+                                                                borderRadius: '4px', padding: '3px 8px',
+                                                                fontSize: '0.625rem', fontWeight: 700, color: 'white',
+                                                            }}>
+                                                                Just Listed
+                                                            </span>
+                                                        ) : null;
+                                                    })()}
 
                                                     {/* Available rooms overlay */}
                                                     {listing.available_rooms === 0 && (
@@ -570,7 +611,7 @@ export default function BrowsePage() {
                             </h3>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
                                 {filteredListings.slice(0, 6).map(l => (
-                                    <Link to={`/listing/${l.id}`} key={l.id} style={{ textDecoration: 'none' }}>
+                                    <Link to={`/listing/${l.slug || l.id}`} key={l.id} style={{ textDecoration: 'none' }}>
                                         <div style={{
                                             padding: '0.75rem', borderRadius: 'var(--radius-md)',
                                             background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)',

@@ -79,8 +79,8 @@ PATCH (v2.0.x) — bug fixes, copy changes, style tweaks
 MINOR (v2.x.0) — new feature, new page, new component
 MAJOR (vx.0.0) — phase unlock (e.g. wallet system, RERA licence)
 
-Current version: v2.5.0 (after Session 9)
-Next session starts at: v2.5.0
+Current version: v2.6.0 (after tier renumbering + demo journeys)
+Next session starts at: v2.6.0
 
 ### README.md update rules
 The README must always reflect:

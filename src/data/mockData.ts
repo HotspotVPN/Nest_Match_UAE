@@ -1,5 +1,10 @@
 import type { User, Listing, Payment, ViewingBooking, ChatChannel, ChatMessage, PropertyRating, MaintenanceTicket, RentLedger, KycDocument } from '@/types';
 
+// ─── Slug Generator ──────────────────────────────────────────
+export function generateSlug(name: string): string {
+    return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
+}
+
 // ─── Helpers ──────────────────────────────────────────────────
 export function getInitials(name: string): string {
     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -535,6 +540,9 @@ export const users: User[] = [
     },
 ];
 
+// ─── Auto-generate slugs for all users ───────────────────────
+users.forEach(u => { if (!u.slug) u.slug = generateSlug(u.name); });
+
 // ─── LISTINGS ─────────────────────────────────────────────────
 export const listings: Listing[] = [
     // ── AED 500 - 800: Legal Bed-spaces ─────────────────────────────────────────
@@ -720,6 +728,9 @@ export const listings: Listing[] = [
         rating: 5.0, total_reviews: 24, created_at: '2025-01-10', updated_at: '2026-03-01',
     },
 ];
+
+// ─── Auto-generate slugs for all listings ────────────────────
+listings.forEach(l => { if (!l.slug) l.slug = generateSlug(l.title); });
 
 // ─── VIEWING BOOKINGS ─────────────────────────────────────────
 export const viewingBookings: ViewingBooking[] = [
@@ -955,4 +966,34 @@ export function getMaintenanceForListing(listingId: string): MaintenanceTicket[]
 
 export function getRentLedgerForTenant(tenantId: string): RentLedger | undefined {
     return rentLedgers.find(l => l.tenant_id === tenantId);
+}
+
+// ─── Slug Lookup Helpers ─────────────────────────────────────
+export function getListingBySlug(slug: string): Listing | undefined {
+    return listings.find(l => l.slug === slug);
+}
+
+export function getUserBySlug(slug: string): User | undefined {
+    return users.find(u => u.slug === slug);
+}
+
+// ─── Chat Auto-Creation (Priority 3) ────────────────────────
+export function getOrCreateChatChannel(tenantId: string, landlordId: string, propertyId: string): ChatChannel {
+    const existing = chatChannels.find(ch =>
+        ch.participants.includes(tenantId) &&
+        ch.participants.includes(landlordId) &&
+        ch.listing_id === propertyId
+    );
+    if (existing) return existing;
+
+    const listing = getListingById(propertyId);
+    const newChannel: ChatChannel = {
+        id: `ch-auto-${Date.now()}`,
+        listing_id: propertyId,
+        name: listing?.title || 'Chat',
+        participants: [tenantId, landlordId],
+        created_at: new Date().toISOString(),
+    };
+    chatChannels.push(newChannel);
+    return newChannel;
 }
