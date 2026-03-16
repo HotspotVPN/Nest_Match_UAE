@@ -24,7 +24,7 @@ export default function HowItWorksPage() {
         { title: 'Create your Account', desc: 'Sign up with email, Google, or UAE PASS and tell us your budget, preferred areas, and lifestyle preferences.' },
         { title: 'Verify for Premium Access', desc: 'Upgrade to UAE PASS or visual ID to unlock chat, bookings, and access to high-trust, GCC-aware listings.' },
         { title: 'Browse Verified Properties', desc: 'Filter properties with valid Makani and Permits. We automatically hide any property at or above legal occupancy.' },
-        { title: 'Book Viewings with a Two-Way Hold', desc: 'Book a time slot with a temporary 50 AED hold. If everyone attends, the hold is released. No more ghosting.' },
+        { title: 'Book Viewings', desc: 'Request a viewing slot. The landlord confirms, and you both get notified. Simple scheduling with no friction.' },
         { title: 'Sign in the Contract Hub & Move In', desc: 'Move into the Contract Hub to finalise Ejari, pay your deposit, and activate your lease. Then manage your stay from your dashboard.' }
     ];
 
@@ -165,7 +165,7 @@ export default function HowItWorksPage() {
                             { icon: ShieldCheck, title: 'Identity', desc: 'Securely anchored to UAE PASS Emirates ID profiles.' },
                             { icon: Activity, title: 'Permit Verification', desc: 'Direct lookup for Trakheesi and Shared Housing permits via DLD API.' },
                             { icon: ScrollText, title: 'Contract Logic', desc: 'RERA-standardised digital terms for bedspace leasing.' },
-                            { icon: CreditCard, title: 'Escrow Control', desc: 'Stripe-integrated holds released only after Ejari success.' },
+                            { icon: CreditCard, title: 'Contract Closing', desc: 'Ejari-verified lease finalization with cheque-based deposit to landlord.' },
                             { icon: Award, title: 'GCC Protocol', desc: 'Behaviour-based scoring for the Dubai shared-housing market.' }
                         ].map(pillar => {
                             const Icon = pillar.icon;

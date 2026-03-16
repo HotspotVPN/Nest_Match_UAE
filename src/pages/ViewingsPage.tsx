@@ -1,16 +1,16 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { viewingBookings, listings, users, formatCurrency, getInitials, formatDate } from '@/data/mockData';
-import { CalendarCheck, Clock, MapPin, CreditCard, CheckCircle2, XCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import type { ViewingStatus } from '@/types';
 
-const STATUS_CONFIG: Record<string, { label: string; badge: string; color: string }> = {
+const STATUS_CONFIG: Record<ViewingStatus, { label: string; badge: string; color: string }> = {
     PENDING: { label: 'Pending', badge: 'badge-orange', color: 'var(--warning)' },
     PENDING_LANDLORD_APPROVAL: { label: 'Awaiting Landlord', badge: 'badge-blue', color: 'var(--info)' },
     CONFIRMED: { label: 'Confirmed', badge: 'badge-green', color: 'var(--success)' },
     COMPLETED: { label: 'Completed', badge: 'badge-green', color: 'var(--success)' },
-    TENANT_NO_SHOW_PENALTY: { label: 'Tenant No-Show Penalty', badge: 'badge-red', color: 'var(--error)' },
-    LANDLORD_NO_SHOW_PENALTY: { label: 'Landlord No-Show Penalty', badge: 'badge-red', color: 'var(--error)' },
+    CANCELLED: { label: 'Cancelled', badge: 'badge-red', color: 'var(--error)' },
 };
 
 export default function ViewingsPage() {
@@ -24,15 +24,15 @@ export default function ViewingsPage() {
     const [viewings, setViewings] = useState(myViewings);
     const [statusFilter, setStatusFilter] = useState('All');
 
-    const updateViewingStatus = (id: string, newStatus: string) => {
-        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus as any } : v));
+    const updateViewingStatus = (id: string, newStatus: ViewingStatus) => {
+        setViewings(prev => prev.map(v => v.id === id ? { ...v, status: newStatus } : v));
     };
 
     const filteredViewings = viewings.filter(v => {
         if (statusFilter === 'All') return true;
         if (statusFilter === 'Upcoming') return ['PENDING', 'PENDING_LANDLORD_APPROVAL', 'CONFIRMED'].includes(v.status);
         if (statusFilter === 'Completed') return v.status === 'COMPLETED';
-        if (statusFilter === 'Penalties') return ['TENANT_NO_SHOW_PENALTY', 'LANDLORD_NO_SHOW_PENALTY'].includes(v.status);
+        if (statusFilter === 'Cancelled') return v.status === 'CANCELLED';
         return true;
     });
 
@@ -48,7 +48,7 @@ export default function ViewingsPage() {
                         <option value="All">All Viewings</option>
                         <option value="Upcoming">Upcoming</option>
                         <option value="Completed">Completed</option>
-                        <option value="Penalties">Penalties</option>
+                        <option value="Cancelled">Cancelled</option>
                     </select>
                 </div>
 
@@ -88,7 +88,7 @@ export default function ViewingsPage() {
                                     <span className={`badge ${config.badge}`}>{config.label}</span>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                     <div>
                                         <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date & Time</div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600 }}>
@@ -109,73 +109,37 @@ export default function ViewingsPage() {
                                             <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{(isLandlord ? searcher : landlord)?.name}</span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Abuse Penalty Hold</div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600, color: 'var(--warning)' }}>
-                                            <CreditCard size={14} /> {formatCurrency(viewing.hold_amount)}
-                                        </div>
-                                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-                                            {viewing.stripe_hold_id ? 'Hold Active' : 'Pending'}
-                                        </div>
-                                    </div>
                                 </div>
 
-                                {/* Actions */}
-                                {viewing.status === 'PENDING_LANDLORD_APPROVAL' && isLandlord && (
+                                {/* Actions for pending viewings */}
+                                {(viewing.status === 'PENDING' || viewing.status === 'PENDING_LANDLORD_APPROVAL') && isLandlord && (
                                     <div style={{ display: 'flex', gap: '0.75rem', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
                                         <div style={{ flex: 1 }}>
                                             <p style={{ fontSize: '0.8125rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
-                                                Accept this viewing? You agree to a {formatCurrency(50)} penalty if you fail to attend.
+                                                {searcher?.name} has requested a viewing at your property.
                                             </p>
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--warning)' }}>
-                                                <input type="checkbox" /> I agree to the Platform Abuse Penalty Authorization
-                                            </label>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
                                             <button onClick={() => updateViewingStatus(viewing.id, 'CONFIRMED')} className="btn btn-primary btn-sm"><CheckCircle2 size={14} /> Accept</button>
-                                            <button onClick={() => updateViewingStatus(viewing.id, 'COMPLETED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}><XCircle size={14} /> Decline</button>
+                                            <button onClick={() => updateViewingStatus(viewing.id, 'CANCELLED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}><XCircle size={14} /> Decline</button>
                                         </div>
                                     </div>
                                 )}
 
                                 {viewing.status === 'CONFIRMED' && (
                                     <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--success-bg)', border: '1px solid rgba(34,197,94,0.3)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                                            <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
-                                            <span style={{ fontSize: '0.8125rem', color: 'var(--success)', fontWeight: 600 }}>
-                                                Both parties confirmed — {formatCurrency(50)} penalty authorization active
-                                            </span>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                            <button 
-                                                onClick={() => {
-                                                    if (window.confirm('Mark viewing as completed? This will release the 50 AED penalty authorization.')) {
-                                                        updateViewingStatus(viewing.id, 'COMPLETED');
-                                                    }
-                                                }}
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
+                                                <span style={{ fontSize: '0.8125rem', color: 'var(--success)', fontWeight: 600 }}>
+                                                    Viewing confirmed
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => updateViewingStatus(viewing.id, 'COMPLETED')}
                                                 className="btn btn-primary btn-sm"
                                             >
-                                                <CheckCircle2 size={14} /> Viewing Completed
-                                            </button>
-                                            <button 
-                                                onClick={() => {
-                                                    if (window.confirm('Report Tenant No-Show? This will CAPTURE the 50 AED penalty from the tenant.')) {
-                                                        updateViewingStatus(viewing.id, 'TENANT_NO_SHOW_PENALTY');
-                                                    }
-                                                }}
-                                                className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', border: '1px solid var(--error)' }}
-                                            >
-                                                <XCircle size={14} /> Report: Tenant No-Show
-                                            </button>
-                                            <button 
-                                                onClick={() => {
-                                                    if (window.confirm('Report Landlord No-Show? This will CHARGE the landlord a 50 AED penalty.')) {
-                                                        updateViewingStatus(viewing.id, 'LANDLORD_NO_SHOW_PENALTY');
-                                                    }
-                                                }}
-                                                className="btn btn-ghost btn-sm" style={{ color: 'var(--error)', border: '1px solid var(--error)' }}
-                                            >
-                                                <AlertTriangle size={14} /> Report: Landlord No-Show
+                                                <CheckCircle2 size={14} /> Mark Completed
                                             </button>
                                         </div>
                                     </div>
@@ -186,7 +150,7 @@ export default function ViewingsPage() {
                                         <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <CheckCircle2 size={16} style={{ color: 'var(--info)' }} />
                                             <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>
-                                                Viewing completed — holds released on {viewing.resolution_date ? formatDate(viewing.resolution_date) : 'N/A'}
+                                                Viewing completed {viewing.resolution_date ? `on ${formatDate(viewing.resolution_date)}` : ''}
                                             </span>
                                         </div>
                                         <Link to={`/contracts/${viewing.id}`} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>

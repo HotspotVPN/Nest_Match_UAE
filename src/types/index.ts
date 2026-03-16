@@ -37,16 +37,6 @@ export interface BankDetails {
     bank_name: string;
 }
 
-export interface DirectDebitMandate {
-    id: string;
-    status: 'pending' | 'active' | 'cancelled';
-    bank_name: string;
-    iban_last4: string;       // Last 4 of IBAN
-    created_at: string;
-    next_payment_date: string;
-    amount: number;           // AED
-}
-
 export interface User {
     id: string;
     type: UserType;
@@ -79,7 +69,6 @@ export interface User {
     current_house_id?: string;
     rent_monthly?: number;      // AED
     deposit?: number;           // AED
-    direct_debit?: DirectDebitMandate;
     good_conduct_certificate?: GoodConductCertificate;
     // Lifestyle & personality for matching
     lifestyle_tags?: string[];
@@ -218,8 +207,7 @@ export type ViewingStatus =
     | 'PENDING_LANDLORD_APPROVAL'
     | 'CONFIRMED'
     | 'COMPLETED'
-    | 'TENANT_NO_SHOW_PENALTY'    // Platform Abuse Penalty — tenant ghosted
-    | 'LANDLORD_NO_SHOW_PENALTY'; // Platform Abuse Penalty — landlord ghosted
+    | 'CANCELLED';
 
 export interface ViewingBooking {
     id: string;
@@ -229,9 +217,6 @@ export interface ViewingBooking {
     requested_date: string;
     time_slot: string;
     status: ViewingStatus;
-    stripe_hold_id?: string;      // Stripe PaymentIntent ID for 50 AED hold
-    hold_amount: number;           // 50 AED
-    landlord_agreed_penalty: boolean;
     resolution_date?: string;
     created_at: string;
     updated_at: string;
@@ -287,9 +272,9 @@ export interface Application {
 }
 
 // ─── Payment Types ────────────────────────────────────────────
-export type PaymentType = 'rent' | 'deposit' | 'refund' | 'penalty_capture';
+export type PaymentType = 'rent' | 'deposit' | 'refund';
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'overdue';
-export type PaymentMethod = 'bank_transfer' | 'direct_debit' | 'card';
+export type PaymentMethod = 'bank_transfer' | 'cheque' | 'card';
 export type ReraEscrowStatus = 'registered' | 'held' | 'release_requested' | 'released';
 
 export interface Payment {

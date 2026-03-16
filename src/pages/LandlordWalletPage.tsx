@@ -27,9 +27,9 @@ export default function LandlordWalletPage() {
         p => p.payee_id === currentUser.id && (p.type === 'rent' || p.type === 'deposit')
     );
 
-    // Outgoing: penalty payments where this landlord is the payer
+    // Outgoing: refund payments where this landlord is the payer
     const outgoing = payments.filter(
-        p => p.payer_id === currentUser.id && p.type === 'penalty_capture'
+        p => p.payer_id === currentUser.id && p.type === 'refund'
     );
 
     const allTransactions = [

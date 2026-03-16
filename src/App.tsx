@@ -19,6 +19,7 @@ import ContractManagerPage from '@/pages/ContractManagerPage';
 import MaintenancePage from '@/pages/MaintenancePage';
 import RentLedgerPage from '@/pages/RentLedgerPage';
 import LandlordWalletPage from '@/pages/LandlordWalletPage';
+import LandlordDashboardPage from '@/pages/LandlordDashboardPage';
 
 export default function App() {
     return (
@@ -46,6 +47,7 @@ export default function App() {
                         <Route path="/maintenance" element={<MaintenancePage />} />
                         <Route path="/ledger" element={<RentLedgerPage />} />
                         <Route path="/wallet" element={<LandlordWalletPage />} />
+                        <Route path="/dashboard" element={<LandlordDashboardPage />} />
                     </Routes>
                 </main>
             </AuthProvider>

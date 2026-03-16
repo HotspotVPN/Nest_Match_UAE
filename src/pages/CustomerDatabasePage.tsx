@@ -38,8 +38,8 @@ export default function CustomerDatabasePage() {
     const searchingUsers = roommates.filter(u => u.resident_role === 'searching').length;
     
     const activeViewings = viewingBookings.filter(v => ['CONFIRMED', 'PENDING', 'PENDING_LANDLORD_APPROVAL'].includes(v.status)).length;
-    const penaltyBookings = viewingBookings.filter(v => ['TENANT_NO_SHOW_PENALTY', 'LANDLORD_NO_SHOW_PENALTY'].includes(v.status)).length;
-    const penaltyRevenue = payments.filter(p => p.type === 'penalty_capture' && p.status === 'completed').reduce((sum, p) => sum + p.amount, 0);
+    const completedViewings = viewingBookings.filter(v => v.status === 'COMPLETED').length;
+    const cancelledViewings = viewingBookings.filter(v => v.status === 'CANCELLED').length;
 
     const supplyDemandRatio = Math.min(100, (searchingUsers / (totalVacancy || 1)) * 100);
 
@@ -90,13 +90,13 @@ export default function CustomerDatabasePage() {
                                 <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Upcoming or pending requests</div>
                             </div>
 
-                            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'linear-gradient(135deg, rgba(244,63,94,0.05), rgba(244,63,94,0.01))', borderColor: 'rgba(244,63,94,0.1)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)' }}>
-                                    <AlertTriangle size={18} />
-                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>Penalty Revenue</span>
+                            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'linear-gradient(135deg, rgba(56,189,248,0.05), rgba(56,189,248,0.01))', borderColor: 'rgba(56,189,248,0.1)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--info)' }}>
+                                    <Activity size={18} />
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>Viewing Outcomes</span>
                                 </div>
-                                <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '0.5rem', color: 'var(--error)' }}>{formatCurrency(penaltyRevenue)}</div>
-                                <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>From {penaltyBookings} no-show penalties captured</div>
+                                <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '0.5rem', color: 'var(--info)' }}>{completedViewings}</div>
+                                <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{cancelledViewings} cancelled</div>
                             </div>
                         </div>
 

@@ -67,7 +67,7 @@ export const users: User[] = [
         compliance: { kyc_status: 'completed', kyc_completed_date: '2025-10-15', aml_status: 'completed', aml_completed_date: '2025-10-15', pep_status: 'clear', pep_completed_date: '2025-10-15', verified: true },
         phone: '+971 56 345 6789', rating: 4.7, total_reviews: 52,
         agency_name: 'Dubai Property Group', rera_license: 'RERA-BRN-2025-12345',
-        managed_landlords: ['landlord-1'], managed_properties: ['listing-1', 'listing-2', 'listing-3'],
+        managed_landlords: ['landlord-1'], managed_properties: ['list-entry-3', 'list-entry-12'],
         commission_rate: 5,
         is_verified: true, has_gcc: false, gccScore: 0, isPremium: false,
         created_at: '2025-09-01', updated_at: '2026-03-10',
@@ -84,9 +84,9 @@ export const users: User[] = [
         phone: '+971 52 456 7890', instagram_handle: '@priya.dubai',
         rating: 4.9, total_reviews: 3,
         preferences: { budget_min: 3000, budget_max: 4500, move_in_date: '2025-12-15', duration: '12_months', schedule: 'early_bird', location_keywords: ['near-metro', 'marina', 'walkable'], lifestyle_keywords: ['non-smoker', 'social', 'clean'] },
-        current_house_id: 'listing-1', rent_monthly: 3500, deposit: 3500,
-        direct_debit: { id: 'dd-1', status: 'active', bank_name: 'Wio Bank', iban_last4: '7823', created_at: '2025-12-15', next_payment_date: '2026-04-15', amount: 3500 },
-        good_conduct_certificate: { id: 'gcc-1', tenant_id: 'roommate-1', issued_by_landlord: 'landlord-1', property_id: 'listing-1', tenancy_start: '2025-12-15', tenancy_end: '2026-12-15', rating: 5, payment_reliability: 'excellent', property_care: 'excellent', issued_at: '2026-02-20', verified: true },
+        current_house_id: 'list-entry-11', rent_monthly: 3200, deposit: 3200,
+
+        good_conduct_certificate: { id: 'gcc-1', tenant_id: 'roommate-1', issued_by_landlord: 'landlord-4', property_id: 'list-entry-11', tenancy_start: '2025-12-15', tenancy_end: '2026-12-15', rating: 5, payment_reliability: 'excellent', property_care: 'excellent', issued_at: '2026-02-20', verified: true },
         is_verified: true, has_gcc: true, gccScore: 85, isPremium: true,
         is_paid: true, bank_linked: true, has_secure_deposit: true,
         resident_role: 'residing', tenancy_duration_months: 14,
@@ -112,8 +112,8 @@ export const users: User[] = [
         phone: '+971 54 567 8901', instagram_handle: '@marcus.dxb',
         rating: 4.6, total_reviews: 2,
         preferences: { budget_min: 3000, budget_max: 4000, move_in_date: '2025-11-01', duration: '12_months', schedule: 'varies', location_keywords: ['near-metro', 'gym-nearby', 'restaurants'], lifestyle_keywords: ['quiet', 'gym-goer', 'professional'] },
-        current_house_id: 'listing-1', rent_monthly: 3500, deposit: 3500,
-        direct_debit: { id: 'dd-2', status: 'active', bank_name: 'ADCB', iban_last4: '3456', created_at: '2025-11-01', next_payment_date: '2026-04-15', amount: 3500 },
+        current_house_id: 'list-entry-12', rent_monthly: 3500, deposit: 3500,
+
         is_verified: true, has_gcc: true, gccScore: 70, isPremium: false,
         is_paid: true, bank_linked: true, has_secure_deposit: true,
         resident_role: 'residing', tenancy_duration_months: 16,
@@ -139,8 +139,8 @@ export const users: User[] = [
         phone: '+971 58 678 9012',
         is_verified: true, has_gcc: false, gccScore: 30, isPremium: false,
         resident_role: 'residing', tenancy_duration_months: 4, gcc_eligible_date: '2026-07-15',
-        current_house_id: 'listing-2', rent_monthly: 3000, deposit: 3000,
-        direct_debit: { id: 'dd-3', status: 'active', bank_name: 'Emirates NBD', iban_last4: '1122', created_at: '2026-01-15', next_payment_date: '2026-04-15', amount: 3000 },
+        current_house_id: 'list-entry-3', rent_monthly: 800, deposit: 800,
+
         preferences: { budget_min: 2500, budget_max: 3500, move_in_date: '2026-01-15', duration: '12_months', schedule: 'varies', location_keywords: ['walkable', 'cafes', 'galleries'], lifestyle_keywords: ['social', 'clean', 'creative'] },
         lifestyle_tags: ['walking', 'yoga', 'dance'],
         personality_traits: ['extroverted', 'creative', 'traveller', 'empathetic'],
@@ -163,9 +163,9 @@ export const users: User[] = [
         phone: '+971 50 789 0123',
         is_verified: true, has_gcc: true, gccScore: 60, isPremium: false,
         resident_role: 'residing', tenancy_duration_months: 9,
-        current_house_id: 'listing-2', rent_monthly: 3000, deposit: 3000,
-        direct_debit: { id: 'dd-4', status: 'active', bank_name: 'FAB', iban_last4: '8844', created_at: '2025-06-01', next_payment_date: '2026-04-01', amount: 3000 },
-        good_conduct_certificate: { id: 'gcc-omar', tenant_id: 'roommate-4', issued_by_landlord: 'landlord-2', property_id: 'listing-2', tenancy_start: '2025-06-01', tenancy_end: '2026-06-01', rating: 4, payment_reliability: 'excellent', property_care: 'good', issued_at: '2026-02-01', verified: true },
+        current_house_id: 'list-entry-8', rent_monthly: 2200, deposit: 2200,
+
+        good_conduct_certificate: { id: 'gcc-omar', tenant_id: 'roommate-4', issued_by_landlord: 'landlord-1', property_id: 'list-entry-8', tenancy_start: '2025-06-01', tenancy_end: '2026-06-01', rating: 4, payment_reliability: 'excellent', property_care: 'good', issued_at: '2026-02-01', verified: true },
         lifestyle_tags: ['gym-goer', 'swimming', 'football'],
         personality_traits: ['extroverted', 'comedian', 'social', 'night-owl'],
         hobbies: ['music-production', 'cooking-arabic', 'football', 'desert-camping'],
@@ -183,8 +183,8 @@ export const users: User[] = [
         phone: '+971 52 890 1234',
         is_verified: true, has_gcc: false, gccScore: 40, isPremium: true,
         resident_role: 'residing', tenancy_duration_months: 6, gcc_eligible_date: '2026-03-01',
-        current_house_id: 'listing-3', rent_monthly: 4000, deposit: 4000,
-        direct_debit: { id: 'dd-5', status: 'active', bank_name: 'ADCB', iban_last4: '5678', created_at: '2025-09-01', next_payment_date: '2026-04-01', amount: 4000 },
+        current_house_id: 'list-entry-10', rent_monthly: 2800, deposit: 2800,
+
         lifestyle_tags: ['runner', 'cycling', 'swimming'],
         personality_traits: ['introverted', 'creative', 'organised', 'calm'],
         hobbies: ['architecture-walks', 'photography', 'japanese-cooking', 'design-exhibitions'],
@@ -361,16 +361,6 @@ export const users: User[] = [
         created_at: '2024-01-01', updated_at: '2026-03-10',
     },
     {
-        id: 'admin-2', type: 'finance', auth_method: 'uae_pass',
-        uaePassId: 'UAEPASS-ADMIN-002', isUaePassVerified: true, isIdVerified: false,
-        name: 'Finance Admin', email: 'finance@nestmatch.ae', avatar: '',
-        bio: 'NestMatch UAE financial controller — RERA escrow and rent reconciliation.',
-        keywords: ['admin', 'finance'], phone: '+971 4 123 4568',
-        compliance: { kyc_status: 'completed', kyc_completed_date: '2024-01-01', aml_status: 'completed', aml_completed_date: '2024-01-01', pep_status: 'clear', pep_completed_date: '2024-01-01', verified: true },
-        is_verified: true, has_gcc: false, gccScore: 0, isPremium: false,
-        created_at: '2024-01-01', updated_at: '2026-03-10',
-    },
-    {
         id: 'admin-3', type: 'operations', auth_method: 'uae_pass',
         uaePassId: 'UAEPASS-ADMIN-003', isUaePassVerified: true, isIdVerified: false,
         name: 'Operations Admin', email: 'operations@nestmatch.ae', avatar: '',
@@ -454,13 +444,13 @@ export const listings: Listing[] = [
     {
         id: 'list-entry-3', landlord_id: 'landlord-2', letting_agent_id: 'agent-1',
         title: 'Al Qusais Shared Room — Close to Airport Freezone',
-        address: 'Damascus St, Al Qusais', district: 'Al Qusais', rent_per_room: 800, total_rooms: 3, available_rooms: 0,
-        images: [], description: 'Very large shared room, only 4 people max. DAFZA metro is a short walk away. Currently at full capacity.',
+        address: 'Damascus St, Al Qusais', district: 'Al Qusais', rent_per_room: 800, total_rooms: 4, available_rooms: 2,
+        images: [], description: 'Very large shared room, only 4 people max. DAFZA metro is a short walk away. Two rooms currently available.',
         amenities: ['Balcony', 'Gym', 'Wi-Fi', 'Central AC'], house_rules: [], bills_included: true, deposit: 800,
-        current_roommates: ['roommate-res-new-3', 'roommate-1', 'roommate-2', 'roommate-3'],
-        occupancy_status: [{ room_number: 1, tenant_id: 'roommate-1', status: 'occupied' }, { room_number: 1, tenant_id: 'roommate-2', status: 'occupied' }, { room_number: 1, tenant_id: 'roommate-3', status: 'occupied' }, { room_number: 1, tenant_id: 'roommate-res-new-3', status: 'occupied' }],
+        current_roommates: ['roommate-res-new-3', 'roommate-3'],
+        occupancy_status: [{ room_number: 1, tenant_id: 'roommate-3', status: 'occupied' }, { room_number: 2, tenant_id: 'roommate-res-new-3', status: 'occupied' }, { room_number: 3, tenant_id: null, status: 'available' }, { room_number: 4, tenant_id: null, status: 'available' }],
         tags: ['bed-space', 'dafza'], makaniNumber: '3344556677', trakheesiPermit: 'TRAK-2025-AQ-123', municipalityPermit: 'DM-SH-2026-AQ1',
-        maxLegalOccupancy: 4, currentOccupants: 4, isActive: true, isApiVerified: true,
+        maxLegalOccupancy: 4, currentOccupants: 2, isActive: true, isApiVerified: true,
         transport_chips: [{ label: 'DAFZA Metro', type: 'metro', walk_time: '8m', lines: ['Green Line'], line_color: '#009639' }], rera_escrow_verified: true,
         location: { lat: 25.267, lng: 55.378, nearby_amenities: ['DAFZA'], area_description: 'Al Qusais — great for freezone workers.' },
         rating: 4.5, total_reviews: 5, created_at: '2025-12-01', updated_at: '2026-03-01',
@@ -602,103 +592,94 @@ export const listings: Listing[] = [
 // ─── VIEWING BOOKINGS ─────────────────────────────────────────
 export const viewingBookings: ViewingBooking[] = [
     {
-        id: 'view-1', property_id: 'listing-1', searcher_id: 'roommate-6', landlord_id: 'landlord-1',
+        id: 'view-1', property_id: 'list-entry-12', searcher_id: 'roommate-6', landlord_id: 'landlord-1',
         requested_date: '2026-03-20T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
-        status: 'CONFIRMED', stripe_hold_id: 'pi_mock_001', hold_amount: 50,
-        landlord_agreed_penalty: true, created_at: '2026-03-10', updated_at: '2026-03-11',
+        status: 'CONFIRMED', created_at: '2026-03-10', updated_at: '2026-03-11',
     },
     {
-        id: 'view-2', property_id: 'listing-3', searcher_id: 'roommate-7', landlord_id: 'landlord-1',
+        id: 'view-2', property_id: 'list-entry-8', searcher_id: 'roommate-7', landlord_id: 'landlord-1',
         requested_date: '2026-03-22T10:00:00Z', time_slot: '10:00 AM - 10:30 AM',
-        status: 'PENDING_LANDLORD_APPROVAL', stripe_hold_id: 'pi_mock_002', hold_amount: 50,
-        landlord_agreed_penalty: false, created_at: '2026-03-11', updated_at: '2026-03-11',
+        status: 'PENDING_LANDLORD_APPROVAL', created_at: '2026-03-11', updated_at: '2026-03-11',
     },
     {
-        id: 'view-3', property_id: 'listing-5', searcher_id: 'roommate-9', landlord_id: 'landlord-1',
+        id: 'view-3', property_id: 'list-entry-4', searcher_id: 'roommate-9', landlord_id: 'landlord-1',
         requested_date: '2026-03-18T16:00:00Z', time_slot: '4:00 PM - 4:30 PM',
-        status: 'COMPLETED', stripe_hold_id: 'pi_mock_003', hold_amount: 50,
-        landlord_agreed_penalty: true, resolution_date: '2026-03-18',
+        status: 'COMPLETED', resolution_date: '2026-03-18',
         created_at: '2026-03-08', updated_at: '2026-03-18',
     },
     {
-        id: 'view-4', property_id: 'listing-2', searcher_id: 'roommate-10', landlord_id: 'landlord-2',
+        id: 'view-4', property_id: 'list-entry-9', searcher_id: 'roommate-10', landlord_id: 'landlord-2',
         requested_date: '2026-03-25T11:00:00Z', time_slot: '11:00 AM - 11:30 AM',
-        status: 'PENDING', hold_amount: 50,
-        landlord_agreed_penalty: false, created_at: '2026-03-12', updated_at: '2026-03-12',
+        status: 'PENDING', created_at: '2026-03-12', updated_at: '2026-03-12',
     },
-    // -- Phase 12 Expanded Data: Viewings
     {
-        id: 'view-5', property_id: 'listing-a', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-3',
+        id: 'view-5', property_id: 'list-entry-1', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-3',
         requested_date: '2026-03-20T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
-        status: 'CONFIRMED', stripe_hold_id: 'pi_mock_005', hold_amount: 50, landlord_agreed_penalty: true, created_at: '2026-03-10', updated_at: '2026-03-11',
+        status: 'CONFIRMED', created_at: '2026-03-10', updated_at: '2026-03-11',
     },
     {
-        id: 'view-6', property_id: 'listing-c', searcher_id: 'roommate-srch-1', landlord_id: 'landlord-3',
+        id: 'view-6', property_id: 'list-entry-6', searcher_id: 'roommate-srch-1', landlord_id: 'landlord-3',
         requested_date: '2026-03-22T10:00:00Z', time_slot: '10:00 AM - 10:30 AM',
-        status: 'CONFIRMED', stripe_hold_id: 'pi_mock_006', hold_amount: 50, landlord_agreed_penalty: true, created_at: '2026-03-11', updated_at: '2026-03-11',
+        status: 'CONFIRMED', created_at: '2026-03-11', updated_at: '2026-03-11',
     },
     {
-        id: 'view-7', property_id: 'listing-a', searcher_id: 'roommate-srch-2', landlord_id: 'landlord-3',
+        id: 'view-7', property_id: 'list-entry-1', searcher_id: 'roommate-srch-2', landlord_id: 'landlord-3',
         requested_date: '2026-03-18T16:00:00Z', time_slot: '4:00 PM - 4:30 PM',
-        status: 'TENANT_NO_SHOW_PENALTY', stripe_hold_id: 'pi_mock_007', hold_amount: 50, landlord_agreed_penalty: true, resolution_date: '2026-03-18', created_at: '2026-03-08', updated_at: '2026-03-18',
+        status: 'CANCELLED', resolution_date: '2026-03-18', created_at: '2026-03-08', updated_at: '2026-03-18',
     },
     {
-        id: 'view-8', property_id: 'listing-b', searcher_id: 'roommate-srch-3', landlord_id: 'landlord-4',
+        id: 'view-8', property_id: 'list-entry-2', searcher_id: 'roommate-srch-3', landlord_id: 'landlord-4',
         requested_date: '2026-03-25T11:00:00Z', time_slot: '11:00 AM - 11:30 AM',
-        status: 'TENANT_NO_SHOW_PENALTY', stripe_hold_id: 'pi_mock_008', hold_amount: 50, landlord_agreed_penalty: true, resolution_date: '2026-03-18', created_at: '2026-03-12', updated_at: '2026-03-12',
+        status: 'CANCELLED', resolution_date: '2026-03-18', created_at: '2026-03-12', updated_at: '2026-03-12',
     },
     {
-        id: 'view-9', property_id: 'listing-d', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-4',
+        id: 'view-9', property_id: 'list-entry-5', searcher_id: 'roommate-srch-0', landlord_id: 'landlord-4',
         requested_date: '2026-03-26T11:00:00Z', time_slot: '11:00 AM - 11:30 AM',
-        status: 'LANDLORD_NO_SHOW_PENALTY', stripe_hold_id: 'pi_mock_009', hold_amount: 50, landlord_agreed_penalty: true, resolution_date: '2026-03-18', created_at: '2026-03-12', updated_at: '2026-03-12',
+        status: 'COMPLETED', resolution_date: '2026-03-26', created_at: '2026-03-12', updated_at: '2026-03-26',
     },
     {
-        id: 'view-10', property_id: 'listing-a', searcher_id: 'roommate-srch-1', landlord_id: 'landlord-3',
+        id: 'view-10', property_id: 'list-entry-1', searcher_id: 'roommate-srch-1', landlord_id: 'landlord-3',
         requested_date: '2026-03-27T11:00:00Z', time_slot: '10:00 AM - 10:30 AM',
-        status: 'LANDLORD_NO_SHOW_PENALTY', stripe_hold_id: 'pi_mock_010', hold_amount: 50, landlord_agreed_penalty: true, resolution_date: '2026-03-18', created_at: '2026-03-12', updated_at: '2026-03-12',
+        status: 'PENDING', created_at: '2026-03-12', updated_at: '2026-03-12',
     },
 ];
 
 // --- PAYMENTS ---
 export const payments: Payment[] = [
-    { id: 'pay-1', listing_id: 'listing-1', payer_id: 'roommate-1', payee_id: 'landlord-1', type: 'rent', amount: 3500, due_date: '2026-03-15', paid_date: '2026-03-14', status: 'completed', method: 'direct_debit', reference: 'NM-AE-2026-03-001', rera_escrow_ref: 'RERA-ESC-001', rera_escrow_status: 'held', created_at: '2026-03-01', updated_at: '2026-03-14' },
-    { id: 'pay-2', listing_id: 'listing-1', payer_id: 'roommate-2', payee_id: 'landlord-1', type: 'rent', amount: 3500, due_date: '2026-03-15', paid_date: '2026-03-15', status: 'completed', method: 'direct_debit', reference: 'NM-AE-2026-03-002', rera_escrow_ref: 'RERA-ESC-002', rera_escrow_status: 'held', created_at: '2026-03-01', updated_at: '2026-03-15' },
-    { id: 'pay-3', listing_id: 'listing-2', payer_id: 'roommate-3', payee_id: 'landlord-2', type: 'rent', amount: 3000, due_date: '2026-03-15', status: 'pending', method: 'bank_transfer', reference: 'NM-AE-2026-03-003', created_at: '2026-03-01', updated_at: '2026-03-01' },
-    { id: 'pay-4', listing_id: 'listing-1', payer_id: 'roommate-1', payee_id: 'landlord-1', type: 'deposit', amount: 3500, due_date: '2025-12-15', paid_date: '2025-12-15', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-001', rera_escrow_ref: 'RERA-DEP-001', rera_escrow_status: 'held', created_at: '2025-12-15', updated_at: '2025-12-15' },
-    { id: 'pay-pen-1', listing_id: 'listing-a', payer_id: 'roommate-srch-2', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-001', created_at: '2026-03-18', updated_at: '2026-03-18' },
-    { id: 'pay-pen-2', listing_id: 'listing-b', payer_id: 'roommate-srch-3', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-002', created_at: '2026-03-18', updated_at: '2026-03-18' },
-    { id: 'pay-pen-3', listing_id: 'listing-d', payer_id: 'landlord-4', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-003', created_at: '2026-03-18', updated_at: '2026-03-18' },
-    { id: 'pay-pen-4', listing_id: 'listing-a', payer_id: 'landlord-3', payee_id: 'platform', type: 'penalty_capture' as const, amount: 50, due_date: '2026-03-18', paid_date: '2026-03-18', status: 'completed', method: 'card', reference: 'PENALTY-004', created_at: '2026-03-18', updated_at: '2026-03-18' },
+    { id: 'pay-1', listing_id: 'list-entry-11', payer_id: 'roommate-1', payee_id: 'landlord-4', type: 'deposit', amount: 3200, due_date: '2025-12-15', paid_date: '2025-12-15', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-001', created_at: '2025-12-15', updated_at: '2025-12-15' },
+    { id: 'pay-2', listing_id: 'list-entry-12', payer_id: 'roommate-2', payee_id: 'landlord-1', type: 'deposit', amount: 3500, due_date: '2025-11-01', paid_date: '2025-11-01', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-002', created_at: '2025-11-01', updated_at: '2025-11-01' },
+    { id: 'pay-3', listing_id: 'list-entry-3', payer_id: 'roommate-3', payee_id: 'landlord-2', type: 'deposit', amount: 800, due_date: '2026-01-15', paid_date: '2026-01-15', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-003', created_at: '2026-01-15', updated_at: '2026-01-15' },
+    { id: 'pay-4', listing_id: 'list-entry-8', payer_id: 'roommate-4', payee_id: 'landlord-1', type: 'deposit', amount: 2200, due_date: '2025-06-01', paid_date: '2025-06-01', status: 'completed', method: 'bank_transfer', reference: 'NM-AE-DEP-004', created_at: '2025-06-01', updated_at: '2025-06-01' },
 ];
 
 // --- CHAT CHANNELS ---
 export const chatChannels: ChatChannel[] = [
     {
-        id: 'ch-1', listing_id: 'listing-1', name: 'Princess Tower - Marina',
-        participants: ['roommate-1', 'roommate-2', 'landlord-1', 'agent-1'],
+        id: 'ch-1', listing_id: 'list-entry-12', name: 'Princess Tower - Marina',
+        participants: ['roommate-2', 'landlord-1', 'agent-1'],
         created_at: '2025-12-15',
         last_message: { id: 'msg-latest-1', channel_id: 'ch-1', sender_id: 'roommate-1', message_type: 'text', content: 'AC filter replaced. Quick response!', read_by: ['roommate-1', 'agent-1'], created_at: '2026-03-10T14:30:00Z' },
     },
     {
-        id: 'ch-2', listing_id: 'listing-2', name: 'JLT Cluster D - Lake View',
-        participants: ['roommate-3', 'roommate-4', 'landlord-2'],
+        id: 'ch-2', listing_id: 'list-entry-3', name: 'Al Qusais - DAFZA',
+        participants: ['roommate-3', 'roommate-res-new-3', 'landlord-2'],
         created_at: '2026-01-15',
         last_message: { id: 'msg-latest-2', channel_id: 'ch-2', sender_id: 'landlord-2', message_type: 'announcement', content: 'DEWA maintenance Thursday 9AM-12PM.', read_by: ['landlord-2'], created_at: '2026-03-09T09:00:00Z' },
     },
     {
-        id: 'ch-3', listing_id: 'listing-3', name: 'Executive Towers - Business Bay',
-        participants: ['roommate-5', 'landlord-1', 'agent-1'],
+        id: 'ch-3', listing_id: 'list-entry-10', name: 'Executive Towers - Business Bay',
+        participants: ['roommate-5', 'landlord-3'],
         created_at: '2026-02-01',
         last_message: { id: 'msg-latest-3', channel_id: 'ch-3', sender_id: 'landlord-1', message_type: 'text', content: 'Confirming your tenancy renewal for next month.', read_by: ['landlord-1', 'roommate-5'], created_at: '2026-03-11T10:00:00Z' },
     },
     {
-        id: 'ch-4', listing_id: 'listing-a', name: 'Al Rigga Sublease',
+        id: 'ch-4', listing_id: 'list-entry-1', name: 'Al Rigga Sublease',
         participants: ['roommate-srch-1', 'landlord-3'],
         created_at: '2026-03-10',
         last_message: { id: 'msg-latest-4', channel_id: 'ch-4', sender_id: 'roommate-srch-1', message_type: 'text', content: 'Hi, is this room still available?', read_by: ['landlord-3'], created_at: '2026-03-11T15:20:00Z' },
     },
     {
-        id: 'ch-5', listing_id: 'listing-d', name: 'International City V3',
+        id: 'ch-5', listing_id: 'list-entry-5', name: 'Al Nahda Twin Share',
         participants: ['roommate-srch-0', 'landlord-4'],
         created_at: '2026-03-12',
         last_message: { id: 'msg-latest-5', channel_id: 'ch-5', sender_id: 'landlord-4', message_type: 'text', content: 'Let me know if you are coming for the viewing.', read_by: [], created_at: '2026-03-12T08:00:00Z' },
@@ -715,28 +696,28 @@ export const chatMessages: ChatMessage[] = [
 
 // ─── PROPERTY RATINGS (Star-only, UAE defamation safe) ────────
 export const propertyRatings: PropertyRating[] = [
-    { id: 'pr-1', property_id: 'listing-1', tenant_id: 'roommate-1', acQuality: 5, amenities: 5, maintenanceSpeed: 4, created_at: '2026-02-15' },
-    { id: 'pr-2', property_id: 'listing-1', tenant_id: 'roommate-2', acQuality: 4, amenities: 5, maintenanceSpeed: 5, created_at: '2026-02-20' },
-    { id: 'pr-3', property_id: 'listing-2', tenant_id: 'roommate-3', acQuality: 4, amenities: 4, maintenanceSpeed: 3, created_at: '2026-03-01' },
-    { id: 'pr-4', property_id: 'listing-2', tenant_id: 'roommate-4', acQuality: 3, amenities: 4, maintenanceSpeed: 4, created_at: '2026-03-05' },
-    { id: 'pr-5', property_id: 'listing-3', tenant_id: 'roommate-5', acQuality: 5, amenities: 5, maintenanceSpeed: 5, created_at: '2026-02-28' },
+    { id: 'pr-1', property_id: 'list-entry-11', tenant_id: 'roommate-1', acQuality: 5, amenities: 5, maintenanceSpeed: 4, created_at: '2026-02-15' },
+    { id: 'pr-2', property_id: 'list-entry-12', tenant_id: 'roommate-2', acQuality: 4, amenities: 5, maintenanceSpeed: 5, created_at: '2026-02-20' },
+    { id: 'pr-3', property_id: 'list-entry-3', tenant_id: 'roommate-3', acQuality: 4, amenities: 4, maintenanceSpeed: 3, created_at: '2026-03-01' },
+    { id: 'pr-4', property_id: 'list-entry-8', tenant_id: 'roommate-4', acQuality: 3, amenities: 4, maintenanceSpeed: 4, created_at: '2026-03-05' },
+    { id: 'pr-5', property_id: 'list-entry-10', tenant_id: 'roommate-5', acQuality: 5, amenities: 5, maintenanceSpeed: 5, created_at: '2026-02-28' },
 ];
 
 // ─── Phase 17: MAINTENANCE TICKETS ────────────────────────────
 export const maintenanceTickets: MaintenanceTicket[] = [
-    { id: 'mt-1', property_id: 'listing-1', tenant_id: 'roommate-1', issue_type: 'AC/Cooling', urgency: 'Medium', status: 'In Progress', description: 'AC unit in living room is leaking water and making a noise.', created_at: '2026-03-08T09:00:00Z' },
-    { id: 'mt-2', property_id: 'listing-1', tenant_id: 'roommate-2', issue_type: 'Plumbing', urgency: 'Emergency', status: 'Reported', description: 'Master bathroom toilet is overflowing, water is spreading fast!', created_at: '2026-03-12T19:30:00Z' },
-    { id: 'mt-3', property_id: 'listing-2', tenant_id: 'roommate-3', issue_type: 'Appliances', urgency: 'Low', status: 'Resolved', description: 'Washing machine door gets stuck sometimes.', created_at: '2026-03-01T14:20:00Z' },
+    { id: 'mt-1', property_id: 'list-entry-11', tenant_id: 'roommate-1', issue_type: 'AC/Cooling', urgency: 'Medium', status: 'In Progress', description: 'AC unit in living room is leaking water and making a noise.', created_at: '2026-03-08T09:00:00Z' },
+    { id: 'mt-2', property_id: 'list-entry-12', tenant_id: 'roommate-2', issue_type: 'Plumbing', urgency: 'Emergency', status: 'Reported', description: 'Master bathroom toilet is overflowing, water is spreading fast!', created_at: '2026-03-12T19:30:00Z' },
+    { id: 'mt-3', property_id: 'list-entry-3', tenant_id: 'roommate-3', issue_type: 'Appliances', urgency: 'Low', status: 'Resolved', description: 'Washing machine door gets stuck sometimes.', created_at: '2026-03-01T14:20:00Z' },
 ];
 
 // ─── Phase 18: RENT LEDGERS ───────────────────────────────────
 export const rentLedgers: RentLedger[] = [
     {
         id: 'ledger-1',
-        property_id: 'listing-1',
+        property_id: 'list-entry-11',
         tenant_id: 'roommate-1',
-        landlord_id: 'landlord-1',
-        total_rent: 42000,
+        landlord_id: 'landlord-4',
+        total_rent: 38400,
         installments: [
             { id: 'inst-1a', due_date: '2025-12-15', amount: 10500, status: 'Paid', method: 'Cheque' },
             { id: 'inst-1b', due_date: '2026-03-15', amount: 10500, status: 'Upcoming', method: 'Stripe' },
@@ -746,7 +727,7 @@ export const rentLedgers: RentLedger[] = [
     },
     {
         id: 'ledger-2',
-        property_id: 'listing-1',
+        property_id: 'list-entry-12',
         tenant_id: 'roommate-2',
         landlord_id: 'landlord-1',
         total_rent: 42000,
@@ -759,7 +740,7 @@ export const rentLedgers: RentLedger[] = [
     },
     {
         id: 'ledger-3',
-        property_id: 'listing-2',
+        property_id: 'list-entry-3',
         tenant_id: 'roommate-3',
         landlord_id: 'landlord-2',
         total_rent: 36000,
@@ -773,3 +754,40 @@ export const rentLedgers: RentLedger[] = [
         ],
     },
 ];
+
+// ─── Lookup Helpers ──────────────────────────────────────────
+export function getUserById(id: string): User | undefined {
+    return users.find(u => u.id === id);
+}
+
+export function getListingById(id: string): Listing | undefined {
+    return listings.find(l => l.id === id);
+}
+
+export function getViewingsForUser(userId: string): ViewingBooking[] {
+    return viewingBookings.filter(v => v.searcher_id === userId || v.landlord_id === userId);
+}
+
+export function getChatChannelsForUser(userId: string): ChatChannel[] {
+    return chatChannels.filter(ch => ch.participants.includes(userId));
+}
+
+export function getMessagesForChannel(channelId: string): ChatMessage[] {
+    return chatMessages.filter(m => m.channel_id === channelId);
+}
+
+export function getPaymentsForUser(userId: string): Payment[] {
+    return payments.filter(p => p.payer_id === userId || p.payee_id === userId);
+}
+
+export function getPaymentsForListing(listingId: string): Payment[] {
+    return payments.filter(p => p.listing_id === listingId);
+}
+
+export function getMaintenanceForListing(listingId: string): MaintenanceTicket[] {
+    return maintenanceTickets.filter(t => t.property_id === listingId);
+}
+
+export function getRentLedgerForTenant(tenantId: string): RentLedger | undefined {
+    return rentLedgers.find(l => l.tenant_id === tenantId);
+}

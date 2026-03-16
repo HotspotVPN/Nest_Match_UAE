@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    getViewingsForUser, getUserById, getListingById, formatDate,
-    getInitials,
+    getViewingsForUser, getUserById, getListingById, listings,
 } from '@/data/mockData';
 import {
     Calendar, Clock, MapPin, CheckCircle2, XCircle, RefreshCw,
-    Plus, Send, User as UserIcon, ShieldCheck,
+    Plus, User as UserIcon, ShieldCheck,
 } from 'lucide-react';
 import type { ViewingStatus } from '@/types';
 import type { User } from '@/types';
@@ -18,17 +17,28 @@ const timeSlots = [
     '16:00 - 16:30', '16:30 - 17:00',
 ];
 
+const statusLabel = (s: ViewingStatus) => {
+    const map: Record<ViewingStatus, string> = {
+        'PENDING': 'Pending',
+        'PENDING_LANDLORD_APPROVAL': 'Awaiting Approval',
+        'CONFIRMED': 'Confirmed',
+        'COMPLETED': 'Completed',
+        'CANCELLED': 'Cancelled',
+    };
+    return map[s] || s;
+};
+
 const statusColor = (s: ViewingStatus) => {
-    if (s === 'confirmed') return 'badge-green';
-    if (s === 'proposed' || s === 'rescheduled') return 'badge-orange';
-    if (s === 'cancelled') return 'badge-red';
-    if (s === 'completed') return 'badge-blue';
+    if (s === 'CONFIRMED') return 'badge-green';
+    if (s === 'PENDING' || s === 'PENDING_LANDLORD_APPROVAL') return 'badge-orange';
+    if (s === 'CANCELLED') return 'badge-red';
+    if (s === 'COMPLETED') return 'badge-blue';
     return 'badge-purple';
 };
 
 const statusIcon = (s: ViewingStatus) => {
-    if (s === 'confirmed' || s === 'completed') return <CheckCircle2 size={14} />;
-    if (s === 'cancelled') return <XCircle size={14} />;
+    if (s === 'CONFIRMED' || s === 'COMPLETED') return <CheckCircle2 size={14} />;
+    if (s === 'CANCELLED') return <XCircle size={14} />;
     return <Clock size={14} />;
 };
 
@@ -51,7 +61,7 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
         return d.toISOString().split('T')[0];
     });
 
-    const viewingsOnDate = (date: string) => userViewings.filter((v) => v.date === date);
+    const viewingsOnDate = (date: string) => userViewings.filter((v) => v.requested_date.startsWith(date));
 
     return (
         <div style={{ paddingBottom: '2rem' }}>
@@ -92,13 +102,13 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                     })}
                 </div>
                 <div style={{ marginTop: '1.25rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    {(['confirmed', 'proposed', 'rescheduled', 'completed'] as ViewingStatus[]).map((s) => {
+                    {(['CONFIRMED', 'PENDING', 'PENDING_LANDLORD_APPROVAL', 'COMPLETED'] as ViewingStatus[]).map((s) => {
                         const count = userViewings.filter((v) => v.status === s).length;
                         if (count === 0) return null;
                         return (
                             <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s === 'confirmed' ? 'var(--success)' : s === 'completed' ? 'var(--brand-blue)' : 'var(--warning)' }} />
-                                {s.charAt(0).toUpperCase() + s.slice(1)} ({count})
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s === 'CONFIRMED' ? 'var(--success)' : s === 'COMPLETED' ? 'var(--brand-blue)' : 'var(--warning)' }} />
+                                {statusLabel(s)} ({count})
                             </div>
                         );
                     })}
@@ -120,8 +130,9 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {userViewings.map((v) => {
-                        const listing = getListingById(v.listing_id);
-                        const otherUser = getUserById(isLandlord ? v.tenant_id : v.landlord_id);
+                        const listing = getListingById(v.property_id);
+                        const otherUser = getUserById(isLandlord ? v.searcher_id : v.landlord_id);
+                        const viewDate = new Date(v.requested_date);
                         return (
                             <div key={v.id} className="glass-card hover-card" style={{ padding: '1.25rem', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
@@ -131,19 +142,19 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                         boxShadow: '0 4px 12px rgba(124,58,237,0.1)',
                                     }}>
                                         <div style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--brand-purple-light)', textTransform: 'uppercase', marginBottom: '2px' }}>
-                                            {new Date(v.date).toLocaleDateString('en-GB', { month: 'short' })}
+                                            {viewDate.toLocaleDateString('en-GB', { month: 'short' })}
                                         </div>
                                         <div style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-display)', lineHeight: 1 }}>
-                                            {new Date(v.date).getDate()}
+                                            {viewDate.getDate()}
                                         </div>
                                         <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '2px' }}>
-                                            {new Date(v.date).toLocaleDateString('en-GB', { weekday: 'short' })}
+                                            {viewDate.toLocaleDateString('en-GB', { weekday: 'short' })}
                                         </div>
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                                             <div>
-                                                <Link to={`/listing/${v.listing_id}`} style={{ fontWeight: 800, fontSize: '1.0625rem', textDecoration: 'none', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
+                                                <Link to={`/listing/${v.property_id}`} style={{ fontWeight: 800, fontSize: '1.0625rem', textDecoration: 'none', color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>
                                                     {listing?.title || 'Property'}
                                                 </Link>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
@@ -151,10 +162,10 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                                 </div>
                                             </div>
                                             <span className={`badge ${statusColor(v.status)}`} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0.4rem 0.75rem', fontSize: '0.6875rem', fontWeight: 800 }}>
-                                                {statusIcon(v.status)} {v.status.toUpperCase()}
+                                                {statusIcon(v.status)} {statusLabel(v.status).toUpperCase()}
                                             </span>
                                         </div>
-                                        
+
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem', background: 'rgba(0,0,0,0.15)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
                                                 <Clock size={14} className="text-muted" />
@@ -166,30 +177,24 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                             </div>
                                         </div>
 
-                                        {v.notes && (
-                                            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', marginBottom: '1rem', fontStyle: 'italic' }}>
-                                                "{v.notes}"
-                                            </div>
-                                        )}
-
-                                        {v.status === 'proposed' && (
+                                        {(v.status === 'PENDING' || v.status === 'PENDING_LANDLORD_APPROVAL') && (
                                             <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
-                                                {(isLandlord && v.proposed_by === 'tenant') || (!isLandlord && v.proposed_by === 'landlord') ? (
+                                                {isLandlord ? (
                                                     <>
                                                         <button className="btn btn-primary btn-sm" style={{ padding: '0.5rem 1.25rem' }}>Confirm Appointment</button>
                                                         <button onClick={() => setRespondingTo(v.id)} className="btn btn-ghost btn-sm">Reschedule</button>
-                                                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}>Cancel</button>
+                                                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}>Decline</button>
                                                     </>
                                                 ) : (
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                                                        <RefreshCw size={14} className="spin-slow" /> Awaiting recipient verification...
+                                                        <RefreshCw size={14} className="spin-slow" /> Awaiting landlord confirmation...
                                                     </div>
                                                 )}
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                                
+
                                 {respondingTo === v.id && (
                                     <div style={{ marginTop: '1.25rem', padding: '1.25rem', borderRadius: 'var(--radius-lg)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-purple-light)' }}>
                                         <h5 style={{ marginBottom: '1rem', fontSize: '0.9375rem', fontWeight: 800 }}>Propose Different Slot</h5>
@@ -220,23 +225,23 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                             <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Create Viewing Slot</h3>
                             <button className="btn btn-ghost btn-icon" onClick={() => setShowNewModal(false)}><XCircle size={24} /></button>
                         </div>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Target Property</label>
                                 <select className="form-input form-select" value={selectedListing} onChange={(e) => setSelectedListing(e.target.value)}>
                                     <option value="">Choose one of your listings...</option>
-                                    <option value="PRP_Ahm_001">Marina Gate Tower 1</option>
-                                    <option value="PRP_Ahm_002">Burj Vista Unit 402</option>
-                                    <option value="PRP_Kha_001">Executive Tower B</option>
+                                    {listings.filter(l => l.landlord_id === currentUser.id || l.letting_agent_id === currentUser.id).map(l => (
+                                        <option key={l.id} value={l.id}>{l.title}</option>
+                                    ))}
                                 </select>
                             </div>
-                            
+
                             <div className="form-group">
                                 <label className="form-label">Available Date</label>
                                 <input type="date" className="form-input" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
                             </div>
-                            
+
                             <div className="form-group">
                                 <label className="form-label">Select Time Intervals</label>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
@@ -251,7 +256,7 @@ export default function ViewingsPanel({ currentUser }: { currentUser: User }) {
                                     <ShieldCheck size={14} /> This slot will be DLD-verified and synced with RERA portals.
                                 </p>
                             </div>
-                            
+
                             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                                 <button onClick={() => setShowNewModal(false)} className="btn btn-primary btn-lg" style={{ flex: 2, fontWeight: 800 }}>Publish Slot</button>
                                 <button onClick={() => setShowNewModal(false)} className="btn btn-ghost" style={{ flex: 1 }}>Discard</button>

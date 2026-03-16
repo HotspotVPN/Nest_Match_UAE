@@ -2,9 +2,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { users, listings, viewingBookings, getInitials } from '@/data/mockData';
 import { Users as UsersIcon, Building2, ThumbsUp, ThumbsDown, Award, ShieldCheck, Eye, EyeOff, CalendarCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function ResidingDashboardPage() {
     const { currentUser } = useAuth();
+    const [approvedIds, setApprovedIds] = useState<string[]>([]);
+    const [rejectedIds, setRejectedIds] = useState<string[]>([]);
 
     // Only landlords and letting agents can see the full applicant management dashboard
     if (!currentUser || (currentUser.type !== 'landlord' && currentUser.type !== 'letting_agent')) {
@@ -151,8 +154,20 @@ export default function ResidingDashboardPage() {
 
                                             {/* Actions */}
                                             <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                                <button className="btn btn-primary btn-sm" style={{ flex: 1 }}><ThumbsUp size={14} /> Approve</button>
-                                                <button className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--text-muted)' }}><ThumbsDown size={14} /> Reject</button>
+                                                {approvedIds.includes(applicant.id) ? (
+                                                    <div style={{ flex: 1, textAlign: 'center', padding: '0.5rem', borderRadius: 'var(--radius-md)', background: 'rgba(34,197,94,0.1)', color: 'var(--success)', fontWeight: 600, fontSize: '0.8125rem' }}>
+                                                        Approved
+                                                    </div>
+                                                ) : rejectedIds.includes(applicant.id) ? (
+                                                    <div style={{ flex: 1, textAlign: 'center', padding: '0.5rem', borderRadius: 'var(--radius-md)', background: 'rgba(239,68,68,0.1)', color: 'var(--error)', fontWeight: 600, fontSize: '0.8125rem' }}>
+                                                        Rejected
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <button onClick={() => setApprovedIds(prev => [...prev, applicant.id])} className="btn btn-primary btn-sm" style={{ flex: 1 }}><ThumbsUp size={14} /> Approve</button>
+                                                        <button onClick={() => setRejectedIds(prev => [...prev, applicant.id])} className="btn btn-ghost btn-sm" style={{ flex: 1, color: 'var(--text-muted)' }}><ThumbsDown size={14} /> Reject</button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     );

@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { viewingBookings, listings, users } from '@/data/mockData';
 import { verifyEjariRegistration } from '@/services/mockDldService';
-import { FileText, ShieldCheck, CheckCircle2, AlertCircle, ChevronLeft, CreditCard, Lock, Home } from 'lucide-react';
+import { FileText, ShieldCheck, CheckCircle2, AlertCircle, ChevronLeft, Lock, Home } from 'lucide-react';
 
 export default function ContractManagerPage() {
     const { viewingId } = useParams();
@@ -247,64 +247,44 @@ export default function ContractManagerPage() {
                         </h2>
 
                         <div style={{ background: 'var(--bg-surface-2)', padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '2rem', border: '1px solid var(--border-subtle)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                                <span>1st Month Rent (Cheque to Landlord)</span>
-                                <span>AED {listing.rent_per_room}</span>
-                            </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.875rem' }}>
-                                <span>Security Deposit (Digital Escrow)</span>
+                                <span>1st Month Rent (Cheque to Landlord)</span>
                                 <span style={{ fontWeight: 600 }}>AED {listing.rent_per_room}</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.875rem' }}>
-                                <span>Platform Fee (2%)</span>
-                                <span style={{ fontWeight: 600 }}>AED {(listing.rent_per_room * 0.02).toFixed(2)}</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.875rem' }}>
+                                <span>Security Deposit (Cheque to Landlord)</span>
+                                <span style={{ fontWeight: 600 }}>AED {listing.rent_per_room}</span>
                             </div>
                             <div style={{ height: '1px', background: 'var(--border-subtle)', margin: '1rem 0' }} />
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.125rem', fontWeight: 700 }}>
-                                <span>Amount Due Now</span>
-                                <span>AED {(listing.rent_per_room * 1.02).toFixed(2)}</span>
+                                <span>Total Due at Move-In</span>
+                                <span>AED {listing.rent_per_room * 2}</span>
                             </div>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
+                                All payments are made directly to the landlord. NestMatch does not process or hold any funds.
+                            </p>
                         </div>
 
                         {isTenant ? (
                             <div>
-                                <h3 style={{ fontSize: '0.9375rem', marginBottom: '1rem' }}>Payment Gateway (Stripe)</h3>
-                                
-                                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                    <label className="form-label">Cardholder Name</label>
-                                    <input type="text" className="form-input" defaultValue={currentUser.name} />
-                                </div>
-                                
-                                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                                    <label className="form-label">Card Details</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <CreditCard size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                        <input type="text" className="form-input" placeholder="0000 0000 0000 0000" style={{ paddingLeft: '2.5rem' }} defaultValue="4242 4242 4242 4242" />
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '0.75rem' }}>
-                                        <input type="text" className="form-input" placeholder="MM/YY" defaultValue="12/26" />
-                                        <input type="text" className="form-input" placeholder="CVC" defaultValue="123" />
-                                    </div>
-                                </div>
-
-                                <button 
-                                    className="btn btn-primary" 
+                                <button
+                                    className="btn btn-primary"
                                     style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', background: 'var(--success)', borderColor: 'var(--success)' }}
                                     onClick={handleFinalizeLease}
                                     disabled={isProcessingPayment}
                                 >
-                                    {isProcessingPayment ? <span className="spin">⌛</span> : <Lock size={18} />}
-                                    {isProcessingPayment ? 'Processing Gateway...' : `Pay AED ${(listing.rent_per_room * 1.02).toFixed(2)} & Finalize`}
+                                    {isProcessingPayment ? <span className="spin">⌛</span> : <CheckCircle2 size={18} />}
+                                    {isProcessingPayment ? 'Finalizing...' : 'Confirm & Finalize Lease'}
                                 </button>
                                 <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1rem' }}>
-                                    Payments are held securely in a DLD-compliant Escrow until you move in.
+                                    By confirming, you acknowledge that cheques have been issued directly to the landlord.
                                 </p>
                             </div>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
                                 <Lock size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-                                <p>Waiting for the tenant to complete the security deposit payment.</p>
-                                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Once paid, the lease will be marked actively bound.</p>
+                                <p>Waiting for the tenant to confirm the lease agreement.</p>
+                                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Once confirmed, the lease will be marked as active.</p>
                             </div>
                         )}
                         

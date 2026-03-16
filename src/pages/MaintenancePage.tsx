@@ -43,7 +43,7 @@ export default function MaintenancePage() {
         setTimeout(() => {
             const newTicket: MaintenanceTicket = {
                 id: `mt-new-${Date.now()}`,
-                property_id: currentUser.current_house_id || 'listing-1', // Fallback for mock
+                property_id: currentUser.current_house_id || 'list-entry-1', // Fallback for mock
                 tenant_id: currentUser.id,
                 issue_type: category,
                 urgency: urgency,

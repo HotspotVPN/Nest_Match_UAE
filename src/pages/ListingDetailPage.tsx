@@ -3,19 +3,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { listings, users, formatCurrency, getInitials, viewingBookings, propertyRatings } from '@/data/mockData';
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
-    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock, CreditCard,
-    MessageSquare, History, Edit2, X, CheckCircle2
+    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
+    MessageSquare, Edit2, X, CheckCircle2
 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ListingDetailPage() {
     const { id } = useParams();
-    const { currentUser } = useAuth();
+    const { currentUser, isVerifiedForBooking } = useAuth();
     const listing = listings.find(l => l.id === id);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [bookingDate, setBookingDate] = useState('');
     const [bookingTime, setBookingTime] = useState('');
-    const [bookingStep, setBookingStep] = useState<'details' | 'payment' | 'confirmation'>('details');
+    const [bookingStep, setBookingStep] = useState<'details' | 'confirmation'>('details');
     const [isEditingRent, setIsEditingRent] = useState(false);
     const [rentAmount, setRentAmount] = useState(listing?.rent_per_room || 0);
     const [activeBills, setActiveBills] = useState<string[]>(listing?.bills_included ? ['Water', 'Wi-Fi', 'DEWA', 'Building Maintenance'] : []);
@@ -33,23 +33,17 @@ export default function ListingDetailPage() {
     const agent = listing.letting_agent_id ? users.find(u => u.id === listing.letting_agent_id) : null;
     const occupancyPercent = (listing.currentOccupants / listing.maxLegalOccupancy) * 100;
     const occupancyClass = occupancyPercent >= 100 ? 'full' : occupancyPercent >= 80 ? 'warning' : 'safe';
-    const avgRating = listing.property_ratings?.length ? listing.property_ratings.reduce((sum, r) => sum + (r.acQuality + r.amenities + r.maintenanceSpeed) / 3, 0) / listing.property_ratings.length : 0;
-    
-    // Add verification Tier 2 check from context
-    const { isVerifiedForBooking } = useAuth();
+
     const isOwner = currentUser?.id === listing.landlord_id;
 
-    const myConfirmedViewings = viewingBookings.filter(v => 
-        (v.searcher_id === currentUser?.id) && 
-        v.property_id === listing.id && 
+    const myConfirmedViewings = viewingBookings.filter(v =>
+        (v.searcher_id === currentUser?.id) &&
+        v.property_id === listing.id &&
         ['CONFIRMED', 'COMPLETED'].includes(v.status)
     );
     const canBook = myConfirmedViewings.length === 0;
 
-    // Aggregate anonymous ratings for UAE compliance
     const propertyReviews = propertyRatings.filter(pr => pr.property_id === listing.id);
-    const averageAcQuality = propertyReviews.length ? (propertyReviews.reduce((sum, pr) => sum + pr.acQuality, 0) / propertyReviews.length).toFixed(1) : 'N/A';
-    const averageMaintenance = propertyReviews.length ? (propertyReviews.reduce((sum, pr) => sum + pr.maintenanceSpeed, 0) / propertyReviews.length).toFixed(1) : 'N/A';
 
     return (
         <div className="section" style={{ paddingTop: '2rem' }}>
@@ -76,8 +70,6 @@ export default function ListingDetailPage() {
                             ) : (
                                 <span className="badge badge-orange"><ShieldCheck size={12} /> Verified</span>
                             )}
-                            <span className="badge badge-blue">RERA Escrow</span>
-                            {listing.rera_escrow_verified && <span className="badge badge-uaepass">Escrow Active</span>}
                         </div>
 
                         <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{listing.title}</h1>
@@ -160,13 +152,12 @@ export default function ListingDetailPage() {
                                 ))}
                             </div>
 
-                            {/* Pending Tenant Recommendations (Landlord Only) */}
                             {isOwner && (
                                 <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
                                     <h4 style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Pending Tenant Recommendations</h4>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                                         <span className="tag" style={{ borderStyle: 'dashed', background: 'transparent', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            Air Purifier 
+                                            Air Purifier
                                             <div style={{ display: 'flex', gap: '0.25rem' }}>
                                                 <button className="btn btn-ghost btn-icon" style={{ width: '20px', height: '20px', color: 'var(--success)' }} onClick={() => setActiveAmenities([...activeAmenities, 'Air Purifier'])}><CheckCircle2 size={14} /></button>
                                                 <button className="btn btn-ghost btn-icon" style={{ width: '20px', height: '20px', color: 'var(--error)' }}><X size={14} /></button>
@@ -199,20 +190,19 @@ export default function ListingDetailPage() {
                         )}
 
                         {/* Star Ratings — NO TEXT, defamation safe */}
-                        {listing.property_ratings && listing.property_ratings.length > 0 && (
+                        {propertyReviews.length > 0 && (
                             <div className="glass-card" style={{ padding: '1.5rem' }}>
                                 <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <Star size={20} style={{ color: '#f59e0b' }} /> Property Ratings
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>({listing.property_ratings.length} ratings)</span>
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>({propertyReviews.length} ratings)</span>
                                 </h3>
-                                {/* Aggregate */}
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
                                     {[
                                         { label: 'AC & Cooling', key: 'acQuality' as const },
                                         { label: 'Building Amenities', key: 'amenities' as const },
                                         { label: 'Maintenance Speed', key: 'maintenanceSpeed' as const },
                                     ].map(({ label, key }) => {
-                                        const avg = listing.property_ratings!.reduce((s, r) => s + r[key], 0) / listing.property_ratings!.length;
+                                        const avg = propertyReviews.reduce((s, r) => s + r[key], 0) / propertyReviews.length;
                                         return (
                                             <div key={key} style={{ textAlign: 'center', padding: '1rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)' }}>
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{label}</div>
@@ -226,7 +216,6 @@ export default function ListingDetailPage() {
                                         );
                                     })}
                                 </div>
-                                {/* NOTE: NO TEXT REVIEWS — UAE Cybercrime Law compliance */}
                             </div>
                         )}
                     </div>
@@ -260,7 +249,7 @@ export default function ListingDetailPage() {
                                 <span style={{ fontWeight: 600 }}>{listing.available_rooms}</span>
                             </div>
 
-                            {/* Bills Details - Expandable via labels for owners or just detailed */}
+                            {/* Bills */}
                             <div style={{ padding: '0.625rem 0', borderTop: '1px solid var(--border-subtle)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginBottom: '0.75rem' }}>
                                     <span style={{ color: 'var(--text-muted)' }}>Bills & Utilities</span>
@@ -269,7 +258,7 @@ export default function ListingDetailPage() {
                                     {['Water', 'Wi-Fi', 'Deep Cleaning', 'Garbage Collection', 'Building Maintenance', 'DEWA'].map(bill => {
                                         const isActive = activeBills.includes(bill);
                                         return (
-                                            <button 
+                                            <button
                                                 key={bill}
                                                 disabled={!isOwner}
                                                 onClick={() => {
@@ -277,8 +266,8 @@ export default function ListingDetailPage() {
                                                     else setActiveBills([...activeBills, bill]);
                                                 }}
                                                 className={`badge ${isActive ? 'badge-blue' : ''}`}
-                                                style={{ 
-                                                    opacity: isActive ? 1 : 0.5, 
+                                                style={{
+                                                    opacity: isActive ? 1 : 0.5,
                                                     cursor: isOwner ? 'pointer' : 'default',
                                                     border: `1px solid ${isActive ? 'rgba(56, 189, 248, 0.4)' : 'var(--border-strong)'}`,
                                                     background: isActive ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
@@ -306,7 +295,7 @@ export default function ListingDetailPage() {
                                         </div>
                                     ) : !isVerifiedForBooking ? (
                                         <>
-                                            <button onClick={() => {}} className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
+                                            <button className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
                                                 <Lock size={18} /> Verify with UAE PASS to book
                                             </button>
                                             <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
@@ -314,14 +303,9 @@ export default function ListingDetailPage() {
                                             </p>
                                         </>
                                     ) : (
-                                        <>
-                                            <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                                                <CalendarCheck size={18} /> Book Viewing
-                                            </button>
-                                            <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.5rem' }}>
-                                                50 AED Platform Abuse Penalty Authorization required
-                                            </p>
-                                        </>
+                                        <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
+                                            <CalendarCheck size={18} /> Request Viewing
+                                        </button>
                                     )}
                                 </>
                             )}
@@ -362,14 +346,13 @@ export default function ListingDetailPage() {
                     </div>
                 </div>
 
-                {/* Booking Modal */}
-                {/* ... existing booking modal ... */}
+                {/* Booking Modal — Simple: date/time → confirmation */}
                 {showBookingModal && (
                     <div className="modal-overlay" onClick={() => setShowBookingModal(false)}>
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
                             {bookingStep === 'details' && (
                                 <>
-                                    <h2 style={{ marginBottom: '0.5rem' }}>Book a Viewing</h2>
+                                    <h2 style={{ marginBottom: '0.5rem' }}>Request a Viewing</h2>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>{listing.title}</p>
 
                                     <div className="form-group" style={{ marginBottom: '1rem' }}>
@@ -384,75 +367,8 @@ export default function ListingDetailPage() {
                                         </select>
                                     </div>
 
-                                    <div style={{ padding: '1rem', borderRadius: 'var(--radius-md)', background: 'var(--warning-bg)', border: '1px solid rgba(251,146,60,0.3)', marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
-                                            <AlertTriangle size={14} style={{ color: 'var(--warning)' }} />
-                                            <span style={{ fontWeight: 700, fontSize: '0.8125rem', color: 'var(--warning)' }}>Platform Abuse Penalty Authorization</span>
-                                        </div>
-                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                                            A temporary <strong>50 AED authorization hold</strong> will be placed on your card. This is NOT a viewing fee.
-                                            You will only be charged a penalty if you fail to attend. The landlord also agrees to a 50 AED penalty if they cancel without notice.
-                                            This hold will be voided after a completed viewing.
-                                        </p>
-                                    </div>
-
-                                    <button onClick={() => setBookingStep('payment')} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!bookingDate || !bookingTime}>
-                                        Continue to Payment Authorization
-                                    </button>
-                                </>
-                            )}
-
-                            {bookingStep === 'payment' && (
-                                <>
-                                    <h2 style={{ marginBottom: '0.5rem' }}>Confirm 50 AED Pre-Auth</h2>
-                                    <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-                                        To comply with RERA regulations, this is NOT a viewing fee. This is a 50 AED pre-authorization hold. You will only be charged a Platform Abuse Penalty if you fail to attend the confirmed viewing.
-                                    </p>
-
-                                    {/* Simulated Stripe Card Input */}
-                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-medium)', marginBottom: '1rem', background: 'var(--bg-surface-2)' }}>
-                                        <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                            <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Cardholder Name</label>
-                                            <input className="form-input" placeholder="e.g. John Doe" />
-                                        </div>
-                                        <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                            <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Card Number</label>
-                                            <input className="form-input" placeholder="**** **** **** 1234" />
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '1rem' }}>
-                                            <div className="form-group" style={{ flex: 1 }}>
-                                                <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Expiry Date</label>
-                                                <input className="form-input" placeholder="MM/YY" />
-                                            </div>
-                                            <div className="form-group" style={{ flex: 1 }}>
-                                                <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>CVC</label>
-                                                <input className="form-input" placeholder="123" type="password" />
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
-                                            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Powered by <strong>Stripe</strong></span>
-                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
-                                                <CreditCard size={20} style={{ color: 'var(--text-muted)' }} />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem' }}>
-                                        <span>Penalty Authorization Hold</span>
-                                        <span style={{ color: 'var(--warning)' }}>{formatCurrency(50)}</span>
-                                    </div>
-
-                                    <button 
-                                        id="auth-btn"
-                                        onClick={() => {
-                                            const btn = document.getElementById('auth-btn');
-                                            if (btn) btn.innerHTML = 'Authorizing...';
-                                            setTimeout(() => setBookingStep('confirmation'), 1500);
-                                        }} 
-                                        className="btn btn-primary btn-lg" 
-                                        style={{ width: '100%' }}
-                                    >
-                                        Authorize 50 AED Hold
+                                    <button onClick={() => setBookingStep('confirmation')} className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={!bookingDate || !bookingTime}>
+                                        Request Viewing
                                     </button>
                                 </>
                             )}
@@ -467,7 +383,7 @@ export default function ListingDetailPage() {
                                         {bookingDate} at {bookingTime}
                                     </p>
                                     <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                                        The landlord has 24 hours to accept. You'll receive a confirmation once they agree to the mutual commitment hold.
+                                        The landlord will review your request and confirm. You'll be notified once it's accepted.
                                     </p>
                                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                                         <Link to="/viewings" className="btn btn-primary" style={{ flex: 1 }}>View My Bookings</Link>
@@ -496,7 +412,7 @@ export default function ListingDetailPage() {
                                             <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{tenant.name}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 85}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 0}</div>
                                             </div>
                                             <Link to={`/chat`} className="btn btn-ghost btn-sm"><MessageSquare size={14} /></Link>
                                         </div>

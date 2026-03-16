@@ -70,8 +70,28 @@ export default function ProfilePage() {
   const isOwnProfile = displayUser?.id === currentUser?.id;
   
   // GCC logic based strictly on displayUser
-  const gccScore = (displayUser as any)?.gccScore ?? 0;
+  const gccScore = displayUser?.gccScore ?? 0;
   const gccQualified = gccScore >= 80;
+
+  // Roommate Match Score (shared lifestyle tags with current user)
+  const matchScore = (() => {
+    if (!currentUser || !displayUser || displayUser.id === currentUser.id) return null;
+    if (currentUser.type !== 'roommate' || displayUser.type !== 'roommate') return null;
+    const myTags = [...(currentUser.lifestyle_tags || []), ...(currentUser.personality_traits || []), ...(currentUser.hobbies || [])];
+    const theirTags = [...(displayUser.lifestyle_tags || []), ...(displayUser.personality_traits || []), ...(displayUser.hobbies || [])];
+    if (myTags.length === 0 || theirTags.length === 0) return null;
+    const shared = myTags.filter(t => theirTags.includes(t)).length;
+    const total = new Set([...myTags, ...theirTags]).size;
+    return Math.round((shared / total) * 100);
+  })();
+
+  // Landlord portfolio summary
+  const landlordStats = displayUser?.type === 'landlord' ? {
+    totalUnits: managedListings.length,
+    occupiedRooms: managedListings.reduce((sum, l) => sum + l.currentOccupants, 0),
+    availableRooms: managedListings.reduce((sum, l) => sum + l.available_rooms, 0),
+    totalRooms: managedListings.reduce((sum, l) => sum + l.total_rooms, 0),
+  } : null;
 
   if (loading) {
     return (
@@ -198,54 +218,80 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-          {/* GCC Score */}
-          <div className="glass-card" style={{ padding: "1.5rem" }}>
-            <h3
-              style={{
-                marginBottom: "1rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
-              <Award size={20} style={{ color: "#f59e0b" }} /> Good Conduct Certificate
+        {/* Landlord Portfolio Summary */}
+        {landlordStats && (
+          <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Building2 size={20} style={{ color: 'var(--brand-purple-light)' }} /> Portfolio Overview
             </h3>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                marginBottom: "0.75rem",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "2.5rem",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-display)",
-                  color: gccQualified ? "#f59e0b" : "var(--text-primary)",
-                }}
-              >
-                {gccScore}
-              </div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                / 100
-                <br />
-                GCC Score
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+              {[
+                { label: 'Properties', value: landlordStats.totalUnits, color: 'var(--brand-purple-light)' },
+                { label: 'Total Rooms', value: landlordStats.totalRooms, color: 'var(--text-primary)' },
+                { label: 'Occupied', value: landlordStats.occupiedRooms, color: 'var(--success)' },
+                { label: 'Available', value: landlordStats.availableRooms, color: 'var(--info)' },
+              ].map(s => (
+                <div key={s.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: s.color }}>{s.value}</div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {displayUser?.type === 'landlord' && isOwnProfile && (
+              <Link to="/dashboard" className="btn btn-outline btn-sm" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center' }}>
+                Open Landlord Dashboard
+              </Link>
+            )}
+          </div>
+        )}
+
+        {/* Roommate Match Score */}
+        {matchScore !== null && (
+          <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{
+              width: '56px', height: '56px', borderRadius: '50%',
+              background: `conic-gradient(${matchScore >= 70 ? 'var(--success)' : matchScore >= 40 ? '#f59e0b' : 'var(--error)'} ${matchScore * 3.6}deg, var(--bg-surface-3) 0deg)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9375rem' }}>
+                {matchScore}%
               </div>
             </div>
-            <div className="occupancy-bar" style={{ height: "8px", marginBottom: "0.75rem" }}>
-              <div
-                className={`occupancy-bar-fill ${
-                  gccScore >= 80
-                    ? "safe"
-                    : gccScore >= 40
-                    ? "warning"
-                    : "critical"
-                }`}
-                style={{ width: `${gccScore}%` }}
-              />
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9375rem' }}>Roommate Match Score</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                Based on shared lifestyle tags, personality traits, and hobbies
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          {/* GCC Score — SVG Ring */}
+          <div className="glass-card" style={{ padding: "1.5rem" }}>
+            <h3 style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Award size={20} style={{ color: "#f59e0b" }} /> Good Conduct Certificate
+            </h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "0.75rem" }}>
+              {/* SVG Circular Progress Ring */}
+              <svg width="80" height="80" viewBox="0 0 80 80" style={{ flexShrink: 0 }}>
+                <circle cx="40" cy="40" r="34" fill="none" stroke="var(--bg-surface-3)" strokeWidth="6" />
+                <circle cx="40" cy="40" r="34" fill="none"
+                  stroke={gccQualified ? '#f59e0b' : gccScore >= 40 ? '#f59e0b' : 'var(--error)'}
+                  strokeWidth="6" strokeLinecap="round"
+                  strokeDasharray={`${(gccScore / 100) * 213.6} 213.6`}
+                  transform="rotate(-90 40 40)"
+                  style={{ transition: 'stroke-dasharray 0.5s' }}
+                />
+                <text x="40" y="36" textAnchor="middle" fill="var(--text-primary)" fontSize="18" fontWeight="800" fontFamily="var(--font-display)">{gccScore}</text>
+                <text x="40" y="50" textAnchor="middle" fill="var(--text-muted)" fontSize="8" fontWeight="600">/ 100</text>
+              </svg>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>GCC Score</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {displayUser?.tenancy_duration_months ? `${displayUser.tenancy_duration_months} months verified tenancy` : 'No tenancy history yet'}
+                </div>
+              </div>
             </div>
 
             {gccQualified ? (
@@ -463,29 +509,21 @@ export default function ProfilePage() {
               >
                 {displayUser.lifestyle_tags && displayUser.lifestyle_tags.length > 0 && (
                   <div>
-                    <span
-                      style={{
-                        fontSize: "0.6875rem",
-                        color: "var(--text-muted)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      Activities
-                    </span>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "0.375rem",
-                        marginTop: "0.375rem",
-                      }}
-                    >
-                      {displayUser.lifestyle_tags.map((t: string) => (
-                        <span key={t} className="tag">
-                          {t}
-                        </span>
-                      ))}
+                    <span style={{ fontSize: "0.6875rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Activities</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem", marginTop: "0.375rem" }}>
+                      {displayUser.lifestyle_tags.map((t: string) => {
+                        const colorMap: Record<string, string> = {
+                          'gym-goer': '#22c55e', 'runner': '#3b82f6', 'cyclist': '#06b6d4', 'swimming': '#0ea5e9',
+                          'yoga': '#a855f7', 'walking': '#84cc16', 'meditation': '#8b5cf6', 'dance': '#ec4899',
+                          'pilates': '#d946ef', 'tennis': '#f97316', 'football': '#22c55e', 'rock-climbing': '#ef4444',
+                        };
+                        const color = colorMap[t] || 'var(--brand-purple-light)';
+                        return (
+                          <span key={t} className="tag" style={{ borderColor: `${color}40`, background: `${color}12`, color }}>
+                            {t}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -592,9 +630,6 @@ export default function ProfilePage() {
                   <span className="tag">
                     {formatCurrency(displayUser.rent_monthly ?? 0)}/mo
                   </span>
-                  {displayUser.direct_debit?.status === "active" && (
-                    <span className="badge badge-green">Auto-Pay Active</span>
-                  )}
                 </div>
               </div>
               <div
@@ -617,7 +652,7 @@ export default function ProfilePage() {
                 </Link>
                 {isOwnProfile && (
                   <Link
-                    to="/ledger"
+                    to="/maintenance"
                     className="btn btn-primary btn-sm"
                     style={{
                       width: "100%",
@@ -625,7 +660,7 @@ export default function ProfilePage() {
                       justifyContent: "center",
                     }}
                   >
-                    Payment Schedule
+                    Maintenance Request
                   </Link>
                 )}
               </div>
