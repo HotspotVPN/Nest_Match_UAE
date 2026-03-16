@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-    getPaymentsForUser, getListingsForLandlord,
+    getPaymentsForUser, listings,
     getUserById, getListingById, getInitials, formatCurrency, formatDate,
 } from '@/data/mockData';
 import {
@@ -329,10 +329,10 @@ export default function AccountingPage() {
                                                         </td>
                                                         <td style={{ fontWeight: 900 }}>{formatCurrency(p.amount)}</td>
                                                         <td>{p.paid_date ? formatDate(p.paid_date) : '—'}</td>
-                                                        <td style={{ fontFamily: 'monospace', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{p.tds_reference || 'DLD_REF_PENDING'}</td>
+                                                        <td style={{ fontFamily: 'monospace', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{p.reference || '—'}</td>
                                                         <td>
-                                                            <span className={`badge ${p.tds_status === 'held' ? 'badge-green' : p.tds_status === 'released' ? 'badge-blue' : 'badge-orange'}`} style={{ fontWeight: 800 }}>
-                                                                {(p.tds_status || 'verified_active').toUpperCase().replace('_', ' ')}
+                                                            <span className={`badge ${p.status === 'completed' ? 'badge-green' : p.status === 'pending' ? 'badge-orange' : 'badge-blue'}`} style={{ fontWeight: 800 }}>
+                                                                {(p.status || 'pending').toUpperCase()}
                                                             </span>
                                                         </td>
                                                     </tr>
