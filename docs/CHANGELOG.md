@@ -3,6 +3,79 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.3.0] — 2026-03-16 · Navbar, Tier Labels, CRM, Supply-Side
+
+### Sessions 6-7: Navbar overhaul, tier naming, CRM restructure, public pages
+
+### Added
+- Supply-side cards on HowItWorksPage: Individual Landlord, RERA Agent, Property Company
+- CRM page restructured into 6 tabs: Landlords, RERA Agents, Gold Tenants,
+  Verified Tenants, Explorer Users, Properties
+- Platform ID system: LND-, AGT-, TNT-G-, TNT-V-, TNT-E-, ADM-C-, ADM-O-
+- Global CRM search across name, email, BRN, nationality
+- HomePage compliance tiles updated (Three-Tier Identity, DLD Agreements,
+  Permits, Demand Intelligence)
+- "How it Works" link in navbar for logged-out users
+- Superpowers integration section in CLAUDE.md
+
+### Changed
+- Tier display labels: "New Arrival" → "Explorer" (Tier 0),
+  "Browse Only" → "Verified" (Tier 1), "Fully Verified" → "Gold" (Tier 3)
+- Navbar: dropdown removed, Profile + Sign Out always visible
+- Browse removed from all authenticated navbars
+- Role-based nav: roommate/landlord/agent/compliance/operations each see
+  only their relevant links
+- HowItWorksPage card order: Explorer → Verified → Gold (lowest to highest)
+- All hardcoded tier strings in ProfilePage replaced with getTierLabel()
+- LoginPage demo logins grouped by role (Landlords, Agents, Tenants by tier, Admin)
+- NestMatch OS flow: "Search → Verify Identity → Book Viewing → Sign DLD Agreement → Move In"
+- All placeholder user names replaced with real culturally diverse personas
+- Admin names: "Compliance Admin" → Sara Al Hashimi, "Operations Admin" → Rashid Khalil
+- Nationality added to all users
+- README.md fully rewritten for v2.3.0
+
+### Fixed
+- Tier label inconsistency between profile header badge and verification card
+- getTierColor swapped: tier0=gray, tier1=amber (was reversed)
+- Letting agents now see viewings for properties they manage
+
+---
+
+## [2.2.0] — 2026-03-16 · Tier 0 Passport KYC + Access Control
+
+### Session 5: Three-tier verification overhaul for new arrivals
+
+### Added
+- VerificationTier type system: tier0_passport, tier1_unverified, tier2_uae_pass
+- KycDocument and KycDocType interfaces for passport/visa document tracking
+- verification_tier field on all User records
+- 3 new Tier 0 demo users (James Okafor, Sofia Kowalski, Ravi Menon) with
+  passport KYC documents, nationality, visa_type, visa_expiry fields
+- PassportKycModal component: simulated passport + visa page upload,
+  passport number input, visa type select, nationality field
+- src/utils/accessControl.ts: canRequestViewing, canChat,
+  canSignViewingAgreement, canSignTenancyContract, canApply, getTierLabel,
+  getTierColor, plus future-phase scaffolds (wallet, tenancy portal)
+- LoginPage: three-path entry (UAE PASS with teal Tier 2 badge,
+  New Arrival with Google/email and amber Tier 0 badge, info list)
+- Demo logins grouped by tier with colour-coded badges
+- ProfilePage: verification status card per tier (amber/gray/green left border),
+  KYC document status rows for Tier 0, upgrade paths for Tier 1
+- CompliancePage: renamed verification tab, added Passport KYC sub-tab
+  with approve/reject buttons for Tier 0 users
+- ListingDetailPage: canRequestViewing gating replaces old isVerifiedForBooking,
+  shows PassportKycModal for Tier 1 users
+
+### Changed
+- User interface: added verification_tier, kyc_documents, passport_number,
+  visa_type, visa_expiry, nationality fields
+- All existing users updated with verification_tier values
+- tier1-2 (Onfido user) reclassified as tier0_passport
+- Booking CTA now uses accessControl.canRequestViewing instead of
+  AuthContext.isVerifiedForBooking
+
+---
+
 ## [2.1.0] — 2026-03-16 · DLD Digital Signing + Analytics
 
 ### Session 4: DocuSign-style viewing agreements + analytics dashboard

@@ -7,6 +7,8 @@ import {
     MessageSquare, Edit2, X, CheckCircle2
 } from 'lucide-react';
 import { useState } from 'react';
+import { canRequestViewing } from '@/utils/accessControl';
+import PassportKycModal from '@/components/PassportKycModal';
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -21,6 +23,7 @@ export default function ListingDetailPage() {
     const [activeBills, setActiveBills] = useState<string[]>(listing?.bills_included ? ['Water', 'Wi-Fi', 'DEWA', 'Building Maintenance'] : []);
     const [activeAmenities, setActiveAmenities] = useState<string[]>(listing?.amenities || []);
     const [showTenantsModal, setShowTenantsModal] = useState(false);
+    const [showKycModal, setShowKycModal] = useState(false);
 
     if (!listing) return (
         <div className="section container" style={{ textAlign: 'center', paddingTop: '4rem' }}>
@@ -293,19 +296,28 @@ export default function ListingDetailPage() {
                                         <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--info-bg)', border: '1px solid rgba(56,189,248,0.3)', textAlign: 'center' }}>
                                             <span style={{ fontSize: '0.8125rem', color: 'var(--info)' }}>Viewing already booked</span>
                                         </div>
-                                    ) : !isVerifiedForBooking ? (
-                                        <>
-                                            <button className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
-                                                <Lock size={18} /> Verify with UAE PASS to book
-                                            </button>
-                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
-                                                Tier 2 verification required to schedule viewings
-                                            </p>
-                                        </>
-                                    ) : (
+                                    ) : canRequestViewing(currentUser) ? (
                                         <button onClick={() => setShowBookingModal(true)} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
                                             <CalendarCheck size={18} /> Request Viewing
                                         </button>
+                                    ) : currentUser?.verification_tier === 'tier1_unverified' ? (
+                                        <>
+                                            <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={() => setShowKycModal(true)}>
+                                                <ShieldCheck size={18} /> Upload Passport to Book
+                                            </button>
+                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                Upload passport + visa to unlock viewing requests
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button className="btn btn-uaepass btn-lg" style={{ width: '100%', opacity: 0.8 }} disabled>
+                                                <Lock size={18} /> Verify to book a viewing
+                                            </button>
+                                            <p style={{ fontSize: '0.6875rem', color: 'var(--warning)', textAlign: 'center', marginTop: '0.5rem' }}>
+                                                Verification required to schedule viewings
+                                            </p>
+                                        </>
                                     )}
                                 </>
                             )}
@@ -393,6 +405,15 @@ export default function ListingDetailPage() {
                             )}
                         </div>
                     </div>
+                )}
+
+                {/* Passport KYC Modal */}
+                {showKycModal && currentUser && (
+                    <PassportKycModal
+                        user={currentUser}
+                        onClose={() => setShowKycModal(false)}
+                        onUpdate={() => setShowKycModal(false)}
+                    />
                 )}
 
                 {/* Residing Tenants Modal (Landlord Only) */}

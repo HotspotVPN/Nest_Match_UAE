@@ -79,8 +79,8 @@ PATCH (v2.0.x) — bug fixes, copy changes, style tweaks
 MINOR (v2.x.0) — new feature, new page, new component
 MAJOR (vx.0.0) — phase unlock (e.g. wallet system, RERA licence)
 
-Current version: v2.1.0 (after Session 4)
-Next session starts at: v2.1.0
+Current version: v2.3.0 (after Sessions 4-6)
+Next session starts at: v2.3.0
 
 ### README.md update rules
 The README must always reflect:
@@ -122,3 +122,48 @@ investor, or legal reviewer reading this repo cold.
 ### On every commit, update at minimum:
 - CHANGELOG.md with what changed this session
 - DECISIONS.md if anything was deleted or a constraint was hit
+
+---
+
+## Superpowers Integration
+
+Superpowers is installed. Its skills trigger automatically.
+NestMatch-specific overrides that take precedence over
+any Superpowers skill:
+
+### brainstorming skill override
+When brainstorming fires before any new feature:
+- Always check the Constraints section of this file first
+- Any feature touching payments, escrow, rent collection,
+  or tenancy contracts must be flagged immediately
+  as out of scope — do not brainstorm implementation,
+  brainstorm alternatives that stay in scope
+- Save design docs to docs/superpowers/specs/ as instructed
+
+### subagent-driven-development override
+When dispatching subagents:
+- Every subagent must receive the hard constraints
+  section from this CLAUDE.md in its context
+- No subagent may create, restore, or reference
+  mockStripeService.ts or ContractManagerPage.tsx
+- Each subagent must run npx tsc --noEmit on completion
+
+### systematic-debugging override
+When debugging:
+- Check accessControl.ts getTierLabel() FIRST
+  for any tier display bug — this is the source of truth
+- Never hardcode tier strings as a debugging fix
+
+### finishing-a-development-branch override
+When finishing a branch:
+- Always update docs/CHANGELOG.md before merge
+- Always present the git remote -v output to the
+  user before any push
+- Never auto-push — wait for explicit confirmation
+
+### verification-before-completion override
+Before marking any task complete:
+- npx tsc --noEmit must return zero errors
+- grep for 'mockStripeService\|ContractManager\|Basic\|Tier 2'
+  in src/ must return nothing
+- All three must pass or the task is not complete

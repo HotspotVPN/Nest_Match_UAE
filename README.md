@@ -1,59 +1,157 @@
 # NestMatch UAE
 
-**Version:** 1.5.0  
-**Status:** Active Development | [Product Narrative (User Guide)](docs/PRODUCT_GUIDE.md) | [Full Development Log](docs/DEVELOPMENT_LOG.md)
+**Version:** 2.3.0
+**Status:** Investor Demo Live
+**Live URL:** https://nest-match-uae.vercel.app
+**Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
 
 ---
 
-## 🏛️ Project Vision & Story
-NestMatch UAE is a **compliance-first PropTech platform** engineered specifically for the unique regulatory landscape of the United Arab Emirates.
+## What is NestMatch UAE?
 
-**New to the project?**  
-👉 [**Read our Non-Technical Product Story**](docs/PRODUCT_GUIDE.md) — This guide explains the vision, the problems we solve (overcrowding, ghosting, legal friction), and the journey from inception to a fully regulated UAE platform in plain English.
+NestMatch UAE is a **compliance-first property discovery platform** for Dubai shared housing. It connects verified tenants with RERA-licensed landlords and agents, digitises the official DLD Property Viewing Agreement, and generates demand intelligence that DLD cannot obtain elsewhere.
 
 ---
 
-## 🚀 Key Ecosystem Features
+## Three-Tier Verification System
 
-### 🛡️ The Compliance Engine (God Mode)
-The platform features an **Operations CRM with "God Mode" capabilities**:
-- **Direct DLD Sync:** Automatically fetches and locks `maxLegalOccupancy` via Makani validation.
-- **Dynamic Suspension:** One-click suspension of listings for compliance breaches.
-- **Legal Audit Rails:** Force-audits against the DLD registry to ensure data integrity.
-
-### 👤 Blind Match & GCC Score
-To promote **cultural harmony** and eliminate bias, NestMatch UAE uses a "Blind Match" discovery flow:
-- **Anonymized Profiles:** Names and photos are hidden to ensure people are chosen for conduct, not origin.
-- **Good Conduct Certificate (GCC):** A performance-based trust score (0-100) calculated from verified residency conduct.
-
-### 💳 Commitment Hold (Ghosting Prevention)
-The unique **Two-Way Commitment Hold** system (50 AED) protects everyone's time:
-- **RERA-Compliant:** Framed as a "Platform Abuse Penalty Authorization" to ensure strict legality.
-- **Stripe Integration:** Pre-authorized holds are voided automatically upon viewing completion.
+| Tier | Name | Identity | Access |
+|---|---|---|---|
+| **Tier 0** | Explorer | Email/Google, no documents | Browse listings only |
+| **Tier 1** | Verified | Passport + UAE visa uploaded | Browse, request viewings, chat, sign DLD viewing agreements |
+| **Tier 3** | Gold | UAE PASS (Emirates ID) | Full access — tenancy applications, contracts, GCC tracking |
 
 ---
 
-## 📖 Complete Project Documentation
-Every task and decision made by **Antigravity** is preserved permanently in this repository for full transparency:
+## Key Features
 
-- [**Full Project Record & Development Log**](docs/DEVELOPMENT_LOG.md): Every single technical task completed since inception (Phases 0-20).
-- [**Technical Architecture Deep-Dive**](docs/ARCHITECTURE.md): Detailed logic on regulatory rails, fintech code, and government integrations.
-- [**Build Walkthrough**](docs/WALKTHROUGH.md): Verification checkmarks and technical specs.
+### For Tenants
+- Browse 12+ verified Dubai listings across 15 districts
+- Filter by district, budget (AED 500–15,000), amenities, transport, occupancy
+- Grid + list view with occupancy bars and transport chips
+- DLD Property Viewing Agreement — digitally signed (DLD/RERA/RL/LP/P210)
+- GCC Score (Good Conduct Certificate) — circular progress ring
+- Roommate Match Score — compatibility based on lifestyle and personality
+- Passport KYC upload for new arrivals (Tier 1)
+
+### For Landlords & Agents
+- Portfolio dashboard with occupancy tracking
+- Viewing requests from verified tenants with accept/decline
+- Auto-generated DLD Viewing Agreement pre-filled with Makani, Trakheesi, BRN
+- Applicant review with full profiles, GCC scores, lifestyle tags
+- RERA licence display on all managed listings
+
+### For Platform Admins
+- Viewing Analytics Dashboard — demand by district, status distribution, agreement log
+- CRM with 6 tabs: Landlords, RERA Agents, Gold Tenants, Verified Tenants, Explorers, Properties
+- Compliance dashboard with Passport KYC approve/reject
+- Platform IDs (LND-, AGT-, TNT-G-, TNT-V-, TNT-E-)
 
 ---
 
-## 🛠️ Tech Stack Summary
+## Demo Accounts
 
-| Layer | Technology | Status |
+### Landlords
+| Name | Email | Tier |
 |---|---|---|
-| **Frontend** | React 19, TypeScript, Vite 7 | Active |
-| **Logic** | Role-Based Access (Landlord/Agent/Roommate) | Verified |
-| **Backend** | Hono (Node.js/Cloudflare Workers Framework) | Active |
-| **Integrations** | UAE PASS, DLD/Makani, Stripe | Mocked/API-Ready |
-| **Database** | Cloudflare D1 (SQLite-based), Prisma | Scaled |
-| **Deployment** | Vercel (Auto-Sync) | Live |
+| Ahmed Al Maktoum | ahmed.almaktoum@nestmatch.ae | Gold |
+| Fatima Hassan | fatima.hassan@nestmatch.ae | Gold |
+
+### Letting Agents
+| Name | Email | BRN |
+|---|---|---|
+| Khalid Al Rashid | khalid@dubaipropertygroup.ae | RERA-BRN-2025-12345 |
+| Tariq Mahmood | tariq@agency.ae | RERA-BRN-33333 |
+
+### Tenants — Gold (UAE PASS)
+| Name | Email | GCC |
+|---|---|---|
+| Priya Sharma | priya.sharma@email.com | 85 |
+| Marcus Chen | marcus.chen@email.com | 70 |
+| Aisha Patel | aisha.patel@email.com | 92 |
+| James Morrison | james.morrison@email.com | 0 |
+
+### Tenants — Verified (Passport KYC)
+| Name | Email | Nationality | KYC Status |
+|---|---|---|---|
+| James Okafor | james.okafor@gmail.com | Nigerian | Pending |
+| Sofia Kowalski | sofia.k@outlook.com | Polish | Approved |
+| Ravi Menon | ravi.menon@gmail.com | Indian | No docs |
+
+### Tenants — Explorer (Browse Only)
+| Name | Email |
+|---|---|
+| Liam O'Brien | liam.obrien@gmail.com |
+| Amara Diallo | amara.diallo@email.com |
+
+### Platform Admin
+| Name | Email | Role |
+|---|---|---|
+| Sara Al Hashimi | compliance@nestmatch.ae | Head of Compliance |
+| Rashid Khalil | operations@nestmatch.ae | Head of Operations |
 
 ---
 
-*Built to provide a safer, compliant, and transparent housing market in the UAE.*  
-*Copyright © 2026 NestMatch UAE Team.*
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite 7 |
+| Styling | Vanilla CSS + CSS variables |
+| Icons | lucide-react |
+| Routing | react-router-dom v7 |
+| Backend | Cloudflare Workers + Hono |
+| Database | Cloudflare D1 (SQLite at edge) |
+| Storage | Cloudflare R2 (images, KYC docs, avatars) |
+| Frontend Deploy | Vercel (auto-deploy on push) |
+| Backend Deploy | Cloudflare Workers |
+
+---
+
+## Out of Scope (by design)
+
+These features are intentionally excluded — NestMatch does not hold the required licences:
+
+| Feature | Licence Required | Status |
+|---|---|---|
+| Payment processing | CBUAE / DIFC | Not held |
+| Escrow / deposit holding | CBUAE | Not held |
+| Rent collection | CBUAE | Not held |
+| Tenancy contract drafting | RERA broker licence | Not held |
+
+NestMatch facilitates property discovery, identity verification, and the official DLD viewing agreement only. All tenancy contracts are prepared by RERA-licensed brokers.
+
+---
+
+## Project Documentation
+
+| Document | Description |
+|---|---|
+| [CHANGELOG](docs/CHANGELOG.md) | Version history and what changed |
+| [ARCHITECTURE](docs/ARCHITECTURE.md) | System design, routes, API, auth tiers |
+| [DECISIONS](docs/DECISIONS.md) | Why things were built, removed, or changed |
+| [COMPLIANCE](docs/COMPLIANCE.md) | Legal scope, licence gaps, data handling |
+| [PRODUCT_ROADMAP](docs/PRODUCT_ROADMAP.md) | What's built, what's next |
+
+---
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Type check
+npx tsc --noEmit
+```
+
+---
+
+*Built for Dubai's shared housing market under Dubai Law No. 4 of 2026.*
+*Copyright 2026 NestMatch UAE.*

@@ -164,6 +164,7 @@ export function mapApiRoommateToUser(api: ApiRoommateProfile): User {
     emiratesId: api.emirates_id,
     isUaePassVerified: Boolean(api.is_uae_pass_verified),
     isIdVerified: Boolean(api.is_id_verified),
+    verification_tier: api.is_uae_pass_verified ? 'tier2_uae_pass' as const : api.is_id_verified ? 'tier0_passport' as const : 'tier1_unverified' as const,
 
     name: api.name,
     email: api.email,

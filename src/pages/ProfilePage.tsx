@@ -18,12 +18,17 @@ import {
   Instagram,
   Linkedin,
   Plus,
-  ChevronLeft
+  ChevronLeft,
+  AlertTriangle,
+  Upload,
+  Lock
 } from "lucide-react";
 import { api } from "@/services/api";
+import { getTierLabel, getTierColor } from "@/utils/accessControl";
+import PassportKycModal from "@/components/PassportKycModal";
 
 export default function ProfilePage() {
-  const { currentUser, verificationTier } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -68,6 +73,7 @@ export default function ProfilePage() {
   );
 
   const isOwnProfile = displayUser?.id === currentUser?.id;
+  const [showKycModal, setShowKycModal] = useState(false);
   
   // GCC logic based strictly on displayUser
   const gccScore = displayUser?.gccScore ?? 0;
@@ -141,19 +147,9 @@ export default function ProfilePage() {
               >
                 <h2 style={{ margin: 0 }}>{displayUser.name}</h2>
 
-                {displayUser.isUaePassVerified ? (
-                  <span className="badge badge-uaepass">
-                    <ShieldCheck size={12} /> UAE PASS Verified (Tier 2)
+                <span className={`badge ${displayUser.verification_tier === 'tier2_uae_pass' ? 'badge-uaepass' : displayUser.verification_tier === 'tier0_passport' ? 'badge-orange' : 'badge-orange'}`}>
+                    <ShieldCheck size={12} /> {getTierLabel(displayUser.verification_tier)}
                   </span>
-                ) : displayUser.isIdVerified ? (
-                  <span className="badge badge-green">
-                    <ShieldCheck size={12} /> ID Verified (Tier 2)
-                  </span>
-                ) : (
-                  <span className="badge badge-orange">
-                    <ShieldCheck size={12} /> Tier 1 Basic
-                  </span>
-                )}
 
                 {displayUser.isPremium && <span className="badge badge-gold">⭐ Premium</span>}
 
@@ -217,6 +213,95 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
+
+        {/* ── Verification Tier Status Card ────────────── */}
+        {isOwnProfile && displayUser && (
+          <div className="glass-card" style={{
+            padding: '1.5rem',
+            marginBottom: '1.5rem',
+            borderLeft: `4px solid ${getTierColor(displayUser.verification_tier)}`,
+          }}>
+            {displayUser.verification_tier === 'tier0_passport' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <AlertTriangle size={20} style={{ color: '#f59e0b' }} />
+                  <h3 style={{ margin: 0 }}>{getTierLabel(displayUser.verification_tier)}</h3>
+                </div>
+
+                {/* KYC document status */}
+                {displayUser.kyc_documents && displayUser.kyc_documents.length > 0 ? (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Document Status</div>
+                    {displayUser.kyc_documents.map(doc => (
+                      <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0.625rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.02)', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.8125rem', textTransform: 'capitalize' }}>{doc.doc_type.replace('_', ' ')}</span>
+                        <span className={`badge ${doc.review_status === 'approved' ? 'badge-green' : doc.review_status === 'rejected' ? 'badge-red' : 'badge-orange'}`} style={{ fontSize: '0.5625rem' }}>
+                          {doc.review_status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '1rem' }}>
+                    <p style={{ fontSize: '0.8125rem', color: '#f59e0b', margin: 0 }}>No documents uploaded yet. Upload your passport and visa to unlock viewing requests.</p>
+                  </div>
+                )}
+
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1rem' }}>
+                  <div><strong>What you can do:</strong> Browse listings, request viewings, chat with landlords, sign viewing agreements</div>
+                  <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)' }}><strong>To unlock full access:</strong> Complete UAE PASS verification to sign tenancy contracts and apply for rooms</div>
+                </div>
+
+                <button className="btn btn-uaepass btn-sm" style={{ width: '100%' }}>
+                  <ShieldCheck size={14} /> Upgrade to UAE PASS (Tier 3 — Gold)
+                </button>
+              </>
+            )}
+
+            {displayUser.verification_tier === 'tier1_unverified' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <Lock size={20} style={{ color: 'var(--text-muted)' }} />
+                  <h3 style={{ margin: 0 }}>{getTierLabel(displayUser.verification_tier)}</h3>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                  You can browse listings but cannot request viewings, chat, or apply. Upload your passport or verify with UAE PASS to unlock more features.
+                </p>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => setShowKycModal(true)}>
+                    <Upload size={14} /> Upload Passport (Tier 1 — Verified)
+                  </button>
+                  <button className="btn btn-uaepass btn-sm" style={{ flex: 1 }}>
+                    <ShieldCheck size={14} /> UAE PASS (Tier 3 — Gold)
+                  </button>
+                </div>
+              </>
+            )}
+
+            {displayUser.verification_tier === 'tier2_uae_pass' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <CheckCircle2 size={20} style={{ color: 'var(--success)' }} />
+                  <h3 style={{ margin: 0 }}>{getTierLabel(displayUser.verification_tier)}</h3>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                  {displayUser.emiratesId
+                    ? `Emirates ID: ${displayUser.emiratesId.replace(/(\d{3})-(\d{4})-(\d{3})(\d{4})(\d+)/, '$1-$2-****$5')}`
+                    : 'UAE PASS identity confirmed — full platform access.'}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* KYC Modal */}
+        {showKycModal && displayUser && (
+          <PassportKycModal
+            user={displayUser}
+            onClose={() => setShowKycModal(false)}
+            onUpdate={() => setShowKycModal(false)}
+          />
+        )}
 
         {/* Landlord Portfolio Summary */}
         {landlordStats && (
@@ -461,7 +546,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {verificationTier === "tier1" && isOwnProfile && (
+            {displayUser.verification_tier === "tier1_unverified" && isOwnProfile && (
               <div
                 style={{
                   marginTop: "1rem",
@@ -477,7 +562,7 @@ export default function ProfilePage() {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  Upgrade to Tier 2 to unlock chat and bookings.
+                  Upgrade to Tier 1 — Verified or Tier 3 — Gold to unlock chat and bookings.
                 </p>
                 <button
                   className="btn btn-primary btn-sm"

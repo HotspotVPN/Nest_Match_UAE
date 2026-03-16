@@ -10,6 +10,24 @@ export type Duration = '6_months' | '12_months' | 'flexible';
 export type Schedule = 'early_bird' | 'night_owl' | 'varies';
 export type AuthMethod = 'email' | 'google' | 'uae_pass'; // Tiered: email/google = Tier 1 (browse-only), uae_pass = Tier 2 (full access)
 
+export type VerificationTier =
+    | 'tier0_passport'
+    | 'tier1_unverified'
+    | 'tier2_uae_pass';
+
+export type KycDocType = 'passport' | 'visa_page' | 'emirates_id' | 'uae_pass';
+
+export interface KycDocument {
+    id: string;
+    user_id: string;
+    doc_type: KycDocType;
+    r2_key: string;
+    uploaded_at: string;
+    review_status: 'pending' | 'approved' | 'rejected';
+    reviewed_by?: string;
+    reviewed_at?: string;
+}
+
 export interface Compliance {
     kyc_status: ComplianceStatus;
     kyc_completed_date?: string;
@@ -45,6 +63,12 @@ export interface User {
     emiratesId?: string;        // Emirates ID number
     isUaePassVerified: boolean; // Tier 2: verified via UAE PASS OAuth
     isIdVerified: boolean;      // Tier 2 alt: verified via Onfido (new expats)
+    verification_tier: VerificationTier;
+    kyc_documents?: KycDocument[];
+    passport_number?: string;
+    visa_type?: string;
+    visa_expiry?: string;
+    nationality?: string;
     name: string;
     email: string;
     avatar: string;

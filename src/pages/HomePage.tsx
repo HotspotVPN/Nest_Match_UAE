@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Building2, Users, Search, CheckCircle2, Award, ArrowRight, Shield, ScrollText, Wallet } from 'lucide-react';
+import { ShieldCheck, Building2, Users, Search, CheckCircle2, Award, ArrowRight, Shield, ScrollText, Wallet, FileText, BarChart2 } from 'lucide-react';
 
 export default function HomePage() {
     return (
@@ -36,7 +36,7 @@ export default function HomePage() {
                     {/* Engine Overview Strip */}
                     <div style={{ marginTop: '4rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
                         <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                           <span style={{ color: 'var(--brand-purple-light)' }}>NestMatch OS:</span> Search → Book (Hold) → Contract Hub → Residing Dashboard
+                           <span style={{ color: 'var(--brand-purple-light)' }}>NestMatch OS:</span> Search → Verify Identity → Book Viewing → Sign DLD Agreement → Move In
                         </div>
                         <Link to="/how-it-works" className="btn btn-outline btn-sm" style={{ padding: '0.5rem 1rem' }}>
                             See how it works <ArrowRight size={14} />
@@ -72,10 +72,10 @@ export default function HomePage() {
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                             {[
-                                { icon: ShieldCheck, title: 'Identity', desc: 'UAE PASS verified Emirates ID anchors.' },
-                                { icon: Building2, title: 'Permits', desc: 'Real-time DLD shared housing permit checks.' },
-                                { icon: ScrollText, title: 'Contracts', desc: 'RERA-aligned digital tenancy agreements.' },
-                                { icon: Award, title: 'GCC & PDPL', desc: 'Behaviour-based scoring with data privacy.' }
+                                { icon: ShieldCheck, title: 'Three-Tier Identity', desc: 'Browse with email, verify with passport, or authenticate with UAE PASS — access scales with your verification level.' },
+                                { icon: FileText, title: 'Official DLD Viewing Agreements', desc: 'Every confirmed viewing generates a DLD Property Viewing Agreement (Ref: DLD/RERA/RL/LP/P210), signed digitally by both parties.' },
+                                { icon: Building2, title: 'Permit-Verified Listings', desc: 'Every listing is checked for a valid Trakheesi advertising permit, shared-housing permit, and 10-digit Makani number before going live.' },
+                                { icon: BarChart2, title: 'Demand Intelligence', desc: 'Real-time data on how many verified tenants are searching each area, budget band, and room type — so landlords price and market smarter.' }
                             ].map(item => {
                                 const Icon = item.icon;
                                 return (

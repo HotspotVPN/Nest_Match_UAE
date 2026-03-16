@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.1.0 — Investor Demo (March 2026)
+## Current: v2.3.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -20,11 +20,27 @@
 - [x] LeaseHandoffCard replacing ContractManagerPage
 - [x] Full applicant profile visibility (blind match removed)
 
-### Planned (Session 5)
-- [ ] Three-tier verification UI overhaul
-- [ ] PassportKycModal for Tier 0 new arrivals
-- [ ] Login page three-path entry (UAE PASS / New Arrival / Browse)
-- [ ] Compliance dashboard Passport KYC tab
+### Completed (Session 5)
+- [x] Three-tier verification UI overhaul
+- [x] PassportKycModal for Tier 0 new arrivals
+- [x] Login page three-path entry (UAE PASS / New Arrival / Browse)
+- [x] Compliance dashboard Passport KYC tab
+- [x] Access control utility (canRequestViewing, canChat, canApply, etc.)
+- [x] Profile page tier-aware verification status card
+- [x] 3 Tier 0 demo users with passport KYC documents
+
+### Completed (Sessions 6-7)
+- [x] Navbar overhaul: dropdown removed, Profile + Sign Out always visible
+- [x] Role-based navbar per user type
+- [x] Browse removed from authenticated navbars
+- [x] Tier naming: Explorer (T0), Verified (T1), Gold (T3)
+- [x] Supply-side cards: Individual Landlord, RERA Agent, Property Company
+- [x] CRM restructured: 6 tabs with Platform IDs and global search
+- [x] HomePage compliance tiles + NestMatch OS flow updated
+- [x] HowItWorksPage complete rewrite with tier system + viewing journey
+- [x] All placeholder users replaced with real diverse personas (30+ nationalities)
+- [x] README.md fully rewritten for v2.3.0
+- [x] Superpowers integration in CLAUDE.md
 
 ---
 

@@ -1,16 +1,14 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import {
-    Home, Search, User, BarChart3, ShieldCheck, Users,
-    LogOut, Building2, CalendarCheck, MessageSquare, LayoutDashboard, Wrench, BarChart2
+    User, ShieldCheck, Users,
+    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle
 } from 'lucide-react';
 
 export default function Navbar() {
-    const { currentUser, logout, isAuthenticated, verificationTier } = useAuth();
+    const { currentUser, logout, isAuthenticated } = useAuth();
     const location = useLocation();
-    const [showDropdown, setShowDropdown] = useState(false);
 
     const isActive = (path: string) => location.pathname === path ? 'active' : '';
 
@@ -26,11 +24,8 @@ export default function Navbar() {
 
                     {isAuthenticated && currentUser && (
                         <div className="navbar-links">
-                            {(currentUser.type === 'roommate') && (
+                            {currentUser.type === 'roommate' && (
                                 <>
-                                    <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
-                                        <Search size={16} /> Browse
-                                    </Link>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings
                                     </Link>
@@ -45,24 +40,17 @@ export default function Navbar() {
                             {(currentUser.type === 'landlord' || currentUser.type === 'letting_agent') && (
                                 <>
                                     <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
-                                        <Building2 size={16} /> Properties
+                                        <ShieldCheck size={16} /> Properties
                                     </Link>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings
                                     </Link>
-                                    <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
-                                        <MessageSquare size={16} /> Chat
-                                    </Link>
-                                    <Link to="/maintenance" className={`navbar-link ${isActive('/maintenance')}`}>
-                                        <Wrench size={16} /> Maintenance
-                                    </Link>
                                     <Link to="/residing-dashboard" className={`navbar-link ${isActive('/residing-dashboard')}`}>
                                         <Users size={16} /> Applicants
                                     </Link>
-                                    <Link to="/wallet" className={`navbar-link ${isActive('/wallet')}`}>
-                                        <BarChart3 size={16} /> Wallet
+                                    <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
+                                        <MessageSquare size={16} /> Chat
                                     </Link>
-                                
                                 </>
                             )}
                             {currentUser.type === 'compliance' && (
@@ -75,15 +63,10 @@ export default function Navbar() {
                                     </Link>
                                 </>
                             )}
-                            {currentUser.type === 'finance' && (
-                                <Link to="/treasury" className={`navbar-link ${isActive('/treasury')}`}>
-                                    <BarChart3 size={16} /> Treasury
-                                </Link>
-                            )}
                             {currentUser.type === 'operations' && (
                                 <>
                                     <Link to="/customers" className={`navbar-link ${isActive('/customers')}`}>
-                                        <Users size={16} /> CRM
+                                        <Users size={16} /> Customers
                                     </Link>
                                     <Link to="/analytics" className={`navbar-link ${isActive('/analytics')}`}>
                                         <BarChart2 size={16} /> Analytics
@@ -93,37 +76,30 @@ export default function Navbar() {
                         </div>
                     )}
 
+                    {!isAuthenticated && (
+                        <div className="navbar-links">
+                            <Link to="/how-it-works" className={`navbar-link ${isActive('/how-it-works')}`}>
+                                <HelpCircle size={16} /> How it Works
+                            </Link>
+                        </div>
+                    )}
+
                     <div className="navbar-actions">
                         {isAuthenticated && currentUser ? (
-                            <>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                    <Link to="/chat" className="btn btn-ghost btn-icon">
-                                        <MessageSquare size={18} />
-                                    </Link>
-                                    <Link to="/residing-dashboard" className="btn btn-ghost btn-icon">
-                                        <LayoutDashboard size={18} />
-                                    </Link>
-                                    
-                                    <div style={{ position: 'relative' }}>
-                                        <button onClick={() => setShowDropdown(!showDropdown)} className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0.5rem', marginLeft: '0.5rem' }}>
-                                            <div className="avatar avatar-sm">{getInitials(currentUser.name)}</div>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-                                                {currentUser.name.split(' ')[0]}
-                                                {verificationTier === 'tier2' && <ShieldCheck size={12} style={{ color: 'var(--uaepass-green)' }} />}
-                                            </span>
-                                        </button>
-                                        {showDropdown && (
-                                            <div className="dropdown-menu" style={{ position: 'absolute', right: 0, top: '100%', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '0.5rem', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', zIndex: 10 }}>
-                                                <Link to="/profile" className="dropdown-item" onClick={() => setShowDropdown(false)} style={{ display: 'block', padding: '0.5rem 1rem', textDecoration: 'none', color: '#333' }}>Profile</Link>
-                                                <button onClick={() => { logout(); setShowDropdown(false); }} className="dropdown-item" style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#333' }}>Sign Out</button>
-                                            </div>
-                                        )}
-                                    </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div className="avatar avatar-sm">{getInitials(currentUser.name)}</div>
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                                        {currentUser.name.split(' ')[0]}
+                                    </span>
                                 </div>
-                                <button onClick={() => { logout(); }} className="btn btn-ghost btn-icon" title="Sign out">
-                                    <LogOut size={16} />
+                                <Link to="/profile" className="btn btn-ghost btn-sm">
+                                    <User size={16} /> Profile
+                                </Link>
+                                <button onClick={() => { logout(); }} className="btn btn-ghost btn-sm" title="Sign out">
+                                    <LogOut size={16} /> Sign Out
                                 </button>
-                            </>
+                            </div>
                         ) : (
                             <Link to="/login" className="btn btn-uaepass btn-sm">
                                 <ShieldCheck size={16} /> Login with UAE PASS
@@ -136,14 +112,11 @@ export default function Navbar() {
             {/* Mobile Bottom Nav */}
             {isAuthenticated && currentUser && (
                 <div className="mobile-nav">
-                    <Link to="/" className={`mobile-nav-link ${isActive('/')}`}>
-                        <Home size={20} /> Home
-                    </Link>
-                    <Link to="/browse" className={`mobile-nav-link ${isActive('/browse')}`}>
-                        <Search size={20} /> Browse
-                    </Link>
                     <Link to="/viewings" className={`mobile-nav-link ${isActive('/viewings')}`}>
                         <CalendarCheck size={20} /> Viewings
+                    </Link>
+                    <Link to="/chat" className={`mobile-nav-link ${isActive('/chat')}`}>
+                        <MessageSquare size={20} /> Chat
                     </Link>
                     <Link to="/profile" className={`mobile-nav-link ${isActive('/profile')}`}>
                         <User size={20} /> Profile
