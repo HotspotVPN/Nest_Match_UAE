@@ -46,6 +46,9 @@ src/types/        — index.ts (single source of truth for all types)
 | /viewings | ViewingsPage | Authenticated |
 | /chat | ChatPage | Authenticated |
 | /dashboard | LandlordDashboardPage | Landlord/Agent |
+| /my-properties | MyPropertiesPage | Landlord/Agent |
+| /privacy | PrivacyPolicyPage | Public |
+| /terms | TermsPage | Public |
 | /residing-dashboard | ResidingDashboardPage | Landlord/Agent |
 | /analytics | ViewingAnalyticsPage | Operations/Compliance admin |
 | /compliance | CompliancePage | Compliance admin |

@@ -362,7 +362,7 @@ export default function HowItWorksPage() {
                                 <li>Multi-unit portfolio dashboard</li>
                                 <li>Bulk listing management</li>
                                 <li>Corporate tenant matching</li>
-                                <li>White-label compliance layer (coming soon)</li>
+                                <li>White-label compliance layer</li>
                                 <li>All viewing agreements under one account</li>
                             </ul>
 

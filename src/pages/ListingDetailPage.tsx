@@ -6,7 +6,7 @@ import { listings, users, formatCurrency, getInitials, viewingBookings, property
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
     ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
-    MessageSquare, Edit2, X, CheckCircle2, Home, Wrench, LogOut, Loader2, ArrowRight
+    MessageSquare, Edit2, X, CheckCircle2, Home, Wrench, LogOut, Loader2, ArrowRight, Clock
 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -89,12 +89,35 @@ export default function ListingDetailPage() {
                     <ChevronLeft size={14} /> Back to Browse
                 </Link>
 
+                {/* Coming Soon Banner */}
+                {listing.listing_status === 'coming_soon' && (
+                    <div style={{
+                        padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem',
+                        background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem',
+                    }}>
+                        <Clock size={16} style={{ color: '#f59e0b' }} />
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#f59e0b' }}>
+                            This property is Coming Soon — not yet available for viewings
+                        </span>
+                    </div>
+                )}
+
                 {/* Image placeholder */}
-                <div style={{ height: '320px', borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
+                <div style={{ height: '320px', borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', position: 'relative' }}>
                     <div style={{ textAlign: 'center' }}>
                         <Building2 size={48} style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }} />
                         <div style={{ color: 'var(--text-muted)' }}>{listing.district}</div>
                     </div>
+                    {listing.listing_status === 'coming_soon' && (
+                        <div style={{
+                            position: 'absolute', top: '1rem', right: '1rem',
+                            padding: '0.375rem 0.875rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700,
+                            background: 'rgba(245,158,11,0.9)', color: '#fff',
+                        }}>
+                            Coming Soon
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
@@ -347,6 +370,20 @@ export default function ListingDetailPage() {
                                         </button>
                                     </div>
                                 </div>
+                            ) : listing.listing_status === 'coming_soon' ? (
+                                <>
+                                    {/* Register Interest CTA for Coming Soon */}
+                                    <button
+                                        onClick={() => showToast("Interest registered! You'll be notified when this property launches.", 'success')}
+                                        className="btn btn-primary btn-lg"
+                                        style={{ width: '100%', background: '#f59e0b', borderColor: '#f59e0b' }}
+                                    >
+                                        <Clock size={18} /> Register Interest
+                                    </button>
+                                    <p style={{ fontSize: '0.6875rem', color: '#f59e0b', textAlign: 'center', marginTop: '0.5rem' }}>
+                                        This property is not yet available for viewings
+                                    </p>
+                                </>
                             ) : (
                                 <>
                                     {/* Book Viewing CTA */}

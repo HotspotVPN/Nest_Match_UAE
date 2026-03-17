@@ -3,6 +3,45 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.7.0] — 2026-03-17 · Legal Pages, My Properties, Coming Soon Listings
+
+### Session 9A: Legal, footer, route fixes + landlord property management
+
+### Added
+- Footer component on all public pages with legal disclaimer
+  ("NestMatch is not a property management company, RERA-licensed
+  broker, or financial services provider")
+- PrivacyPolicyPage (/privacy) — UAE Federal Law No. 45 compliance
+- TermsPage (/terms) — legal boundary statements
+- vercel.json SPA rewrite rule for direct URL access on Vercel
+- MyPropertiesPage (/my-properties) — landlord's own properties with
+  Active/Coming Soon/All tabs, stat cards, occupancy bars, action buttons
+- listing_status field on Listing type ('active'|'coming_soon'|'draft'|'suspended')
+- 2 Coming Soon listings: Downtown Dubai Studio + Palm Jumeirah Villa
+  with 'coming-soon' tags and amber badges
+- "Launch & Advertise" button on Coming Soon properties (simulated)
+- "Register Interest" button on Coming Soon listing detail pages
+- Coming Soon banner on listing detail for pre-market properties
+- Dashboard link added to landlord/agent navbar
+
+### Changed
+- Landlord navbar: "Properties" (/browse) → "My Properties" (/my-properties)
+- My Properties shows only landlord's own/managed listings (filtered)
+- Coming Soon listings hidden from public /browse page
+- Homepage search bar: "Search by area, building, or district..." (removed
+  "AI-powered search coming soon" — that was placeholder text, not the feature)
+
+### Removed
+- "AI-powered search coming soon" hint text from homepage
+- "(coming soon)" text from HowItWorksPage
+
+### Docs
+- CLAUDE.md: legal pages constraint, anonymisation rules, premium features,
+  Coming Soon Listings TODO, premium status table, new routes
+- DECISIONS.md: to be updated with coming soon feature decision
+
+---
+
 ## [2.6.0] — 2026-03-16 · Tier Renumbering + Demo Journeys
 
 ### Tier 3 → Tier 2 rename

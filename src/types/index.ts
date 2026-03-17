@@ -206,6 +206,7 @@ export interface Listing {
     currentOccupants: number;     // Must never exceed maxLegalOccupancy
     isActive: boolean;            // Auto-false when at capacity
     isApiVerified: boolean;       // true = DLD Mock API validated the permit
+    listing_status?: 'active' | 'coming_soon' | 'draft' | 'suspended';
     // ── Transport ─────────────────────────────────────────────
     transport_chips?: TransportChip[];
     // ── Fintech / Proptech ────────────────────────────────────

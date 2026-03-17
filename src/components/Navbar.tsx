@@ -2,8 +2,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import {
-    User, ShieldCheck, Users,
-    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search
+    User, ShieldCheck, Users, LayoutDashboard,
+    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -39,8 +39,11 @@ export default function Navbar() {
                             )}
                             {(currentUser.type === 'landlord' || currentUser.type === 'letting_agent') && (
                                 <>
-                                    <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
-                                        <ShieldCheck size={16} /> Properties
+                                    <Link to="/dashboard" className={`navbar-link ${isActive('/dashboard')}`}>
+                                        <LayoutDashboard size={16} /> Dashboard
+                                    </Link>
+                                    <Link to="/my-properties" className={`navbar-link ${isActive('/my-properties')}`}>
+                                        <Building2 size={16} /> My Properties
                                     </Link>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings

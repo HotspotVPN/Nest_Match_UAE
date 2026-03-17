@@ -92,6 +92,7 @@ export default function BrowsePage() {
     // ─── Filtering + Sorting ─────────────────────────────────
     const filteredListings = useMemo(() => {
         let result = listings.filter(l => {
+            if (l.listing_status === 'coming_soon') return false;
             if (l.currentOccupants > l.maxLegalOccupancy) return false;
             // Hide fully occupied by default unless toggle is on
             if (!showFullyOccupied && l.available_rooms === 0) return false;

@@ -10,7 +10,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.6.0
+**Current version:** v2.7.0
 
 ---
 
@@ -23,6 +23,40 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - KYC docs in R2 KYC_DOCS bucket only (never IMAGES bucket)
 - Occupancy count can NEVER go below 0 or above maxLegalOccupancy
 - Never set verification_tier to 'gold' without UAE PASS OAuth completing
+
+### Legal pages (never remove)
+- src/pages/PrivacyPolicyPage.tsx — UAE Federal Law No. 45 compliance
+- src/pages/TermsPage.tsx — legal boundary statements
+- src/components/Footer.tsx — contains legal disclaimer
+- The footer disclaimer "NestMatch is not a property management
+  company, RERA-licensed broker, or financial services provider"
+  must appear on every public page. Never remove or weaken this text.
+
+### Anonymisation rules (premium features)
+- Occupant profiles shown to searchers must NEVER include:
+  name, photo, nationality, employer, exact age, contact info
+- Occupant profiles may include: lifestyle tags, work schedule,
+  noise preference, shared space habits, age RANGE, GCC Score,
+  move-in date, match score
+- Rejection reasons are predefined code strings only —
+  'schedule', 'lifestyle', 'noise', 'habits'
+- Never allow free-text rejection reasons (discrimination risk)
+- Resident review signals are advisory — landlord has final authority
+
+### Premium Features (no licence required)
+- Premium tenant matching: occupant profiles, resident reviews
+- GCC Score gamification: review points, rejection penalties
+- Premium = Tier 2 Gold automatically (no payment until CBUAE licence)
+- NEVER store free-text rejection reasons — predefined codes only
+
+### TODO: Coming Soon Listings (premium feature, not yet built)
+- Add 'coming_soon' as a Listing status value in types/index.ts
+- Coming Soon = pre-market listings visible only to Tier 2 Gold users
+- Landlords can list properties before they're publicly available
+- Verified/premium tenants get early access to browse these
+- Browse page: "Coming Soon" filter/section for premium users
+- Standard users see a locked/blurred preview with upgrade CTA
+- This is NOT "coming soon" placeholder text — it's a product feature
 
 ## Deleted files (never recreate)
 - src/services/mockStripeService.ts
@@ -83,7 +117,20 @@ src/utils/           — accessControl.ts (tier gating + display labels)
 /wallet              → LandlordWalletPage (landlord/agent)
 /add-property        → AddPropertyPage (landlord/agent)
 /ledger              → RentLedgerPage (authenticated)
+/my-properties       → MyPropertiesPage (landlord/agent)
+/privacy             → PrivacyPolicyPage (public)
+/terms               → TermsPage (public)
 ```
+
+### Premium Status (layered on top of tiers)
+| Status | Who | Access |
+|---|---|---|
+| Standard | All users by default | Normal platform features per tier |
+| Premium | Tier 2 Gold users (auto-granted) | See occupant profiles, review applicants, GCC Score boost |
+
+Premium status is NOT a tier — it's an overlay. A Tier 2 Gold user
+is automatically premium. A Tier 1 Verified user must upgrade to
+Tier 2 first. Tier 0 Explorers cannot access premium features.
 
 ### Slug routing
 All listings and users have a `slug` field generated from their name/title.

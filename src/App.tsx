@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DemoStateProvider } from '@/contexts/DemoStateContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import Navbar from '@/components/Navbar';
 import Toast from '@/components/Toast';
 import DemoControls from '@/components/DemoControls';
+import Footer from '@/components/Footer';
 import HomePage from '@/pages/HomePage';
 import LoginPage from '@/pages/LoginPage';
 import BrowsePage from '@/pages/BrowsePage';
@@ -27,11 +28,27 @@ import LandlordDashboardPage from '@/pages/LandlordDashboardPage';
 import RegisterLandingPage from '@/pages/RegisterLandingPage';
 import TenantSignupPage from '@/pages/TenantSignupPage';
 import LandlordSignupPage from '@/pages/LandlordSignupPage';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
+import TermsPage from '@/pages/TermsPage';
+import MyPropertiesPage from '@/pages/MyPropertiesPage';
+
+const DASHBOARD_PATHS = [
+    '/dashboard', '/viewings', '/compliance', '/customers', '/analytics',
+    '/chat', '/maintenance', '/residing-dashboard', '/wallet', '/gcc',
+    '/ledger', '/add-property', '/my-properties',
+];
 
 function AuthenticatedDemoControls() {
     const { isAuthenticated } = useAuth();
     if (!isAuthenticated) return null;
     return <DemoControls />;
+}
+
+function ConditionalFooter() {
+    const { pathname } = useLocation();
+    const isDashboard = DASHBOARD_PATHS.some(p => pathname.startsWith(p));
+    if (isDashboard) return null;
+    return <Footer />;
 }
 
 export default function App() {
@@ -52,6 +69,8 @@ export default function App() {
                                 <Route path="/browse" element={<BrowsePage />} />
                                 <Route path="/listing/:id" element={<ListingDetailPage />} />
                                 <Route path="/profile/:id?" element={<ProfilePage />} />
+                                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                                <Route path="/terms" element={<TermsPage />} />
 
                                 <Route path="/viewings" element={<ViewingsPage />} />
                                 <Route path="/add-property" element={<AddPropertyPage />} />
@@ -67,8 +86,10 @@ export default function App() {
                                 <Route path="/ledger" element={<RentLedgerPage />} />
                                 <Route path="/wallet" element={<LandlordWalletPage />} />
                                 <Route path="/dashboard" element={<LandlordDashboardPage />} />
+                                <Route path="/my-properties" element={<MyPropertiesPage />} />
                             </Routes>
                         </main>
+                        <ConditionalFooter />
                         <AuthenticatedDemoControls />
                     </AuthProvider>
                 </DemoStateProvider>

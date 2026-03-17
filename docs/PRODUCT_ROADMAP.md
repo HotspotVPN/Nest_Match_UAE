@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.6.0 — Investor Demo (March 2026)
+## Current: v2.7.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -69,6 +69,18 @@
 - [x] Tenant listing awareness ("You live here" badge + shortcuts)
 - [x] Viewing history + GCC score factors on profile
 - [x] Tier 3 → Tier 2 rename: sequential 0, 1, 2
+
+### Completed (Session 9A — Legal + My Properties)
+- [x] Footer with legal disclaimer on all public pages
+- [x] Privacy Policy page (/privacy)
+- [x] Terms of Use page (/terms)
+- [x] vercel.json SPA rewrite rule
+- [x] MyPropertiesPage (/my-properties) with Active/Coming Soon tabs
+- [x] listing_status field: active, coming_soon, draft, suspended
+- [x] 2 Coming Soon listings (Downtown Studio, Palm Villa)
+- [x] Coming Soon hidden from /browse, visible on /my-properties
+- [x] Landlord navbar: Dashboard | My Properties | Viewings | Applicants | Chat
+- [x] Coming Soon banner + Register Interest on listing detail
 
 ### Completed (Session 9 — Homepage Revamp)
 - [x] Homepage legal audit: removed all unlicensed capability claims

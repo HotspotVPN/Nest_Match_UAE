@@ -28,18 +28,12 @@ export default function HomePage() {
                     <Link to="/browse" style={{ textDecoration: 'none' }}>
                         <div style={{ maxWidth: '560px', margin: '0 auto', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(124,58,237,0.35)', borderRadius: '12px', padding: '0.5rem 0.5rem 0.5rem 1.25rem', gap: '0.75rem' }}>
                             <Search size={20} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-                            <span style={{ flex: 1, textAlign: 'left', color: 'var(--text-muted)', fontSize: '0.9375rem' }}>I'm looking for a room in Dubai...</span>
+                            <span style={{ flex: 1, textAlign: 'left', color: 'var(--text-muted)', fontSize: '0.9375rem' }}>Search by area, building, or district...</span>
                             <button className="btn btn-primary" style={{ padding: '0.625rem 1.25rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.375rem', pointerEvents: 'none' }}>
                                 Search <ArrowRight size={16} />
                             </button>
                         </div>
                     </Link>
-
-                    {/* AI hint */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.75rem' }}>
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand-purple-light)' }} />
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI-powered search coming soon</span>
-                    </div>
 
                     {/* Secondary CTAs */}
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}>

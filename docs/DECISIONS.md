@@ -146,3 +146,27 @@ explanation. The string enum values ('explorer', 'verified', 'gold')
 are unchanged — only display numbers were updated. If an intermediate
 tier is needed later, it can be inserted with a new string value
 without renumbering.
+
+---
+
+## DEC-013 — Separate My Properties from public Browse
+**Date:** 2026-03-17 (Session 9A)
+**Decision:** Landlord navbar "Properties" (linked to /browse) replaced
+with "My Properties" (linked to /my-properties). Browse page (/browse)
+is accessible from the homepage search bar for public users only.
+**Reason:** Landlords need a dedicated view of their own properties
+with occupancy, actions, and Coming Soon management. Mixing their
+portfolio with the public browse page conflated discovery (tenant
+action) with management (landlord action).
+
+---
+
+## DEC-014 — Coming Soon listings as pre-market feature
+**Date:** 2026-03-17 (Session 9A)
+**Decision:** Added listing_status field with 'coming_soon' value.
+Coming Soon listings are visible on /my-properties for landlords
+and on /listing/:slug for direct access, but hidden from /browse.
+**Reason:** Landlords need to prepare listings before launch.
+Premium tenants will get early access in a future phase.
+This is a product feature ("Coming Soon Listings"), distinct from
+placeholder "coming soon" text which was removed from the UI.

@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.6.0
+**Version:** 2.7.0
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -41,6 +41,8 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 - Passport KYC upload for new arrivals (Tier 1)
 
 ### For Landlords & Agents
+- My Properties page: Active + Coming Soon tabs, occupancy bars, action buttons
+- Coming Soon listings: pre-market properties with "Launch & Advertise" flow
 - Portfolio dashboard with occupancy tracking
 - Viewing requests from verified tenants with accept/decline
 - Auto-generated DLD Viewing Agreement pre-filled with Makani, Trakheesi, BRN
@@ -111,6 +113,13 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 | Storage | Cloudflare R2 (images, KYC docs, avatars) |
 | Frontend Deploy | Vercel (auto-deploy on push) |
 | Backend Deploy | Cloudflare Workers |
+
+---
+
+### Legal
+- Privacy Policy (/privacy) — UAE Federal Law No. 45 of 2021
+- Terms of Use (/terms) — legal boundary statements
+- Footer disclaimer on all public pages
 
 ---
 
