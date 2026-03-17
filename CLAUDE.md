@@ -10,7 +10,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.7.0
+**Current version:** v2.7.2
 
 ---
 

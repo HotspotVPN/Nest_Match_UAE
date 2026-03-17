@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 
-const payments = new Hono<{ Bindings: Env }>();
+const payments = new Hono<AppEnv>();
 
 // GET /api/payments
 payments.get('/', authMiddleware({ required: true }), async (c) => {

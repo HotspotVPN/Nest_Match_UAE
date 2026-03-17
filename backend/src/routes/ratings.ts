@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 import { tierGate } from '../middleware/tierGate';
 import { createRatingSchema } from '../validation/schemas';
 
-const ratings = new Hono<{ Bindings: Env }>();
+const ratings = new Hono<AppEnv>();
 
 // GET /api/properties/:id/ratings
 ratings.get('/:propertyId', async (c) => {

@@ -19,4 +19,9 @@ export type JWTPayload = {
   exp: number;
 };
 
-export type HonoContext = Context<{ Bindings: Env; Variables: { user?: JWTPayload } }>;
+export type AppEnv = {
+  Bindings: Env;
+  Variables: { user: JWTPayload };
+};
+
+export type HonoContext = Context<AppEnv>;

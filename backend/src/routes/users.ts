@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 import { updateProfileSchema } from '../validation/schemas';
 
-const users = new Hono<{ Bindings: Env }>();
+const users = new Hono<AppEnv>();
 
 // GET /api/users/me
 users.get('/me', authMiddleware({ required: true }), async (c) => {

@@ -1,7 +1,7 @@
 import { MiddlewareHandler } from 'hono';
-import { Env } from '../types';
+import { Env, JWTPayload } from '../types';
 
-export const tierGate = (minTier: number = 2): MiddlewareHandler<{ Bindings: Env }> => {
+export const tierGate = (minTier: number = 2): MiddlewareHandler<{ Bindings: Env; Variables: { user: JWTPayload } }> => {
   return async (c, next) => {
     const user = c.get('user');
 

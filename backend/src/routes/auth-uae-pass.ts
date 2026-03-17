@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { signJWT } from '../services/jwt';
 import { getMockUaePassUser } from '../services/mockUaePass';
 
-const authUaePass = new Hono<{ Bindings: Env }>();
+const authUaePass = new Hono<AppEnv>();
 
 // POST /api/auth/uae-pass — UAE PASS OAuth callback
 // CRITICAL: This is the ONLY path to verification_tier = 'tier2_uae_pass' (gold)

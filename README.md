@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.7.0
+**Version:** 2.7.2
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -108,8 +108,8 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 | Styling | Vanilla CSS + CSS variables |
 | Icons | lucide-react |
 | Routing | react-router-dom v7 |
-| Backend | Cloudflare Workers + Hono |
-| Database | Cloudflare D1 (SQLite at edge) |
+| Backend | Cloudflare Workers + Hono (deployed, 23+ endpoints) |
+| Database | Cloudflare D1 (SQLite at edge, 32 users + 14 properties seeded) |
 | Storage | Cloudflare R2 (images, KYC docs, avatars) |
 | Frontend Deploy | Vercel (auto-deploy on push) |
 | Backend Deploy | Cloudflare Workers |

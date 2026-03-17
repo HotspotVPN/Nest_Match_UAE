@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './types';
+import { Env, AppEnv } from './types';
 import { cors } from './middleware/cors';
 import authRoutes from './routes/auth';
 import authGoogleRoutes from './routes/auth-google';
@@ -12,11 +12,21 @@ import paymentRoutes from './routes/payments';
 import kycRoutes from './routes/kyc';
 import occupancyRoutes from './routes/occupancy';
 import gccRoutes from './routes/gcc-score';
+import agreementRoutes from './routes/agreements';
+import maintenanceRoutes from './routes/maintenance';
+import chatRoutes from './routes/chat';
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<AppEnv>();
 
 // Global Middleware
 app.use('*', cors());
+
+// Health check
+app.get('/api/health', (c) => c.json({
+  status: 'ok',
+  timestamp: new Date().toISOString(),
+  version: '2.7.1'
+}));
 
 // Routes
 app.route('/api/auth', authRoutes);
@@ -30,6 +40,9 @@ app.route('/api/payments', paymentRoutes);
 app.route('/api/kyc', kycRoutes);
 app.route('/api/properties', occupancyRoutes);
 app.route('/api/gcc', gccRoutes);
+app.route('/api/agreements', agreementRoutes);
+app.route('/api/maintenance', maintenanceRoutes);
+app.route('/api/chat', chatRoutes);
 
 app.get('/', (c) => {
   return c.text('NestMatch UAE API (Cloudflare Workers + Hono) is live!');

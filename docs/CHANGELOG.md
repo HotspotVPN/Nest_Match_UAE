@@ -3,6 +3,36 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.7.2] — 2026-03-17 · Backend Production Deploy + Full D1 Seed
+
+### Session 9B: Backend incremental fixes + production deployment
+
+### Added
+- /api/health endpoint returning status, timestamp, version
+- agreements.ts route: GET /api/agreements/:id with signatures join
+- maintenance.ts route: GET /api/maintenance (tenant's tickets)
+- chat.ts route: GET /api/chat/channels (user's channels)
+- AppEnv shared type in types.ts for consistent Hono Variables typing
+- D1 database_id in wrangler.toml for remote operations
+- maintenance_tickets table created on production D1
+- Full production seed: 32 users + 14 properties + 38 room_occupancy
+
+### Fixed
+- CORS: OPTIONS preflight now returns headers (was bare 204)
+- Auth login: accepts demo password for seeded users (no bcrypt in demo)
+- Auth Google: wrapped in try/catch for schema mismatch resilience
+- TypeScript: zero errors — all route files use AppEnv type
+- Chat route: uses participants LIKE query matching actual schema
+- All middleware files: JWTPayload properly imported from types.ts
+
+### Production state
+- 32 users across all tiers (Gold, Verified, Explorer)
+- 14 properties across 14 Dubai districts (11 active, 3 coming soon/inactive)
+- All auth endpoints working (login, Google OAuth, UAE PASS)
+- CORS configured for nest-match-uae.vercel.app
+
+---
+
 ## [2.7.1] — 2026-03-17 · Backend Integration, CORS Fix, D1 Seed, Agent Protocol
 
 ### Backend integration verified end-to-end

@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 
-const kyc = new Hono<{ Bindings: Env }>();
+const kyc = new Hono<AppEnv>();
 
 // POST /api/kyc/upload — Upload KYC document to R2 KYC_DOCS bucket
 kyc.post('/upload', authMiddleware({ required: true }), async (c) => {

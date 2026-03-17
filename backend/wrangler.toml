@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "nestmatch-uae"
-# database_id will be auto-filled after `wrangler d1 create`
+database_id = "4fa9bd02-a8e2-4f25-8fae-d6d6c9073ebe"
 migrations_dir = "migrations"
 
 # R2 Buckets

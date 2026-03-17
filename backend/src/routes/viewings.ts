@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 import { tierGate } from '../middleware/tierGate';
 import { createViewingSchema } from '../validation/schemas';
 
-const viewings = new Hono<{ Bindings: Env }>();
+const viewings = new Hono<AppEnv>();
 
 // GET /api/viewings
 viewings.get('/', authMiddleware({ required: true }), async (c) => {

@@ -1,8 +1,8 @@
 import { MiddlewareHandler } from 'hono';
-import { Env } from '../types';
+import { Env, JWTPayload } from '../types';
 import { verifyJWT } from '../services/jwt';
 
-export const auth = (options: { required: boolean } = { required: true }): MiddlewareHandler<{ Bindings: Env }> => {
+export const auth = (options: { required: boolean } = { required: true }): MiddlewareHandler<{ Bindings: Env; Variables: { user: JWTPayload } }> => {
   return async (c, next) => {
     const authHeader = c.req.header('Authorization');
 

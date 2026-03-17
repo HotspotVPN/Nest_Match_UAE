@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 import { tierGate } from '../middleware/tierGate';
 import { rbac } from '../middleware/rbac';
 import { createPropertySchema } from '../validation/schemas';
 import { verifySharedHousingPermit } from '../services/mockDld';
 
-const properties = new Hono<{ Bindings: Env }>();
+const properties = new Hono<AppEnv>();
 
 // GET /api/properties (Browse)
 properties.get('/', async (c) => {

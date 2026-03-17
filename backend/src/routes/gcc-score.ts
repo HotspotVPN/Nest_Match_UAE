@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 
-const gccScore = new Hono<{ Bindings: Env }>();
+const gccScore = new Hono<AppEnv>();
 
 // POST /api/users/:id/recalculate-gcc — Recalculate GCC score
 // Auth: compliance admin or system

@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { auth as authMiddleware } from '../middleware/auth';
 
-const occupancy = new Hono<{ Bindings: Env }>();
+const occupancy = new Hono<AppEnv>();
 
 // PATCH /api/properties/:id/rooms/:roomNumber — Landlord/agent room state change
 occupancy.patch('/:id/rooms/:roomNumber', authMiddleware({ required: true }), async (c) => {

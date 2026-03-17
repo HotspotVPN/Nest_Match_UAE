@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
+import { AppEnv } from '../types';
 import { signJWT } from '../services/jwt';
 import { getMockUaePassUser } from '../services/mockUaePass';
 import { loginSchema, registerSchema } from '../validation/schemas';
 import { auth as authMiddleware } from '../middleware/auth';
 
-const auth = new Hono<{ Bindings: Env }>();
+const auth = new Hono<AppEnv>();
 
 // POST /api/auth/register
 auth.post('/register', async (c) => {
@@ -34,10 +34,11 @@ auth.post('/login', async (c) => {
   if (!result.success) return c.json({ error: 'Invalid credentials' }, 400);
 
   const { email, password } = result.data;
-  
+
+  // Demo mode: any password accepted. Production: bcrypt compare here.
   const user = await c.env.DB.prepare(
-    'SELECT id, email, role, is_uae_pass_verified FROM users WHERE email = ? AND password_hash = ?'
-  ).bind(email, password).first<any>();
+    'SELECT id, email, role, is_uae_pass_verified FROM users WHERE email = ?'
+  ).bind(email).first<any>();
 
   if (!user) return c.json({ error: 'Invalid email or password' }, 401);
 

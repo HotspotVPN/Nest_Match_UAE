@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.7.0 — Investor Demo (March 2026)
+## Current: v2.7.2 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -81,6 +81,20 @@
 - [x] Coming Soon hidden from /browse, visible on /my-properties
 - [x] Landlord navbar: Dashboard | My Properties | Viewings | Applicants | Chat
 - [x] Coming Soon banner + Register Interest on listing detail
+
+### Completed (Session 9B — Backend Production)
+- [x] /api/health endpoint
+- [x] Auth login fix for demo users
+- [x] Google OAuth error handling fix
+- [x] CORS OPTIONS preflight fix
+- [x] AppEnv TypeScript type — zero backend TS errors
+- [x] Agreements route (GET /api/agreements/:id)
+- [x] Maintenance route (GET /api/maintenance)
+- [x] Chat route (GET /api/chat/channels)
+- [x] D1 database_id in wrangler.toml
+- [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
+- [x] All auth endpoints verified on production
+- [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
 
 ### Completed (Session 9 — Homepage Revamp)
 - [x] Homepage legal audit: removed all unlicensed capability claims
