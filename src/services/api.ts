@@ -168,7 +168,7 @@ export const api = {
     },
 
     // ── Auth ─────────────────────────────────────────────────
-    login: async (email: string, password = 'pass123'): Promise<{
+    login: async (email: string, password = 'demo2026'): Promise<{
         success: boolean;
         token?: string;
         user?: { id: string; email: string; role: string; tier: number };

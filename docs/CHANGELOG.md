@@ -3,6 +3,34 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.8.1] — 2026-03-17 · QA Fixes + Demo Polish
+
+### Session 11: Frontend QA fixes for investor demo readiness
+
+### Fixed
+- Demo password auto-fill: clicking a persona now fills both email AND password fields (demo2026)
+- Demo emails aligned to backend D1: ahmed@, fatima@, priya@, james@, sofia@, liam@ all @nestmatch.ae
+- Default auth password changed from 'pass123' to 'demo2026' (matches production D1)
+- Max Legal Occupancy wording: "X persons" → "X rooms (1 tenant per room)" (Law No. 4 compliance)
+- Console error spam: all mock fallback logs changed from console.error to console.info with purple [NestMatch] prefix
+- Listing detail scroll: pages now scroll to top when navigating between listings
+- Login return path: all 3 login handlers (email, UAE PASS, Google mock) respect ?return= query param
+- Viewings empty state: added "Browse Properties →" CTA button
+
+### Changed
+- quickLogin no longer auto-submits — fills form fields, investor clicks Sign In for control
+- handleEmailLogin now passes actual password field value instead of relying on default
+- Demo hint added below persona list: "Click any persona — password auto-fills"
+- README.md demo accounts table updated with new emails and demo2026 password note
+
+### Verified
+- Nav consistency: correct per role (tenant/landlord/compliance/operations/logged-out)
+- API mapper: zero hardcoded title overrides, direct pass-through confirmed
+- Stripe/penalty remnants: zero matches in active source code
+- TypeScript: zero errors (npx tsc --noEmit)
+
+---
+
 ## [2.8.0] — 2026-03-17 · Property Images, Compliance Fix, Mock Data, Route Cleanup
 
 ### Frontend 10-Fix + Compliance Session

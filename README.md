@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.8.0
+**Version:** 2.8.1
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -59,11 +59,13 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 
 ## Demo Accounts
 
+**Password for all demo accounts:** `demo2026`
+
 ### Landlords
 | Name | Email | Tier |
 |---|---|---|
-| Ahmed Al Maktoum | ahmed.almaktoum@nestmatch.ae | Gold |
-| Fatima Hassan | fatima.hassan@nestmatch.ae | Gold |
+| Ahmed Al Maktoum | ahmed@nestmatch.ae | Gold |
+| Fatima Hassan | fatima@nestmatch.ae | Gold |
 
 ### Letting Agents
 | Name | Email | BRN |
@@ -74,7 +76,7 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 ### Tenants — Gold (UAE PASS)
 | Name | Email | GCC |
 |---|---|---|
-| Priya Sharma | priya.sharma@email.com | 85 |
+| Priya Sharma | priya@nestmatch.ae | 85 |
 | Marcus Chen | marcus.chen@email.com | 70 |
 | Aisha Patel | aisha.patel@email.com | 92 |
 | James Morrison | james.morrison@email.com | 0 |
@@ -82,14 +84,14 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 ### Tenants — Verified (Passport KYC)
 | Name | Email | Nationality | KYC Status |
 |---|---|---|---|
-| James Okafor | james.okafor@gmail.com | Nigerian | Pending |
-| Sofia Kowalski | sofia.k@outlook.com | Polish | Approved |
+| James Okafor | james@nestmatch.ae | Nigerian | Pending |
+| Sofia Kowalski | sofia@nestmatch.ae | Polish | Approved |
 | Ravi Menon | ravi.menon@gmail.com | Indian | No docs |
 
 ### Tenants — Explorer (Browse Only)
 | Name | Email |
 |---|---|
-| Liam O'Brien | liam.obrien@gmail.com |
+| Liam O'Brien | liam@nestmatch.ae |
 | Amara Diallo | amara.diallo@email.com |
 
 ### Platform Admin

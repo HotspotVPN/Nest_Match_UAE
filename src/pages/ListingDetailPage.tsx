@@ -8,7 +8,7 @@ import {
     ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
     MessageSquare, Edit2, X, CheckCircle2, Home, Wrench, LogOut, Loader2, ArrowRight, Clock
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { canRequestViewing } from '@/utils/accessControl';
 import PassportKycModal from '@/components/PassportKycModal';
@@ -54,6 +54,8 @@ export default function ListingDetailPage() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const navigate = useNavigate();
     const dateChips = getNextDays(7);
+
+    useEffect(() => { window.scrollTo(0, 0); }, [id]);
 
     // Detect if current user lives here
     const isResident = currentUser?.current_house_id === listing?.id;
@@ -157,7 +159,7 @@ export default function ListingDetailPage() {
                                     { label: 'Makani Number', value: listing.makaniNumber, verified: true },
                                     { label: 'Trakheesi Permit', value: listing.trakheesiPermit, verified: true },
                                     { label: 'Municipality Permit', value: listing.municipalityPermit, verified: true },
-                                    { label: 'Max Legal Occupancy', value: `${listing.maxLegalOccupancy} persons`, verified: true },
+                                    { label: 'Max Legal Occupancy', value: `${listing.maxLegalOccupancy} rooms (1 tenant per room)`, verified: true },
                                 ].map(item => (
                                     <div key={item.label} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
                                         <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>{item.label}</div>

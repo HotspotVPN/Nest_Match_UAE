@@ -335,7 +335,8 @@ export default function ViewingsPage() {
                     <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
                         <CalendarCheck size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
                         <h3>No viewings yet</h3>
-                        <p style={{ fontSize: '0.875rem' }}>Browse properties and book your first viewing.</p>
+                        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Browse properties and book your first viewing.</p>
+                        <a href="/browse" className="btn btn-primary btn-sm">Browse Properties &rarr;</a>
                     </div>
                 )}
             </div>

@@ -76,7 +76,7 @@ export default function BrowsePage() {
             setUsers(mockUsers as User[]);
             setLoading(false);
         }).catch(err => {
-            console.error('[BrowsePage] API fetch failed, using mock:', err);
+            console.info('%c[NestMatch] BrowsePage — using mock fallback', 'color: #8B5CF6; font-weight: bold;');
             import('@/data/mockData').then(({ listings: mockListings }) => {
                 console.log('[BrowsePage] Mock data:', mockListings.length, 'properties');
                 setListings(mockListings as Listing[]);

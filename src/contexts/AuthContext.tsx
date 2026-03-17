@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     setCurrentUser(user);
                 }
             } catch (err) {
-                console.error("Session check failed:", err);
+                console.info('%c[NestMatch] Session check — backend unavailable', 'color: #8B5CF6; font-weight: bold;');
             } finally {
                 setLoading(false);
             }
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (user) setCurrentUser(user);
     };
 
-    const loginWithEmail = async (email: string, password = 'pass123') => {
+    const loginWithEmail = async (email: string, password = 'demo2026') => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (user) setCurrentUser(user);
             }
         } catch (err) {
-            console.error("Login failed, using mock fallback:", err);
+            console.info('%c[NestMatch] Login — using mock fallback', 'color: #8B5CF6; font-weight: bold;');
             const user = mockUsers.find((u) => u.email === email);
             if (user) setCurrentUser(user);
         }

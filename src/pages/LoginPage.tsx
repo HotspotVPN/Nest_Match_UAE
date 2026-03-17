@@ -15,18 +15,25 @@ export default function LoginPage() {
 
     const handleUaePassLogin = () => {
         loginWithUaePass('uae-pass-ahmed'); // Mocking an ID
-        navigate('/browse');
+        const params = new URLSearchParams(window.location.search);
+        const returnPath = params.get('return');
+        navigate(returnPath ? decodeURIComponent(returnPath) : '/browse');
     };
 
-    const handleEmailLogin = (e: React.FormEvent) => {
+    const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        loginWithEmail(email);
-        navigate('/browse');
+        await loginWithEmail(email, password || undefined);
+        const params = new URLSearchParams(window.location.search);
+        const returnPath = params.get('return');
+        navigate(returnPath ? decodeURIComponent(returnPath) : '/browse');
     };
+
+    const DEMO_PASSWORD = 'demo2026';
 
     const quickLogin = (userEmail: string) => {
-        loginWithEmail(userEmail);
-        navigate('/browse');
+        setEmail(userEmail);
+        setPassword(DEMO_PASSWORD);
+        // Do NOT auto-submit — let investor click Sign In
     };
 
     const tierBadge = (tier: VerificationTier) => (
@@ -52,8 +59,8 @@ export default function LoginPage() {
             label: 'Landlords',
             color: 'var(--brand-purple-light)',
             entries: [
-                { email: 'ahmed.almaktoum@nestmatch.ae', name: 'Ahmed Al Maktoum', desc: '8 units · Marina, JBR, Downtown', tier: 'tier2_uae_pass' as VerificationTier },
-                { email: 'fatima.hassan@nestmatch.ae', name: 'Fatima Hassan', desc: 'JLT & Business Bay', tier: 'tier2_uae_pass' as VerificationTier },
+                { email: 'ahmed@nestmatch.ae', name: 'Ahmed Al Maktoum', desc: '8 units · Marina, JBR, Downtown', tier: 'tier2_uae_pass' as VerificationTier },
+                { email: 'fatima@nestmatch.ae', name: 'Fatima Hassan', desc: 'JLT & Business Bay', tier: 'tier2_uae_pass' as VerificationTier },
             ],
         },
         {
@@ -68,7 +75,7 @@ export default function LoginPage() {
             label: 'Tenants — Tier 2 — Gold (UAE PASS Verified)',
             color: 'var(--success)',
             entries: [
-                { email: 'priya.sharma@email.com', name: 'Priya Sharma', desc: 'Residing · JLT · GCC 85', tier: 'tier2_uae_pass' as VerificationTier },
+                { email: 'priya@nestmatch.ae', name: 'Priya Sharma', desc: 'Residing · JLT · GCC 85', tier: 'tier2_uae_pass' as VerificationTier },
                 { email: 'marcus.chen@email.com', name: 'Marcus Chen', desc: 'Residing · Marina', tier: 'tier2_uae_pass' as VerificationTier },
                 { email: 'aisha.patel@email.com', name: 'Aisha Patel', desc: 'Searching · GCC 92 · Premium', tier: 'tier2_uae_pass' as VerificationTier },
                 { email: 'james.morrison@email.com', name: 'James Morrison', desc: 'Searching · relocating from London', tier: 'tier2_uae_pass' as VerificationTier },
@@ -78,8 +85,8 @@ export default function LoginPage() {
             label: 'Tenants — Tier 0 — Explorer',
             color: '#f59e0b',
             entries: [
-                { email: 'james.okafor@gmail.com', name: 'James Okafor', desc: 'Nigerian · Pending KYC', tier: 'tier0_passport' as VerificationTier },
-                { email: 'sofia.k@outlook.com', name: 'Sofia Kowalski', desc: 'Polish · Approved KYC', tier: 'tier0_passport' as VerificationTier },
+                { email: 'james@nestmatch.ae', name: 'James Okafor', desc: 'Nigerian · Pending KYC', tier: 'tier0_passport' as VerificationTier },
+                { email: 'sofia@nestmatch.ae', name: 'Sofia Kowalski', desc: 'Polish · Approved KYC', tier: 'tier0_passport' as VerificationTier },
                 { email: 'ravi.menon@gmail.com', name: 'Ravi Menon', desc: 'Indian · No docs yet', tier: 'tier0_passport' as VerificationTier },
             ],
         },
@@ -87,7 +94,7 @@ export default function LoginPage() {
             label: 'Tenants — Tier 1 — Verified',
             color: 'var(--text-muted)',
             entries: [
-                { email: 'liam.obrien@gmail.com', name: 'Liam O\'Brien', desc: 'Irish · Job-seeker visa', tier: 'tier1_unverified' as VerificationTier },
+                { email: 'liam@nestmatch.ae', name: 'Liam O\'Brien', desc: 'Irish · Job-seeker visa', tier: 'tier1_unverified' as VerificationTier },
                 { email: 'amara.diallo@email.com', name: 'Amara Diallo', desc: 'Senegalese · Exploratory visit', tier: 'tier1_unverified' as VerificationTier },
             ],
         },
@@ -137,7 +144,7 @@ export default function LoginPage() {
                         </div>
 
                         <button
-                            onClick={() => { /* Google OAuth mock */ loginWithEmail('james.okafor@gmail.com'); navigate('/browse'); }}
+                            onClick={async () => { /* Google OAuth mock */ await loginWithEmail('james@nestmatch.ae', 'demo2026'); const p = new URLSearchParams(window.location.search).get('return'); navigate(p ? decodeURIComponent(p) : '/browse'); }}
                             className="btn btn-outline"
                             style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', marginBottom: '1rem' }}
                         >
@@ -205,6 +212,16 @@ export default function LoginPage() {
                                     </div>
                                 </div>
                             ))}
+                            <div style={{
+                                marginTop: '0.75rem',
+                                padding: '0.5rem 0.75rem',
+                                background: 'rgba(124, 92, 252, 0.08)',
+                                borderRadius: '8px',
+                                fontSize: '11px',
+                                color: 'var(--text-secondary, #7a7a8c)',
+                            }}>
+                                Click any persona — password auto-fills
+                            </div>
                         </div>
                     )}
                 </div>
