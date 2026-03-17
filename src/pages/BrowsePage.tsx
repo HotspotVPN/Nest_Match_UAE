@@ -7,6 +7,7 @@ import {
     getInitials,
 } from '@/data/mockData';
 import type { Listing, User } from '@/types';
+import { api } from '@/services/api';
 import {
     Search, MapPin, Train, ShieldCheck, Users as UsersIcon,
     Filter, LayoutGrid, List, Building2,
@@ -68,10 +69,20 @@ export default function BrowsePage() {
     const [showFilters, setShowFilters] = useState(true);
 
     useEffect(() => {
-        import('@/data/mockData').then(({ listings: mockListings }) => {
-            setListings(mockListings as Listing[]);
+        console.log('[BrowsePage] Starting property fetch...');
+        api.getProperties().then(data => {
+            console.log('[BrowsePage] API returned:', data.length, 'properties');
+            setListings(data as Listing[]);
             setUsers(mockUsers as User[]);
             setLoading(false);
+        }).catch(err => {
+            console.error('[BrowsePage] API fetch failed, using mock:', err);
+            import('@/data/mockData').then(({ listings: mockListings }) => {
+                console.log('[BrowsePage] Mock data:', mockListings.length, 'properties');
+                setListings(mockListings as Listing[]);
+                setUsers(mockUsers as User[]);
+                setLoading(false);
+            });
         });
     }, []);
 

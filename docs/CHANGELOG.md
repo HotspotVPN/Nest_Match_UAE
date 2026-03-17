@@ -3,6 +3,28 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.7.1] — 2026-03-17 · Backend Integration, CORS Fix, D1 Seed, Agent Protocol
+
+### Backend integration verified end-to-end
+- CORS middleware fixed: OPTIONS preflight now returns proper headers
+  (was creating bare Response without CORS headers)
+- localhost:* allowed in dev, production origin preserved
+- BrowsePage wired to api.getProperties() with mock fallback + console logs
+- D1 seed migration 0006: all 32 users, 14 properties, 38 room_occupancy
+  rows copied from mockData to D1 — full parity
+- Backend Stripe files deleted: mockStripe.ts, mockStripeService.ts
+- viewings.ts: all Stripe hold/void calls removed
+- Agent Coordination Protocol added to CLAUDE.md (file boundaries,
+  coordination points, progress reporting, deployment coordination)
+
+### Verified integration state
+- Frontend (port 5177) → Backend (port 8788) → D1: all connected
+- CORS: Access-Control-Allow-Origin correctly mirrors localhost origin
+- API returns 11 active properties from D1 (3 inactive/coming-soon filtered)
+- Auth flow: register → login → JWT → authenticated endpoints all working
+
+---
+
 ## [2.7.0] — 2026-03-17 · Legal Pages, My Properties, Coming Soon Listings
 
 ### Session 9A: Legal, footer, route fixes + landlord property management

@@ -406,3 +406,54 @@ Examples that require clarification before proceeding:
 Never silently make these decisions.
 Never build a feature that looks complete but
 writes to no persistent storage.
+
+---
+
+## Agent Coordination Protocol
+
+### File boundaries
+- **Frontend agent** owns: `src/`, `public/`, `index.html`, `vite.config.ts`,
+  `tsconfig.json`, `package.json` (root), `.env.*`
+- **Backend agent** owns: `backend/` (all files within)
+- **Shared** (both read, coordinate before editing): `CLAUDE.md`,
+  `docs/`, `README.md`, `vercel.json`, `.gitignore`
+- **Never cross boundaries** — frontend agent must not edit
+  `backend/src/` files, backend agent must not edit `src/` files
+
+### Coordination points
+- `src/services/api.ts` — frontend reads this; backend defines
+  the routes it calls. If backend adds/changes a route, frontend
+  must update api.ts to match.
+- `src/types/index.ts` — frontend source of truth for types.
+  Backend must match these shapes in API responses.
+- `backend/src/types.ts` — backend source of truth for Env bindings.
+  Frontend does not read this directly.
+- `src/services/apiMappers.ts` — maps D1 snake_case to frontend
+  camelCase. Must be updated when backend schema changes.
+
+### Progress reporting format
+Each agent reports progress as:
+```
+[AGENT] [STATUS] [FILE] — [what changed]
+Example:
+[FRONTEND] DONE src/pages/BrowsePage.tsx — added Coming Soon filter
+[BACKEND] DONE backend/src/routes/kyc.ts — added PATCH review endpoint
+[FRONTEND] BLOCKED — waiting for backend /api/agreements route
+```
+
+### Deployment Coordination
+
+**Frontend deploy (Vercel):**
+- Triggered by: git push to main
+- Agent must: Run `npm run build` first, verify no errors
+- Notify: Backend agent of new frontend version
+
+**Backend deploy (Cloudflare):**
+- Triggered by: `wrangler deploy`
+- Agent must: Run migrations first, verify D1 updated
+- Notify: Frontend agent of new API version
+
+**Simultaneous deploy:**
+- Both agents coordinate timing
+- Backend deploys first (to avoid 404s)
+- Frontend deploys 30s later (after backend health check passes)

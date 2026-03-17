@@ -4,7 +4,8 @@
       "Bash(npm run:*)",
       "Bash(start:*)",
       "Bash(cd:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(echo:*)"
     ]
   }
 }
