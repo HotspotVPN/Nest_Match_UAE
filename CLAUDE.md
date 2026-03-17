@@ -5,17 +5,196 @@ NestMatch UAE is a compliance-first property discovery platform for Dubai shared
 Frontend: React 19 + TypeScript + Vite on Vercel.
 Backend: Cloudflare Workers + Hono + D1 + R2.
 
+**Live URLs:**
+- Frontend: https://nest-match-uae.vercel.app
+- Backend: https://nest-match-uae.pushkar-nagela.workers.dev
+- Repo: https://github.com/HotspotVPN/Nest_Match_UAE
+
+**Current version:** v2.6.0
+
+---
+
 ## Hard constraints (never violate)
 - No payment processing (no CBUAE/DIFC licence)
 - No lease/tenancy contract drafting (no RERA broker licence)
 - No escrow, deposit holding, rent collection
 - Star-only ratings (no text — UAE Cybercrime Law)
-- Identity fields always masked in UI
-- KYC docs in R2 KYC_DOCS bucket only (never IMAGES)
+- Identity fields always masked in UI (Emirates ID, passport, UAE PASS ID)
+- KYC docs in R2 KYC_DOCS bucket only (never IMAGES bucket)
+- Occupancy count can NEVER go below 0 or above maxLegalOccupancy
+- Never set verification_tier to 'gold' without UAE PASS OAuth completing
 
 ## Deleted files (never recreate)
 - src/services/mockStripeService.ts
 - src/pages/ContractManagerPage.tsx
+
+---
+
+## Verification Tier System
+
+| Internal Value | Display Label | Identity | Access |
+|---|---|---|---|
+| `tier1_unverified` | Tier 0 — Explorer | Email/Google, no documents | Browse only |
+| `tier0_passport` | Tier 1 — Verified | Passport + visa OR Emirates ID uploaded | Viewings, chat, sign DLD agreements |
+| `tier2_uae_pass` | Tier 2 — Gold | UAE PASS OAuth (Emirates ID) | Full access — applications, contracts, GCC |
+
+**Source of truth for display labels:** `src/utils/accessControl.ts` → `getTierLabel()`
+**Source of truth for colours:** `src/utils/accessControl.ts` → `getTierColor()`
+
+Never hardcode tier strings. Always use these functions.
+
+---
+
+## Frontend Architecture
+
+### Key directories
+```
+src/pages/           — one file per route
+src/components/      — reusable UI (Navbar, ChatPanel, ViewingsPanel,
+                       ViewingAgreementModal, LeaseHandoffCard,
+                       DemoControls, Toast, UAEPassOverlay, PassportKycModal)
+src/contexts/        — AuthContext, DemoStateContext, ToastContext
+src/data/            — mockData.ts (fallback when backend is down)
+src/services/        — api.ts (smart fallback), apiMappers.ts
+src/types/           — index.ts (single source of truth for all types)
+src/utils/           — accessControl.ts (tier gating + display labels)
+```
+
+### Routes (all in App.tsx)
+```
+/                    → HomePage (public)
+/login               → LoginPage (public)
+/register            → RegisterLandingPage (public)
+/register/tenant     → TenantSignupPage (public)
+/register/landlord   → LandlordSignupPage (public)
+/browse              → BrowsePage (public)
+/how-it-works        → HowItWorksPage (public)
+/listing/:id         → ListingDetailPage (public, supports slug or ID)
+/profile/:id?        → ProfilePage (authenticated, supports slug or ID)
+/viewings            → ViewingsPage (authenticated)
+/chat                → ChatPage (authenticated)
+/maintenance         → MaintenancePage (roommate)
+/dashboard           → LandlordDashboardPage (landlord/agent)
+/residing-dashboard  → ResidingDashboardPage (landlord/agent)
+/analytics           → ViewingAnalyticsPage (operations/compliance admin)
+/compliance          → CompliancePage (compliance admin)
+/customers           → CustomerDatabasePage (operations admin)
+/gcc                 → GccDashboardPage (authenticated)
+/wallet              → LandlordWalletPage (landlord/agent)
+/add-property        → AddPropertyPage (landlord/agent)
+/ledger              → RentLedgerPage (authenticated)
+```
+
+### Slug routing
+All listings and users have a `slug` field generated from their name/title.
+Lookup pattern: try slug first, fall back to ID.
+```tsx
+const listing = listings.find(l => l.slug === id || l.id === id);
+```
+
+### Foundation systems (available to all components)
+- **DemoStateContext** (`useDemoState()`): Mutable state layer over mockData. Holds viewingOverrides, tierOverrides, kycSubmissions, occupancyOverrides, applicantDecisions, etc. Components read mockData first, then check demoState for overrides.
+- **ToastContext** (`useToast()`): `showToast(message, type)` where type = 'success' | 'error' | 'info' | 'warning'. Auto-dismiss 4s. Use for all user feedback.
+- **DemoControls**: Floating bottom-right panel for persona switching + quick actions. Renders when authenticated.
+- **UAEPassOverlay**: Reusable mock UAE PASS authentication modal. Used in landlord signup and tenant Tier 2 upgrade.
+
+### API fallback pattern
+1. Frontend health-checks backend on first API call (3s timeout)
+2. Result cached for 30 seconds
+3. If backend live → real D1 data via apiMappers.ts
+4. If backend down → mock data from src/data/mockData.ts
+5. Zero UI disruption either way
+
+---
+
+## Backend Architecture — Cloudflare D1 State Machines
+
+The backend is NOT just CRUD. Every major entity has a state machine.
+Before building any backend route, read the relevant state machine here.
+
+### Room occupancy states
+```
+available → pending_approval → occupied → notice_given → available
+available → viewing_confirmed → occupied
+occupied → removed_by_landlord → available
+```
+
+Every state transition MUST:
+1. Write to room_occupancy (current state)
+2. Write to occupancy_events (audit log — never delete)
+3. Update properties.current_occupants count
+4. Never go below 0 or above maxLegalOccupancy
+
+### Viewing states
+```
+PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED →
+FULLY_SIGNED → COMPLETED | NO_SHOW_TENANT | NO_SHOW_LANDLORD | CANCELLED
+```
+
+Every state transition MUST:
+1. Write to viewing_bookings (current state)
+2. Write to viewing_events (audit log)
+3. If FULLY_SIGNED: trigger room_occupancy → pending_approval
+
+### User verification states
+```
+explorer → verified (passport upload) → gold (UAE PASS)
+explorer → verified (emirates_id upload) → gold (UAE PASS)
+```
+
+Every state transition MUST:
+1. Write to users.verification_tier
+2. Write to kyc_documents (if document uploaded)
+3. Write to verification_events (audit log)
+
+### D1 Tables (all built)
+
+**Core tables (migration 0001-0003):**
+users, properties, room_occupancy, viewing_bookings,
+property_ratings, maintenance_tickets, chat_channels,
+chat_messages, applications, rent_ledgers
+
+**State machine tables (migration 0004):**
+oauth_tokens, kyc_documents, occupancy_events,
+viewing_agreements, agreement_signatures,
+tenancy_events, verification_events
+
+**Schema additions (migration 0005):**
+slug columns on users and properties
+
+### API Routes (23 built)
+
+| Category | Route | Status |
+|---|---|---|
+| Auth | POST /register, /login, GET /me | Built |
+| Auth OAuth | POST /auth/google, /auth/uae-pass | Built (mock) |
+| Properties | GET /, GET /:id, POST / | Built |
+| Users | GET /me, PATCH /me, GET /:id | Built |
+| Viewings | GET /, POST /, PATCH /:id/accept, /:id/decline | Built |
+| KYC | POST /upload, GET /my-documents, PATCH /:id/review | Built |
+| Occupancy | PATCH /rooms/:num, POST /notice, /move-out | Built |
+| GCC | POST /users/:id/recalculate-gcc | Built |
+| Ratings | GET /:propertyId/ratings, POST /:propertyId/ratings | Built |
+| Payments | GET /, POST / | Built |
+
+### API routes NOT yet built
+```
+POST /api/agreements           (create DLD viewing agreement in D1)
+PATCH /api/agreements/:id/sign (persist signature to D1)
+POST /api/tenancy/move-in      (confirm tenant moves in)
+```
+
+### Rule for Claude Code
+Never build a frontend feature that requires one of the
+missing routes above. If a frontend action needs backend
+data that doesn't exist, either:
+A) Use mock data fallback (already implemented) and
+   add a `// TODO: wire to [route]` comment
+B) Ask the user before proceeding
+Never silently build a fake implementation that looks
+real but writes nowhere.
+
+---
 
 ## After every code change
 Run: `npx tsc --noEmit` — zero errors required.
@@ -33,7 +212,7 @@ Run: `npx tsc --noEmit` — zero errors required.
 When a session's work is complete, present this summary
 and WAIT for the user to say "yes commit" or "commit and push":
 
----
+```
 READY TO COMMIT — please confirm
 
 Version bump: v[X.X.X] → v[X.X.X]
@@ -53,16 +232,12 @@ Docs that will be updated before committing:
 
 Type "confirm commit" to proceed.
 Type "confirm commit and push" to commit + push to Vercel.
----
+```
 
 ### When user confirms commit only:
 1. Update docs/CHANGELOG.md with this session's changes
 2. Update docs/PRODUCT_ROADMAP.md — tick completed items
-3. Update README.md if any of these changed:
-   - New routes added
-   - New demo login users added
-   - Tech stack changed
-   - Setup instructions changed
+3. Update README.md if routes, users, stack, or setup changed
 4. Run npx tsc --noEmit — must be zero errors
 5. git add -A
 6. git commit -m "[message]"
@@ -78,9 +253,6 @@ Type "confirm commit and push" to commit + push to Vercel.
 PATCH (v2.0.x) — bug fixes, copy changes, style tweaks
 MINOR (v2.x.0) — new feature, new page, new component
 MAJOR (vx.0.0) — phase unlock (e.g. wallet system, RERA licence)
-
-Current version: v2.6.0 (after tier renumbering + demo journeys)
-Next session starts at: v2.6.0
 
 ### README.md update rules
 The README must always reflect:
@@ -164,75 +336,14 @@ When finishing a branch:
 ### verification-before-completion override
 Before marking any task complete:
 - npx tsc --noEmit must return zero errors
-- grep for 'mockStripeService\|ContractManager\|Basic\|Tier 2'
-  in src/ must return nothing
-- All three must pass or the task is not complete
+- grep for 'mockStripeService\|ContractManager' in src/
+  must return nothing
+- Both must pass or the task is not complete
 
 ---
 
-## Backend Architecture — Cloudflare D1 State Machines
+## How Claude Code should handle ambiguous instructions
 
-The backend is NOT just CRUD. Every major entity has a state machine.
-Before building any backend route, read the relevant state machine here.
-
-### Room occupancy states
-available → pending_approval → occupied → notice_given → available
-available → viewing_confirmed → occupied
-occupied → removed_by_landlord → available
-
-Every state transition MUST:
-1. Write to room_occupancy (current state)
-2. Write to occupancy_events (audit log — never delete)
-3. Update properties.current_occupants count
-4. Never go below 0 or above maxLegalOccupancy
-
-### Viewing states
-PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED →
-FULLY_SIGNED → COMPLETED | NO_SHOW_TENANT | NO_SHOW_LANDLORD | CANCELLED
-
-Every state transition MUST:
-1. Write to viewing_bookings (current state)
-2. Write to viewing_events (audit log)
-3. If FULLY_SIGNED: trigger room_occupancy → pending_approval
-
-### User verification states
-explorer → verified (passport upload) → gold (UAE PASS)
-explorer → verified (emirates_id upload) → gold (UAE PASS)
-
-Every state transition MUST:
-1. Write to users.verification_tier
-2. Write to kyc_documents (if document uploaded)
-3. Write to verification_events (audit log)
-
-### Missing D1 tables (must be built before any live launch)
-- oauth_tokens (Google + UAE PASS tokens)
-- kyc_documents (passport, visa, emirates_id uploads)
-- occupancy_events (audit log for all room state changes)
-- viewing_agreements (DLD form data + signatures)
-- verification_events (tier change audit log)
-- tenancy_events (move-in, move-out, notice)
-
-### API routes that do NOT exist yet
-POST /api/auth/google          (Google OAuth callback)
-POST /api/auth/uae-pass        (UAE PASS OAuth callback)
-POST /api/kyc/upload           (passport/visa/eid upload to R2)
-PATCH /api/occupancy/:id       (landlord changes room state)
-POST /api/tenancy/move-out     (tenant gives notice)
-POST /api/tenancy/move-in      (confirm tenant moves in)
-POST /api/agreements           (create DLD viewing agreement)
-PATCH /api/agreements/:id/sign (sign agreement)
-
-### Rule for Claude Code
-Never build a frontend feature that requires one of the
-missing routes above. If a frontend action needs backend
-data that doesn't exist, either:
-A) Use mock data fallback (already implemented) and
-   add a // TODO: wire to [route] comment
-B) Ask the user before proceeding
-Never silently build a fake implementation that looks
-real but writes nowhere.
-
-### How Claude Code should handle ambiguous instructions
 When an instruction could be interpreted multiple ways,
 or when building it would require decisions that affect
 other parts of the system, STOP and ask before building.
