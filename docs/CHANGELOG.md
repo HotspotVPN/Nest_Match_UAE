@@ -3,6 +3,42 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.9.0] — 2026-03-17 · Seed Viewings + D1 CHECK Constraint Fix
+
+### Session 9C: Backend D1 seeding for demo viewing data
+
+### Added
+- backend/migrations/0007_seed_viewings.sql — seed migration for demo viewings
+- 5 viewing_bookings: Priya (3), Aisha (1), Sofia (1) across 4 properties
+- 4 viewing_agreements: draft, fully_signed (x2), agent_signed
+- 5 agreement_signatures: broker + tenant placeholder signatures
+- Priya: COMPLETED + CONFIRMED + PENDING (full lifecycle demo)
+- Aisha: FULLY_SIGNED with both parties' signatures
+- Sofia: AGREEMENT_SENT with broker-only signature
+
+### Fixed
+- viewing_bookings CHECK constraint expanded from 6 → 12 status values
+  (added AGREEMENT_SENT, AGENT_SIGNED, FULLY_SIGNED, NO_SHOW_TENANT,
+  NO_SHOW_LANDLORD, CANCELLED — now matches frontend ViewingStatus type)
+- signer_role values: 'agent' → 'broker' to match D1 CHECK constraint
+- outcome values: 'viewing_completed' → 'attended' to match D1 CHECK constraint
+- D1 demo emails synced: ahmed@, fatima@, priya@, james@, sofia@, liam@ all @nestmatch.ae
+- All 32 users confirmed password_hash = 'demo2026'
+
+### Production D1 State
+- viewing_bookings: 5 rows
+- viewing_agreements: 4 rows
+- agreement_signatures: 5 rows
+- GET /api/viewings returns 3 viewings for Priya (CONFIRMED, PENDING, COMPLETED)
+- All 9 demo logins verified via /api/auth/login
+
+### Note
+- PATCH /api/agreements/:id/sign route NOT YET BUILT
+- New signatures from browser canvas go to DemoStateContext (session-only)
+- Pre-seeded signatures in D1 persist across refresh
+
+---
+
 ## [2.8.1] — 2026-03-17 · QA Fixes + Demo Polish
 
 ### Session 11: Frontend QA fixes for investor demo readiness

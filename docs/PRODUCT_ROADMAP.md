@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.8.1 — Investor Demo (March 2026)
+## Current: v2.9.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,15 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Session 9C — Seed Viewings + D1 Fix)
+- [x] 5 viewing_bookings seeded to production D1 (Priya 3, Aisha 1, Sofia 1)
+- [x] 4 viewing_agreements seeded (draft, fully_signed x2, agent_signed)
+- [x] 5 agreement_signatures seeded (broker + tenant placeholders)
+- [x] viewing_bookings CHECK constraint expanded: 6 → 12 status values
+- [x] D1 status values now match frontend ViewingStatus type exactly
+- [x] GET /api/viewings returns real D1 data for Priya (3 viewings)
+- [x] D1 demo emails synced + all 9 demo logins verified
 
 ### Completed (Session 11 — QA Fixes + Demo Polish)
 - [x] Demo password auto-fill: persona click fills email + password (demo2026)
