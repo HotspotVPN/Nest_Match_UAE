@@ -103,12 +103,16 @@ export default function ListingDetailPage() {
                     </div>
                 )}
 
-                {/* Image placeholder */}
-                <div style={{ height: '320px', borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', position: 'relative' }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <Building2 size={48} style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }} />
-                        <div style={{ color: 'var(--text-muted)' }}>{listing.district}</div>
-                    </div>
+                {/* Property Image */}
+                <div style={{ height: '320px', borderRadius: 'var(--radius-lg)', background: listing.images?.[0] ? 'none' : 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
+                    {listing.images?.[0] ? (
+                        <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '320px', objectFit: 'cover', borderRadius: 'var(--radius-lg)' }} />
+                    ) : (
+                        <div style={{ textAlign: 'center' }}>
+                            <Building2 size={48} style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }} />
+                            <div style={{ color: 'var(--text-muted)' }}>{listing.district}</div>
+                        </div>
+                    )}
                     {listing.listing_status === 'coming_soon' && (
                         <div style={{
                             position: 'absolute', top: '1rem', right: '1rem',

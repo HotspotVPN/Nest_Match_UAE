@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.7.2
+**Version:** 2.8.0
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev
@@ -32,7 +32,7 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 - Query param targeting: ?role=landlord highlights landlord column
 
 ### For Tenants
-- Browse 12+ verified Dubai listings across 15 districts
+- Browse 14 verified Dubai listings with real property images across 15 districts
 - Filter by district, budget (AED 500–15,000), amenities, transport, occupancy
 - Grid + list view with occupancy bars and transport chips
 - DLD Property Viewing Agreement — digitally signed (DLD/RERA/RL/LP/P210)

@@ -14,7 +14,6 @@ import ProfilePage from '@/pages/ProfilePage';
 import ViewingsPage from '@/pages/ViewingsPage';
 import AddPropertyPage from '@/pages/AddPropertyPage';
 import ResidingDashboardPage from '@/pages/ResidingDashboardPage';
-import TreasuryPage from '@/pages/TreasuryPage';
 import CompliancePage from '@/pages/CompliancePage';
 import CustomerDatabasePage from '@/pages/CustomerDatabasePage';
 import HowItWorksPage from '@/pages/HowItWorksPage';
@@ -22,8 +21,6 @@ import ChatPage from '@/pages/ChatPage';
 import GccDashboardPage from '@/pages/GccDashboardPage';
 import ViewingAnalyticsPage from '@/pages/ViewingAnalyticsPage';
 import MaintenancePage from '@/pages/MaintenancePage';
-import RentLedgerPage from '@/pages/RentLedgerPage';
-import LandlordWalletPage from '@/pages/LandlordWalletPage';
 import LandlordDashboardPage from '@/pages/LandlordDashboardPage';
 import RegisterLandingPage from '@/pages/RegisterLandingPage';
 import TenantSignupPage from '@/pages/TenantSignupPage';
@@ -34,8 +31,8 @@ import MyPropertiesPage from '@/pages/MyPropertiesPage';
 
 const DASHBOARD_PATHS = [
     '/dashboard', '/viewings', '/compliance', '/customers', '/analytics',
-    '/chat', '/maintenance', '/residing-dashboard', '/wallet', '/gcc',
-    '/ledger', '/add-property', '/my-properties',
+    '/chat', '/maintenance', '/residing-dashboard', '/gcc',
+    '/add-property', '/my-properties',
 ];
 
 function AuthenticatedDemoControls() {
@@ -75,7 +72,6 @@ export default function App() {
                                 <Route path="/viewings" element={<ViewingsPage />} />
                                 <Route path="/add-property" element={<AddPropertyPage />} />
                                 <Route path="/residing-dashboard" element={<ResidingDashboardPage />} />
-                                <Route path="/treasury" element={<TreasuryPage />} />
                                 <Route path="/compliance" element={<CompliancePage />} />
                                 <Route path="/customers" element={<CustomerDatabasePage />} />
                                 <Route path="/how-it-works" element={<HowItWorksPage />} />
@@ -83,8 +79,6 @@ export default function App() {
                                 <Route path="/gcc" element={<GccDashboardPage />} />
                                 <Route path="/analytics" element={<ViewingAnalyticsPage />} />
                                 <Route path="/maintenance" element={<MaintenancePage />} />
-                                <Route path="/ledger" element={<RentLedgerPage />} />
-                                <Route path="/wallet" element={<LandlordWalletPage />} />
                                 <Route path="/dashboard" element={<LandlordDashboardPage />} />
                                 <Route path="/my-properties" element={<MyPropertiesPage />} />
                             </Routes>

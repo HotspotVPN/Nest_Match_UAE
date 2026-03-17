@@ -21,7 +21,7 @@ const HEALTH_CHECK_INTERVAL = 30_000; // Re-check every 30s
 
 // ─── Helpers ─────────────────────────────────────────────────
 function getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('nestmatch_token');
+    const token = localStorage.getItem('nm_token');
     const headers: HeadersInit = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
     return headers;
@@ -33,10 +33,18 @@ async function checkBackend(): Promise<boolean> {
         return backendAvailable;
     }
     try {
-        const res = await fetch(`${API_BASE_URL}/`, { signal: AbortSignal.timeout(3000) });
+        const res = await fetch(`${API_BASE_URL}/api/health`, { signal: AbortSignal.timeout(3000) });
         backendAvailable = res.ok;
+        if (res.ok) {
+            sessionStorage.removeItem('nm_fallback_mode');
+        } else {
+            sessionStorage.setItem('nm_fallback_mode', 'true');
+            console.info('%c[NestMatch] Running on mock data — backend unreachable', 'color: #8B5CF6; font-weight: bold;');
+        }
     } catch {
         backendAvailable = false;
+        sessionStorage.setItem('nm_fallback_mode', 'true');
+        console.info('%c[NestMatch] Running on mock data — backend unreachable', 'color: #8B5CF6; font-weight: bold;');
     }
     lastHealthCheck = now;
     return backendAvailable;
@@ -53,6 +61,11 @@ async function apiFetch<T>(
             headers: { ...getAuthHeaders(), ...options.headers },
             signal: options.signal ?? AbortSignal.timeout(8000),
         });
+        if (res.status === 401) {
+            localStorage.removeItem('nm_token');
+            window.location.href = `/login?return=${encodeURIComponent(window.location.pathname)}`;
+            return { ok: false, error: 'Unauthorised' };
+        }
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
             return { ok: false, error: body.error || `HTTP ${res.status}` };
@@ -166,7 +179,7 @@ export const api = {
             { method: 'POST', body: JSON.stringify({ email, password }) },
         );
         if (!res.ok) return { success: false, error: res.error };
-        localStorage.setItem('nestmatch_token', res.data.token);
+        localStorage.setItem('nm_token', res.data.token);
         return { success: true, token: res.data.token, user: res.data.user };
     },
 
@@ -189,12 +202,12 @@ export const api = {
             body: JSON.stringify({ code }),
         });
         if (!res.ok) return { success: false, error: res.error };
-        localStorage.setItem('nestmatch_token', res.data.token);
+        localStorage.setItem('nm_token', res.data.token);
         return { success: true, token: res.data.token, user: res.data.user };
     },
 
     getSession: async (): Promise<User | null> => {
-        const token = localStorage.getItem('nestmatch_token');
+        const token = localStorage.getItem('nm_token');
         if (!token) return null;
         const res = await apiFetch<any>('/api/auth/me');
         if (!res.ok) return null;
@@ -349,7 +362,7 @@ export const api = {
         if (metadata.nationality) formData.append('nationality', metadata.nationality);
 
         try {
-            const token = localStorage.getItem('nestmatch_token');
+            const token = localStorage.getItem('nm_token');
             const headers: HeadersInit = {};
             if (token) headers['Authorization'] = `Bearer ${token}`;
 

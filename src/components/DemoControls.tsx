@@ -35,7 +35,6 @@ const PERSONAS: Persona[] = [
 const ROLE_PATHS: Record<string, string[]> = {
   '/dashboard': ['landlord', 'letting_agent'],
   '/add-property': ['landlord', 'letting_agent'],
-  '/wallet': ['landlord'],
   '/compliance': ['compliance'],
   '/customers': ['operations', 'compliance'],
   '/residing-dashboard': ['roommate'],

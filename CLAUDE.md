@@ -10,7 +10,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.7.2
+**Current version:** v2.8.0
 
 ---
 
@@ -19,6 +19,18 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - No lease/tenancy contract drafting (no RERA broker licence)
 - No escrow, deposit holding, rent collection
 - Star-only ratings (no text — UAE Cybercrime Law)
+
+### Listing compliance rules (Law No. 4 of 2026)
+- NestMatch lists ROOMS, not bed-spaces
+- Maximum occupancy per bedroom: 1 tenant
+- Never create listings with "twin share", "shared bedroom",
+  "bed-space", or any language implying multiple people per room
+- Shared COMMON AREAS are fine (kitchen, bathroom, living room)
+- Shared BEDROOMS are never compliant
+- maxLegalOccupancy = number of bedrooms (1 person each)
+- Occupancy display always shows "X/[total rooms]" not "X/[total beds]"
+- This is the grey market NestMatch exists to eliminate —
+  bed-space listings on our platform destroy compliance credibility
 - Identity fields always masked in UI (Emirates ID, passport, UAE PASS ID)
 - KYC docs in R2 KYC_DOCS bucket only (never IMAGES bucket)
 - Occupancy count can NEVER go below 0 or above maxLegalOccupancy

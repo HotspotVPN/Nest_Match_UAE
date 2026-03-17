@@ -3,6 +3,39 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.8.0] — 2026-03-17 · Property Images, Compliance Fix, Mock Data, Route Cleanup
+
+### Frontend 10-Fix + Compliance Session
+
+### Added
+- Unsplash property images on all 14 listings (3 per property by district tier)
+- Image rendering on BrowsePage (grid + list cards) and ListingDetailPage (hero)
+- 5 mock viewing bookings (Priya: 3, Aisha: 1, Sofia: 1) across all statuses
+- 3 mock chat channels + 9 messages (Priya↔Ahmed, Priya↔Fatima, Aisha↔Ahmed)
+- API retry guard: health check logs fallback mode, skips fetch when backend down
+- 401 handler in apiFetch: clears token, redirects to /login?return=
+
+### Fixed
+- Health check now hits /api/health (was hitting / root)
+- Token key standardized to 'nm_token' (was 'nestmatch_token')
+- vercel.json SPA rewrite destination: /index.html (was /)
+- All bed-space/twin-share listings rewritten to private rooms (Law No. 4 compliance)
+- maxLegalOccupancy = rooms (1 tenant each), not beds
+- Section comments: "Legal Bed-spaces" → "Budget Private Rooms"
+- Chat channel "Al Nahda Twin Share" → "Al Nahda Private Room"
+
+### Removed (legal compliance — no CBUAE/RERA licence)
+- /ledger route + RentLedgerPage.tsx — DELETED
+- /wallet route + LandlordWalletPage.tsx — DELETED
+- /treasury route + TreasuryPage.tsx — DELETED
+- All nav links to ledger/wallet/treasury removed
+
+### Changed
+- CLAUDE.md: added listing compliance rules (rooms not beds, 1 tenant/room)
+- All 'bed-space' tags replaced with 'private-room' across mockData
+
+---
+
 ## [2.7.2] — 2026-03-17 · Backend Production Deploy + Full D1 Seed
 
 ### Session 9B: Backend incremental fixes + production deployment

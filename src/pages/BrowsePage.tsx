@@ -392,8 +392,12 @@ export default function BrowsePage() {
                                             <Link to={`/listing/${listing.slug || listing.id}`} key={listing.id} style={{ textDecoration: 'none' }}>
                                                 <div className="glass-card hover-card" style={{ display: 'flex', gap: '1.25rem', padding: '1.25rem', alignItems: 'center' }}>
                                                     {/* Mini image */}
-                                                    <div style={{ width: '140px', minWidth: '140px', height: '100px', borderRadius: 'var(--radius-md)', background: `linear-gradient(135deg, ${districtColor}20, ${districtColor}08)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                                                        <Building2 size={28} style={{ color: districtColor, opacity: 0.6 }} />
+                                                    <div style={{ width: '140px', minWidth: '140px', height: '100px', borderRadius: 'var(--radius-md)', background: listing.images?.[0] ? 'none' : `linear-gradient(135deg, ${districtColor}20, ${districtColor}08)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                                                        {listing.images?.[0] ? (
+                                                            <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        ) : (
+                                                            <Building2 size={28} style={{ color: districtColor, opacity: 0.6 }} />
+                                                        )}
                                                         {listing.isApiVerified && (
                                                             <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(0,0,0,0.6)', borderRadius: '4px', padding: '2px 4px' }}>
                                                                 <ShieldCheck size={10} style={{ color: 'var(--success)' }} />
@@ -437,10 +441,15 @@ export default function BrowsePage() {
                                             <div className="listing-card">
                                                 {/* Hero Image */}
                                                 <div className="listing-card-image" style={{
-                                                    background: `linear-gradient(135deg, ${districtColor}25, ${districtColor}08, var(--bg-surface-2))`,
+                                                    background: listing.images?.[0] ? 'none' : `linear-gradient(135deg, ${districtColor}25, ${districtColor}08, var(--bg-surface-2))`,
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
+                                                    overflow: 'hidden',
                                                 }}>
-                                                    <Building2 size={40} style={{ color: districtColor, opacity: 0.4 }} />
+                                                    {listing.images?.[0] ? (
+                                                        <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <Building2 size={40} style={{ color: districtColor, opacity: 0.4 }} />
+                                                    )}
 
                                                     {/* Makani badge */}
                                                     <span style={{

@@ -149,6 +149,29 @@ without renumbering.
 
 ---
 
+## DEC-015 — Bed-space listings removed (compliance)
+**Date:** 2026-03-17 (Session 10)
+**Decision:** All "twin share", "bed-space", and "shared bedroom"
+listings rewritten as private rooms (1 tenant per room).
+**Reason:** NestMatch is a compliance-first platform for Law No. 4
+of 2026 which mandates occupancy limits. Bed-space arrangements are
+the grey market NestMatch exists to eliminate. Showing them on the
+platform contradicts the entire compliance value proposition.
+**Rule:** maxLegalOccupancy = number of bedrooms. Each bedroom = 1 tenant.
+Shared common areas (kitchen, bathroom, living room) are fine.
+
+---
+
+## DEC-016 — Illegal route removal (ledger, wallet, treasury)
+**Date:** 2026-03-17 (Session 10)
+**Decision:** Deleted RentLedgerPage, LandlordWalletPage, TreasuryPage
+and all routes/nav links to them.
+**Reason:** These pages implied payment processing, rent collection,
+and financial management capabilities. NestMatch holds no CBUAE licence.
+Keeping dead routes that reference unlicensed features is a liability.
+
+---
+
 ## DEC-013 — Separate My Properties from public Browse
 **Date:** 2026-03-17 (Session 9A)
 **Decision:** Landlord navbar "Properties" (linked to /browse) replaced

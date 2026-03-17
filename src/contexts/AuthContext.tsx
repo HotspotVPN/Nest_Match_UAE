@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 // In local dev, we might not have cookies set yet if we didn't login
                 // but we try to fetch the 'me' profile
-                const token = localStorage.getItem('nestmatch_token');
+                const token = localStorage.getItem('nm_token');
                 if (!token) {
                     setLoading(false);
                     return;
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('nestmatch_token', data.token);
+                localStorage.setItem('nm_token', data.token);
                 setCurrentUser(data.user);
             } else {
                 // Fallback to mock for demo purposes if backend login fails
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = () => {
-        localStorage.removeItem('nestmatch_token');
+        localStorage.removeItem('nm_token');
         setCurrentUser(null);
     };
 

@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.7.2 — Investor Demo (March 2026)
+## Current: v2.8.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,17 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Session 10 — Images, Compliance, Mock Data)
+- [x] Property images: Unsplash URLs on all 14 listings
+- [x] Image rendering on browse cards + listing detail hero
+- [x] Bed-space/twin-share compliance fix: all listings = private rooms
+- [x] 5 mock viewing bookings for Priya, Aisha, Sofia
+- [x] 3 mock chat channels + 9 messages
+- [x] Illegal routes removed: /ledger, /wallet, /treasury
+- [x] Health check → /api/health, token → nm_token
+- [x] API retry guard with fallback logging
+- [x] vercel.json SPA rewrite fix
 
 ### Completed (Session 9 — Homepage Revamp)
 - [x] Homepage legal audit: removed all unlicensed capability claims
