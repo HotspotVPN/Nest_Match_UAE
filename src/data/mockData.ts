@@ -525,7 +525,7 @@ export const users: User[] = [
     },
     {
         id: 'tier1-2', type: 'roommate', auth_method: 'google',
-        isUaePassVerified: false, isIdVerified: true, verification_tier: 'tier0_passport',  // Verified via Onfido (new expat fallback)
+        isUaePassVerified: false, isIdVerified: false, verification_tier: 'tier1_unverified',
         name: 'Amara Diallo', email: 'amara.diallo@email.com', avatar: '', nationality: 'Senegalese',
         bio: 'Freelance photographer scoping out Dubai for a potential relocation. Browsing listings before her exploratory visit next month.',
         keywords: ['new-expat', 'photographer'], phone: '+971 52 010 1111',

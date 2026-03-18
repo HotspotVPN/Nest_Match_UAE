@@ -485,6 +485,51 @@ export const api = {
         return { success: true, gcc_score: res.data.gcc_score };
     },
 
+    // ── Agreements ─────────────────────────────────────────────
+    getAgreement: async (agreementId: string): Promise<{
+        success: boolean; data?: any; error?: string;
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { success: false, error: 'Backend unavailable' };
+
+        const res = await apiFetch<any>(`/api/agreements/${agreementId}`);
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, data: res.data };
+    },
+
+    createAgreement: async (data: {
+        viewing_id: string;
+        broker_orn?: string;
+        commercial_license?: string;
+        plot_number?: string;
+        building_number?: string;
+    }): Promise<{ success: boolean; data?: any; error?: string }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { success: false, error: 'Backend unavailable' };
+
+        const res = await apiFetch<{ data: any }>('/api/agreements', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, data: res.data.data || res.data };
+    },
+
+    signAgreement: async (agreementId: string, data: {
+        signature_data: string;
+        signer_role: 'broker' | 'tenant';
+    }): Promise<{ success: boolean; data?: any; error?: string }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { success: false, error: 'Backend unavailable' };
+
+        const res = await apiFetch<{ data: any }>(`/api/agreements/${agreementId}/sign`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, data: res.data.data || res.data };
+    },
+
     // ── Utility ──────────────────────────────────────────────
     /** Force re-check backend availability */
     resetBackendCheck: () => {

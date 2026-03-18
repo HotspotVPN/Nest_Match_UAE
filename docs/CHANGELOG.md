@@ -3,6 +3,34 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.9.1] — 2026-03-18 · Signature Wiring, Data Governance, Demo Polish
+
+### Sessions 9D + 11D + 9F: Signature persistence, tier alignment, governance docs
+
+### Added
+- PATCH /api/agreements/:id/sign — signature persistence route (backend deployed)
+- POST /api/agreements — DLD agreement creation route (backend deployed)
+- GET /api/agreements/:id — agreement with signatures and property details (backend)
+- api.signAgreement(), api.createAgreement(), api.getAgreement() in frontend api.ts
+- ViewingAgreementModal wired to real API with DemoStateContext fallback
+- Loading states (Loader2 spinners) on Generate and Sign buttons
+- docs/TECH_DEBT.md — comprehensive tech debt register (6 items)
+- docs/incidents/2026-03-17_data_model_deviation.md — incident postmortem
+- docs/PRODUCT_DIRECTOR_BRIEFING_v2.md — canonical 15-persona reference
+- CLAUDE.md Data Model Governance section — approval gates, canonical persona list
+
+### Fixed
+- Amara Diallo tier: tier0_passport → tier1_unverified (mockData + D1 aligned)
+- Backend agreements.ts: full rewrite from stub (GET only) to 3 routes (GET + POST + PATCH)
+- User ID `user.user_id` → `user.sub` to match JWTPayload type in backend routes
+
+### Verified
+- All 15 canonical personas: tiers match between mockData, D1, and LoginPage
+- Signature flow: Priya (tenant) + Ahmed (broker) → FULLY_SIGNED in production
+- TypeScript: zero errors (frontend + backend)
+
+---
+
 ## [2.9.0] — 2026-03-17 · Seed Viewings + D1 CHECK Constraint Fix
 
 ### Session 9C: Backend D1 seeding for demo viewing data

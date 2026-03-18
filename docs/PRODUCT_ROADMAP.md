@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.9.0 — Investor Demo (March 2026)
+## Current: v2.9.1 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,17 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Session 9D + 11D + 9F — Signatures, Governance, Alignment)
+- [x] PATCH /api/agreements/:id/sign — signature persistence route (deployed)
+- [x] POST /api/agreements — DLD agreement creation route (deployed)
+- [x] Frontend ViewingAgreementModal wired to real API with fallback
+- [x] Amara Diallo tier fixed: tier0_passport → tier1_unverified (D1 + mockData)
+- [x] All 15 canonical personas verified: tiers aligned across D1, mockData, LoginPage
+- [x] Data Model Governance added to CLAUDE.md (approval gates, canonical list)
+- [x] Incident report: docs/incidents/2026-03-17_data_model_deviation.md
+- [x] Tech debt register: docs/TECH_DEBT.md (6 items tracked)
+- [x] Product Director Briefing v2: docs/PRODUCT_DIRECTOR_BRIEFING_v2.md
 
 ### Completed (Session 9C — Seed Viewings + D1 Fix)
 - [x] 5 viewing_bookings seeded to production D1 (Priya 3, Aisha 1, Sofia 1)

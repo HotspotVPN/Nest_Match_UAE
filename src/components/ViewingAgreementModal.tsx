@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { ViewingBooking, Listing, User, ViewingAgreementRecord, DigitalSignature } from '@/types';
-import { X, FileText, CheckCircle2, Clock, Pen, Download, Users, ShieldCheck } from 'lucide-react';
+import { X, FileText, CheckCircle2, Clock, Pen, Download, Users, ShieldCheck, Loader2 } from 'lucide-react';
+import { api } from '@/services/api';
 
 interface Props {
     viewing: ViewingBooking;
@@ -28,6 +29,10 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
     const [plotNumber, setPlotNumber] = useState(viewing.agreement?.plot_number || '');
     const [buildingNumber, setBuildingNumber] = useState(viewing.agreement?.building_number || '');
 
+    // Loading states
+    const [generating, setGenerating] = useState(false);
+    const [signing, setSigning] = useState(false);
+
     // Signature pad state
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -40,24 +45,58 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
         return `NM-VA-2026-${suffix}`;
     };
 
-    const handleGenerate = () => {
-        const newAgreement: ViewingAgreementRecord = {
-            id: `va-${viewing.id}`,
+    const handleGenerate = async () => {
+        setGenerating(true);
+
+        // Try real API first
+        const result = await api.createAgreement({
             viewing_id: viewing.id,
-            agreement_number: getAgreementNumber(),
-            generated_at: new Date().toISOString(),
             broker_orn: orn || undefined,
-            broker_company: brokerCompany || undefined,
-            broker_brn: brokerBrn || undefined,
             commercial_license: commercialLicense || undefined,
             plot_number: plotNumber || undefined,
             building_number: buildingNumber || undefined,
-            signatures: [],
-            status: 'sent',
-        };
-        setAgreement(newAgreement);
-        const updated: ViewingBooking = { ...viewing, status: 'AGREEMENT_SENT', agreement: newAgreement, updated_at: new Date().toISOString() };
-        onAgreementUpdate(updated);
+        });
+
+        if (result.success && result.data) {
+            const apiAgreement: ViewingAgreementRecord = {
+                id: result.data.id,
+                viewing_id: result.data.viewing_id,
+                agreement_number: result.data.agreement_number,
+                generated_at: result.data.generated_at,
+                broker_orn: result.data.broker_orn,
+                broker_company: brokerCompany || undefined,
+                broker_brn: result.data.broker_brn,
+                commercial_license: result.data.commercial_license,
+                plot_number: result.data.plot_number,
+                building_number: result.data.building_number,
+                signatures: [],
+                status: result.data.status || 'sent',
+            };
+            setAgreement(apiAgreement);
+            const updated: ViewingBooking = { ...viewing, status: 'AGREEMENT_SENT', agreement: apiAgreement, updated_at: new Date().toISOString() };
+            onAgreementUpdate(updated);
+        } else {
+            // Fallback to local DemoStateContext
+            const newAgreement: ViewingAgreementRecord = {
+                id: `va-${viewing.id}`,
+                viewing_id: viewing.id,
+                agreement_number: getAgreementNumber(),
+                generated_at: new Date().toISOString(),
+                broker_orn: orn || undefined,
+                broker_company: brokerCompany || undefined,
+                broker_brn: brokerBrn || undefined,
+                commercial_license: commercialLicense || undefined,
+                plot_number: plotNumber || undefined,
+                building_number: buildingNumber || undefined,
+                signatures: [],
+                status: 'sent',
+            };
+            setAgreement(newAgreement);
+            const updated: ViewingBooking = { ...viewing, status: 'AGREEMENT_SENT', agreement: newAgreement, updated_at: new Date().toISOString() };
+            onAgreementUpdate(updated);
+        }
+
+        setGenerating(false);
         setScreen('awaiting');
     };
 
@@ -97,30 +136,63 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
         onAgreementUpdate(updated);
     };
 
-    const handleConfirmSignature = () => {
+    const handleConfirmSignature = async () => {
         if (!agreement || !canvasRef.current) return;
         const now = new Date().toISOString();
-        const sigData = canvasRef.current.toDataURL();
-        const newSig: DigitalSignature = {
-            signer_id: signingFor === 'broker' ? agent.id : tenant.id,
-            signer_name: signerName,
-            signer_role: signingFor,
-            signed_at: now,
+        const sigData = canvasRef.current.toDataURL('image/png');
+
+        setSigning(true);
+
+        // Try real API first
+        const result = await api.signAgreement(agreement.id, {
             signature_data: sigData,
-            ip_simulated: `192.168.1.${Math.floor(Math.random() * 200) + 10}`,
-        };
+            signer_role: signingFor,
+        });
 
-        const existingSigs = agreement.signatures.filter(s => s.signer_role !== signingFor);
-        const allSigs = [...existingSigs, newSig];
-        const hasBroker = allSigs.some(s => s.signer_role === 'broker');
-        const hasTenant = allSigs.some(s => s.signer_role === 'tenant');
-        const newStatus = hasBroker && hasTenant ? 'fully_signed' : hasBroker ? 'agent_signed' : 'sent';
-        const viewingStatus = newStatus === 'fully_signed' ? 'FULLY_SIGNED' : newStatus === 'agent_signed' ? 'AGENT_SIGNED' : 'AGREEMENT_SENT';
+        if (result.success && result.data) {
+            // Use API response for updated state
+            const apiSigs: DigitalSignature[] = (result.data.signatures || []).map((s: any) => ({
+                signer_id: s.signer_id,
+                signer_name: s.signer_id === agent.id ? agent.name : tenant.name,
+                signer_role: s.signer_role,
+                signed_at: s.signed_at,
+                signature_data: sigData, // Canvas data for display
+                ip_simulated: '192.168.1.100',
+            }));
+            const newStatus = result.data.status || agreement.status;
+            const viewingStatus = result.data.viewing_status ||
+                (newStatus === 'fully_signed' ? 'FULLY_SIGNED' :
+                 newStatus === 'agent_signed' ? 'AGENT_SIGNED' : 'AGREEMENT_SENT');
 
-        const updatedAgreement: ViewingAgreementRecord = { ...agreement, signatures: allSigs, status: newStatus };
-        setAgreement(updatedAgreement);
-        const updated: ViewingBooking = { ...viewing, status: viewingStatus, agreement: updatedAgreement, updated_at: now } as ViewingBooking;
-        onAgreementUpdate(updated);
+            const updatedAgreement: ViewingAgreementRecord = { ...agreement, signatures: apiSigs, status: newStatus };
+            setAgreement(updatedAgreement);
+            const updated: ViewingBooking = { ...viewing, status: viewingStatus as ViewingBooking['status'], agreement: updatedAgreement, updated_at: now };
+            onAgreementUpdate(updated);
+        } else {
+            // Fallback to local DemoStateContext
+            const newSig: DigitalSignature = {
+                signer_id: signingFor === 'broker' ? agent.id : tenant.id,
+                signer_name: signerName,
+                signer_role: signingFor,
+                signed_at: now,
+                signature_data: sigData,
+                ip_simulated: `192.168.1.${Math.floor(Math.random() * 200) + 10}`,
+            };
+
+            const existingSigs = agreement.signatures.filter(s => s.signer_role !== signingFor);
+            const allSigs = [...existingSigs, newSig];
+            const hasBroker = allSigs.some(s => s.signer_role === 'broker');
+            const hasTenant = allSigs.some(s => s.signer_role === 'tenant');
+            const newStatus = hasBroker && hasTenant ? 'fully_signed' : hasBroker ? 'agent_signed' : 'sent';
+            const viewingStatus = newStatus === 'fully_signed' ? 'FULLY_SIGNED' : newStatus === 'agent_signed' ? 'AGENT_SIGNED' : 'AGREEMENT_SENT';
+
+            const updatedAgreement: ViewingAgreementRecord = { ...agreement, signatures: allSigs, status: newStatus };
+            setAgreement(updatedAgreement);
+            const updated: ViewingBooking = { ...viewing, status: viewingStatus, agreement: updatedAgreement, updated_at: now } as ViewingBooking;
+            onAgreementUpdate(updated);
+        }
+
+        setSigning(false);
         setScreen('awaiting');
     };
 
@@ -291,8 +363,8 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
                             </p>
                         </div>
 
-                        <button onClick={handleGenerate} className="btn btn-primary" style={{ width: '100%', fontWeight: 700 }}>
-                            Generate & Send for Signing
+                        <button onClick={handleGenerate} className="btn btn-primary" style={{ width: '100%', fontWeight: 700 }} disabled={generating}>
+                            {generating ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Generating...</> : 'Generate & Send for Signing'}
                         </button>
                     </div>
                 )}
@@ -427,8 +499,8 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
 
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <button onClick={() => setScreen('awaiting')} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
-                            <button onClick={handleConfirmSignature} className="btn btn-primary" style={{ flex: 2, fontWeight: 700 }} disabled={!hasContent || !signerName.trim()}>
-                                <CheckCircle2 size={14} /> Confirm Signature
+                            <button onClick={handleConfirmSignature} className="btn btn-primary" style={{ flex: 2, fontWeight: 700 }} disabled={!hasContent || !signerName.trim() || signing}>
+                                {signing ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Signing...</> : <><CheckCircle2 size={14} /> Confirm Signature</>}
                             </button>
                         </div>
                     </div>
