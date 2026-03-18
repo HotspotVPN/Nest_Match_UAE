@@ -28,6 +28,7 @@ import LandlordSignupPage from '@/pages/LandlordSignupPage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsPage from '@/pages/TermsPage';
 import MyPropertiesPage from '@/pages/MyPropertiesPage';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const DASHBOARD_PATHS = [
     '/dashboard', '/viewings', '/compliance', '/customers', '/analytics',
@@ -65,22 +66,22 @@ export default function App() {
                                 <Route path="/register/landlord" element={<LandlordSignupPage />} />
                                 <Route path="/browse" element={<BrowsePage />} />
                                 <Route path="/listing/:id" element={<ListingDetailPage />} />
-                                <Route path="/profile/:id?" element={<ProfilePage />} />
+                                <Route path="/profile/:id?" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                                 <Route path="/terms" element={<TermsPage />} />
 
-                                <Route path="/viewings" element={<ViewingsPage />} />
-                                <Route path="/add-property" element={<AddPropertyPage />} />
-                                <Route path="/residing-dashboard" element={<ResidingDashboardPage />} />
-                                <Route path="/compliance" element={<CompliancePage />} />
-                                <Route path="/customers" element={<CustomerDatabasePage />} />
+                                <Route path="/viewings" element={<ProtectedRoute><ViewingsPage /></ProtectedRoute>} />
+                                <Route path="/add-property" element={<ProtectedRoute><AddPropertyPage /></ProtectedRoute>} />
+                                <Route path="/residing-dashboard" element={<ProtectedRoute><ResidingDashboardPage /></ProtectedRoute>} />
+                                <Route path="/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
+                                <Route path="/customers" element={<ProtectedRoute><CustomerDatabasePage /></ProtectedRoute>} />
                                 <Route path="/how-it-works" element={<HowItWorksPage />} />
-                                <Route path="/chat" element={<ChatPage />} />
-                                <Route path="/gcc" element={<GccDashboardPage />} />
-                                <Route path="/analytics" element={<ViewingAnalyticsPage />} />
-                                <Route path="/maintenance" element={<MaintenancePage />} />
-                                <Route path="/dashboard" element={<LandlordDashboardPage />} />
-                                <Route path="/my-properties" element={<MyPropertiesPage />} />
+                                <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                                <Route path="/gcc" element={<ProtectedRoute><GccDashboardPage /></ProtectedRoute>} />
+                                <Route path="/analytics" element={<ProtectedRoute><ViewingAnalyticsPage /></ProtectedRoute>} />
+                                <Route path="/maintenance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
+                                <Route path="/dashboard" element={<ProtectedRoute><LandlordDashboardPage /></ProtectedRoute>} />
+                                <Route path="/my-properties" element={<ProtectedRoute><MyPropertiesPage /></ProtectedRoute>} />
                             </Routes>
                         </main>
                         <ConditionalFooter />

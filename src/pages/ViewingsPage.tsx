@@ -1,7 +1,8 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { viewingBookings, listings, users, getInitials, formatDate, getOrCreateChatChannel } from '@/data/mockData';
-import { CalendarCheck, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle, Loader2 } from 'lucide-react';
+import { CalendarCheck, CalendarX, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import type { ViewingStatus, ViewingBooking } from '@/types';
 import ViewingAgreementModal from '@/components/ViewingAgreementModal';
@@ -136,6 +137,14 @@ export default function ViewingsPage() {
 
                 {/* Viewing Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {filteredViewings.length === 0 && myViewings.length > 0 && (
+                        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
+                            <CalendarX size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem', margin: '0 auto 1rem' }} />
+                            <h3>No viewings in this category</h3>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Try selecting a different filter above, or browse properties to book another viewing.</p>
+                            <Link to="/browse" className="btn btn-primary btn-sm">Browse Properties &rarr;</Link>
+                        </div>
+                    )}
                     {filteredViewings.map(viewing => {
                         const listing = listings.find(l => l.id === viewing.property_id);
                         const searcher = users.find(u => u.id === viewing.searcher_id);

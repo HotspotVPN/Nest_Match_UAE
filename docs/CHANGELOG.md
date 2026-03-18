@@ -3,6 +3,28 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.9.2] — 2026-03-18 · Auth Guard, Empty States, Governance Docs
+
+### Session 12A: Final demo fixes — auth protection + filtered empty states
+
+### Added
+- ProtectedRoute component: redirects unauthenticated users to /login?return=...
+- 11 routes wrapped with ProtectedRoute (viewings, chat, profile, dashboard, etc.)
+- Filtered viewings empty state: "No viewings in this category" + Browse CTA
+- docs/CLAUDE_MD_GOVERNANCE.md — standalone data governance reference
+
+### Fixed
+- TC-4: Filtered viewings with 0 results no longer show blank page
+- TC-7: Direct URL access to protected routes redirects to login with return path
+- TC-7b: After login, user returns to original destination (not default /browse)
+
+### Tested (local, 18 March 2026)
+- TC-4: PASS — Sofia → /viewings → Completed filter → empty state visible
+- TC-7: PASS — Incognito → /viewings → redirect to /login?return=%2Fviewings
+- TC-7b: PASS — Login as Priya → redirected to /viewings (not /browse)
+
+---
+
 ## [2.9.1] — 2026-03-18 · Signature Wiring, Data Governance, Demo Polish
 
 ### Sessions 9D + 11D + 9F: Signature persistence, tier alignment, governance docs
