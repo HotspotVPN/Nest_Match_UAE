@@ -668,6 +668,10 @@ tbody tr:nth-child(even):hover {
   max-width: 900px;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

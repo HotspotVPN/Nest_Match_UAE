@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { canRequestViewing } from '@/utils/accessControl';
 import PassportKycModal from '@/components/PassportKycModal';
+import ComplianceFlow from '@/components/ComplianceFlow';
 
 // Generate next 7 days as date chips
 function getNextDays(count: number): { label: string; value: string }[] {
@@ -533,13 +534,7 @@ export default function ListingDetailPage() {
                                     </div>
 
                                     <button
-                                        onClick={() => {
-                                            setBookingStep('loading');
-                                            setTimeout(() => {
-                                                setBookingStep('confirmation');
-                                                showToast('Viewing requested!', 'success');
-                                            }, 1000);
-                                        }}
+                                        onClick={() => setBookingStep('loading')}
                                         className="btn btn-primary btn-lg"
                                         style={{ width: '100%' }}
                                         disabled={!bookingDate || !bookingTime}
@@ -550,11 +545,16 @@ export default function ListingDetailPage() {
                             )}
 
                             {bookingStep === 'loading' && (
-                                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                                    <Loader2 size={40} style={{ color: 'var(--brand-purple-light)', animation: 'spin 1s linear infinite', marginBottom: '1rem' }} />
-                                    <p style={{ fontWeight: 600 }}>Submitting request...</p>
-                                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                                </div>
+                                <ComplianceFlow
+                                    onComplete={() => {
+                                        setBookingStep('confirmation');
+                                        showToast('Viewing requested!', 'success');
+                                    }}
+                                    propertyTitle={listing.title}
+                                    makaniNumber={listing.makaniNumber}
+                                    trakheesiPermit={listing.trakheesiPermit}
+                                    district={listing.district}
+                                />
                             )}
 
                             {bookingStep === 'confirmation' && (

@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.9.2 — Investor Demo (March 2026)
+## Current: v2.10.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,13 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Session 13 — ComplianceFlow Phase 2A)
+- [x] ComplianceFlow.tsx: 6-step animated compliance verification
+- [x] Integrated into ListingDetailPage booking modal
+- [x] UAE PASS, RERA, Makani, Law No. 4, DocuSign, Registry steps
+- [x] Global @keyframes spin added to index.css
+- [x] Inbox deferred to Phase 2B (confirmed by PD)
 
 ### Completed (Session 12A — Auth Guard, Empty States)
 - [x] ProtectedRoute component with return path preservation

@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.10.0] — 2026-03-19 · ComplianceFlow Component — Phase 2A
+
+### Session 13: Animated compliance verification sequence for booking flow
+
+### Added
+- ComplianceFlow.tsx: 6-step animated compliance verification sequence
+  - Step 1: UAE PASS KYC verification
+  - Step 2: RERA Trakheesi permit check (shows permit number)
+  - Step 3: Makani geo-verification (shows Makani + district)
+  - Step 4: Law No. 4 of 2026 compliance check
+  - Step 5: DocuSign envelope preparation
+  - Step 6: Registry bridge ready
+- Steps auto-advance at 1.5s intervals with progress bar
+- Global @keyframes spin in index.css
+
+### Changed
+- ListingDetailPage booking modal: replaced simple spinner with ComplianceFlow
+- Booking "Confirm" button no longer uses setTimeout — ComplianceFlow onComplete handles transition
+
+### Not Built (Phase 2B — deferred)
+- Inbox/Notifications page
+- InboxBadge component
+
+---
+
 ## [2.9.2] — 2026-03-18 · Auth Guard, Empty States, Governance Docs
 
 ### Session 12A: Final demo fixes — auth protection + filtered empty states
