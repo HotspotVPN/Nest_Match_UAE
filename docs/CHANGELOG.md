@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.11.1] — 2026-03-19 · Inbox Data Alignment — Match Canonical Seed
+
+### Migration 0010: Additional inbox messages to match PD-approved seed
+
+### Added
+- 8 additional inbox messages seeded to D1 (migration 0010)
+- Khalid Al Rashid: 2 messages (sign agreement action, chat from Liam)
+- Liam O'Brien: 2 messages (upgrade to Gold action, welcome update)
+- Aisha Patel: 2 additional (viewing confirmed, Gold benefits)
+- Ahmed Al Maktoum: 2 additional (Marcus chat, March analytics)
+
+### D1 Inbox State (15 total)
+- roommate-1 (Priya): 3 messages, 1 unread
+- roommate-7 (Aisha): 3 messages, 2 unread
+- landlord-1 (Ahmed): 4 messages, 1 unread
+- agent-1 (Khalid): 2 messages, 2 unread
+- tier1-1 (Liam): 2 messages, 1 unread
+- admin-1 (Sara): 1 message, 1 unread
+
+### Process Note
+- Migration 0010 created and applied after PD review
+- Commit gated on explicit PD approval per governance rules
+
+---
+
 ## [2.11.0] — 2026-03-19 · Inbox System — Phase 2B (Backend + Frontend)
 
 ### Sessions 10 + 14: Full inbox infrastructure

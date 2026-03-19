@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.11.0 — Investor Demo (March 2026)
+## Current: v2.11.1 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,11 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Migration 0010 — Inbox Data Alignment)
+- [x] 8 additional inbox messages seeded to match PD-approved canonical seed
+- [x] Khalid (agent-1) and Liam (tier1-1) now have inbox messages
+- [x] Total: 15 messages across 6 users (all smoke tested)
 
 ### Completed (Sessions 10 + 14 — Inbox System Phase 2B)
 - [x] Backend: inbox_messages table + 5 API routes deployed
