@@ -565,6 +565,48 @@ export const api = {
         return res.ok;
     },
 
+    // ── Ejari Documents ─────────────────────────────────────────
+    getEjariDocuments: async (status?: string): Promise<{
+        documents: any[]; counts: { active: number; expired: number; cancelled: number };
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { documents: [], counts: { active: 0, expired: 0, cancelled: 0 } };
+
+        const params = status ? `?status=${status}` : '';
+        const res = await apiFetch<any>(`/api/ejari${params}`);
+        if (!res.ok) return { documents: [], counts: { active: 0, expired: 0, cancelled: 0 } };
+        return { documents: res.data.documents || [], counts: res.data.counts || { active: 0, expired: 0, cancelled: 0 } };
+    },
+
+    getEjariStats: async (): Promise<{
+        total_documents: number; active: number; expired: number;
+        total_annual_rent: number; expiring_soon: number;
+    } | null> => {
+        const isUp = await checkBackend();
+        if (!isUp) return null;
+
+        const res = await apiFetch<any>('/api/ejari/stats/summary');
+        if (!res.ok) return null;
+        return res.data;
+    },
+
+    uploadEjariDocument: async (data: {
+        ejari_number: string; property_id: string;
+        contract_start_date?: string; contract_end_date?: string;
+        annual_rent?: number; landlord_name?: string;
+        tenant_name?: string; tenant_user_id?: string;
+    }): Promise<{ success: boolean; id?: string; error?: string }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { success: false, error: 'Backend unavailable' };
+
+        const res = await apiFetch<{ success: boolean; id: string }>('/api/ejari', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return { success: false, error: res.error };
+        return { success: true, id: res.data.id };
+    },
+
     // ── Utility ──────────────────────────────────────────────
     /** Force re-check backend availability */
     resetBackendCheck: () => {

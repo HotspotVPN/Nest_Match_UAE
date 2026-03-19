@@ -16,6 +16,7 @@ import agreementRoutes from './routes/agreements';
 import maintenanceRoutes from './routes/maintenance';
 import chatRoutes from './routes/chat';
 import inboxRoutes from './routes/inbox';
+import ejariRoutes from './routes/ejari';
 
 const app = new Hono<AppEnv>();
 
@@ -45,6 +46,7 @@ app.route('/api/agreements', agreementRoutes);
 app.route('/api/maintenance', maintenanceRoutes);
 app.route('/api/chat', chatRoutes);
 app.route('/api/inbox', inboxRoutes);
+app.route('/api/ejari', ejariRoutes);
 
 app.get('/', (c) => {
   return c.text('NestMatch UAE API (Cloudflare Workers + Hono) is live!');

@@ -3,6 +3,45 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.12.0] — 2026-03-19 · Ejari Documents + CORS Fix + Auth Fix
+
+### Backend Session 11 + Frontend Session 15 + Critical Fixes
+
+### Added — Ejari Document Storage
+- ejari_documents table (migration 0011) — stores uploaded Ejari certificates
+- 5 demo Ejari documents seeded (migration 0012) for Ahmed (4) and Fatima (1)
+- Room-level rent values (migration 0013) — AED 2,700–3,800/mo
+- 4 API routes: GET /api/ejari, GET /api/ejari/stats/summary,
+  GET /api/ejari/:id, POST /api/ejari
+- Route order: /stats/summary registered before /:id (Hono requirement)
+- EjariDocumentsPage.tsx — stats bar, Active/Expired tabs, document cards
+- Ejari nav link for landlords, agents, AND residing tenants
+- Legal disclaimer: "NestMatch does not draft, manage, verify, or file
+  tenancy contracts or Ejari registrations"
+
+### Fixed — CORS (P0 blocker)
+- ALLOWED_ORIGIN in wrangler.toml: nestmatch-uae → nest-match-uae
+  (production Vercel URL has hyphens — this blocked ALL browser API calls)
+- cors.ts fallback origin also corrected
+
+### Fixed — Auth Login Crash
+- loginWithEmail: after API login, fetches full profile via /api/auth/me
+  (login response only returns {id, email, role, tier} — missing name, type,
+  verification_tier causing Navbar crash on currentUser.name)
+- Session restore on page load: same /me enrichment applied
+- Mock data merge ensures complete User object for frontend rendering
+
+### Fixed — EjariDocumentsPage
+- formatCurrency null guard (tenant stats endpoint returns null)
+- Stats bar hidden for tenants (only landlords/agents see aggregate stats)
+
+### Compliance
+- Zero "contracts" references as feature names in source code
+- "Ejari" naming used consistently (not "contracts")
+- Disclaimer present on Ejari page
+
+---
+
 ## [2.11.1] — 2026-03-19 · Inbox Data Alignment — Match Canonical Seed
 
 ### Migration 0010: Additional inbox messages to match PD-approved seed

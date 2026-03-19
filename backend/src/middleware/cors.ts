@@ -4,7 +4,7 @@ import { Env } from '../types';
 export const cors = (): MiddlewareHandler<{ Bindings: Env }> => {
   return async (c, next) => {
     const requestOrigin = c.req.header('Origin') || '';
-    const allowedOrigin = c.env.ALLOWED_ORIGIN || 'https://nestmatch-uae.vercel.app';
+    const allowedOrigin = c.env.ALLOWED_ORIGIN || 'https://nest-match-uae.vercel.app';
 
     // Determine which origin to allow
     let origin: string;

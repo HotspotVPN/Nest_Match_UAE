@@ -56,8 +56,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
 
                 if (response.ok) {
-                    const user = await response.json();
-                    setCurrentUser(user);
+                    const apiUser = await response.json();
+                    // Enrich API user with mock data for complete User object
+                    const mockUser = mockUsers.find((u) => u.id === apiUser.id || u.email === apiUser.email);
+                    setCurrentUser(mockUser ? { ...mockUser, ...apiUser, name: apiUser.name || mockUser.name } : apiUser);
                 }
             } catch (err) {
                 console.info('%c[NestMatch] Session check — backend unavailable', 'color: #8B5CF6; font-weight: bold;');
@@ -84,7 +86,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('nm_token', data.token);
-                setCurrentUser(data.user);
+
+                // Login returns minimal user — fetch full profile
+                try {
+                    const meResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${data.token}` }
+                    });
+                    if (meResponse.ok) {
+                        const fullUser = await meResponse.json();
+                        // Merge API profile with mock data for complete User object
+                        const mockUser = mockUsers.find((u) => u.email === email || u.id === fullUser.id);
+                        setCurrentUser(mockUser ? { ...mockUser, ...fullUser, name: fullUser.name || mockUser.name } : fullUser);
+                        return;
+                    }
+                } catch {
+                    // /me failed — fall through to mock enrichment
+                }
+
+                // Enrich minimal login response with mock data
+                const mockUser = mockUsers.find((u) => u.email === email);
+                if (mockUser) {
+                    setCurrentUser({ ...mockUser, id: data.user.id, email: data.user.email });
+                } else {
+                    setCurrentUser(data.user);
+                }
             } else {
                 // Fallback to mock for demo purposes if backend login fails
                 const user = mockUsers.find((u) => u.email === email);

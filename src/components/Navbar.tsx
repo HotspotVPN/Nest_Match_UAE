@@ -4,7 +4,7 @@ import { getInitials } from '@/data/mockData';
 import InboxBadge from '@/components/InboxBadge';
 import {
     User, ShieldCheck, Users, LayoutDashboard,
-    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2
+    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2, FileText
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -36,6 +36,11 @@ export default function Navbar() {
                                     <Link to="/maintenance" className={`navbar-link ${isActive('/maintenance')}`}>
                                         <Wrench size={16} /> Maintenance
                                     </Link>
+                                    {currentUser.resident_role === 'residing' && (
+                                        <Link to="/ejari" className={`navbar-link ${isActive('/ejari')}`}>
+                                            <FileText size={16} /> Ejari
+                                        </Link>
+                                    )}
                                 </>
                             )}
                             {(currentUser.type === 'landlord' || currentUser.type === 'letting_agent') && (
@@ -54,6 +59,9 @@ export default function Navbar() {
                                     </Link>
                                     <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
                                         <MessageSquare size={16} /> Chat
+                                    </Link>
+                                    <Link to="/ejari" className={`navbar-link ${isActive('/ejari')}`}>
+                                        <FileText size={16} /> Ejari
                                     </Link>
                                 </>
                             )}

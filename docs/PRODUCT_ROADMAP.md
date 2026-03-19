@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.11.1 — Investor Demo (March 2026)
+## Current: v2.12.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,15 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Sessions 11+15 — Ejari Documents + CORS + Auth Fix)
+- [x] Backend: ejari_documents table + 5 demo records + 4 API routes deployed
+- [x] Frontend: EjariDocumentsPage with stats, tabs, cards, legal disclaimer
+- [x] Ejari nav link for landlords, agents, and residing tenants
+- [x] Stats bar hidden for tenants (shows documents only)
+- [x] CORS fix: ALLOWED_ORIGIN corrected to nest-match-uae.vercel.app
+- [x] Auth fix: login now fetches full profile via /api/auth/me
+- [x] formatCurrency null guard for tenant views
 
 ### Completed (Migration 0010 — Inbox Data Alignment)
 - [x] 8 additional inbox messages seeded to match PD-approved canonical seed
