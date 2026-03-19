@@ -530,6 +530,41 @@ export const api = {
         return { success: true, data: res.data.data || res.data };
     },
 
+    // ── Inbox ──────────────────────────────────────────────────
+    getInbox: async (category?: string): Promise<{
+        messages: any[]; unread: { action: number; message: number; update: number; total: number };
+    }> => {
+        const isUp = await checkBackend();
+        if (!isUp) return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+
+        const params = category ? `?category=${category}` : '';
+        const res = await apiFetch<any>(`/api/inbox${params}`);
+        if (!res.ok) return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+        return { messages: res.data.messages || [], unread: res.data.unread || { action: 0, message: 0, update: 0, total: 0 } };
+    },
+
+    getUnreadCount: async (): Promise<number> => {
+        const isUp = await checkBackend();
+        if (!isUp) return 0;
+
+        const res = await apiFetch<{ count: number }>('/api/inbox/unread-count');
+        if (!res.ok) return 0;
+        return res.data.count || 0;
+    },
+
+    markInboxRead: async (messageId: string): Promise<boolean> => {
+        const res = await apiFetch<{ success: boolean }>(`/api/inbox/${messageId}/read`, { method: 'PATCH' });
+        return res.ok;
+    },
+
+    markAllInboxRead: async (category?: string): Promise<boolean> => {
+        const res = await apiFetch<{ success: boolean }>('/api/inbox/mark-all-read', {
+            method: 'POST',
+            body: JSON.stringify(category ? { category } : {}),
+        });
+        return res.ok;
+    },
+
     // ── Utility ──────────────────────────────────────────────
     /** Force re-check backend availability */
     resetBackendCheck: () => {

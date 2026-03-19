@@ -1,6 +1,6 @@
 # NestMatch UAE
 
-**Version:** 2.10.0
+**Version:** 2.11.0
 **Status:** Investor Demo Live
 **Live URL:** https://nest-match-uae.vercel.app
 **Backend:** https://nest-match-uae.pushkar-nagela.workers.dev

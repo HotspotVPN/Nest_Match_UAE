@@ -28,6 +28,7 @@ import LandlordSignupPage from '@/pages/LandlordSignupPage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsPage from '@/pages/TermsPage';
 import MyPropertiesPage from '@/pages/MyPropertiesPage';
+import InboxPage from '@/pages/InboxPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const DASHBOARD_PATHS = [
@@ -82,6 +83,7 @@ export default function App() {
                                 <Route path="/maintenance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
                                 <Route path="/dashboard" element={<ProtectedRoute><LandlordDashboardPage /></ProtectedRoute>} />
                                 <Route path="/my-properties" element={<ProtectedRoute><MyPropertiesPage /></ProtectedRoute>} />
+                                <Route path="/inbox" element={<ProtectedRoute><InboxPage /></ProtectedRoute>} />
                             </Routes>
                         </main>
                         <ConditionalFooter />

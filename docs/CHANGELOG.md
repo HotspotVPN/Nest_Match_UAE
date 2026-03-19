@@ -3,6 +3,35 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.11.0] — 2026-03-19 · Inbox System — Phase 2B (Backend + Frontend)
+
+### Sessions 10 + 14: Full inbox infrastructure
+
+### Backend
+- Created inbox_messages table (migration 0008)
+- Seeded 7 demo messages for Priya (3), Ahmed (2), Aisha (1), Sara (1)
+- Built 5 inbox routes: GET /api/inbox, GET /api/inbox/unread-count,
+  PATCH /api/inbox/:id/read, POST /api/inbox/mark-all-read,
+  PATCH /api/inbox/:id/action
+- Registered in index.ts, deployed to Workers
+
+### Frontend
+- InboxPage.tsx: 3-tab inbox (Actions, Messages, Updates) with unread badges
+- InboxBadge.tsx: bell icon with red unread count, polls every 30s
+- Added to Navbar (next to avatar) and App.tsx routes
+- api.ts: getInbox, getUnreadCount, markInboxRead, markAllInboxRead methods
+- Click message → marks as read, CTA buttons navigate to relevant pages
+- Empty states per tab, loading spinner
+
+### Data
+- 7 seeded messages across 4 users (action/message/update categories)
+- Priya: 1 unread action (sign agreement), 2 read items
+- Ahmed: 1 unread action (review viewing request), 1 read update
+- Aisha: 1 unread update
+- Sara: 1 unread action (KYC review)
+
+---
+
 ## [2.10.0] — 2026-03-19 · ComplianceFlow Component — Phase 2A
 
 ### Session 13: Animated compliance verification sequence for booking flow

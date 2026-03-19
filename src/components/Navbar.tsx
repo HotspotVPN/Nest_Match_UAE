@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
+import InboxBadge from '@/components/InboxBadge';
 import {
     User, ShieldCheck, Users, LayoutDashboard,
     LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2
@@ -99,6 +100,7 @@ export default function Navbar() {
                                         {currentUser.name.split(' ')[0]}
                                     </span>
                                 </div>
+                                <InboxBadge />
                                 <Link to="/profile" className="btn btn-ghost btn-sm">
                                     <User size={16} /> Profile
                                 </Link>

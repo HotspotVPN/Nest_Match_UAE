@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.10.0 — Investor Demo (March 2026)
+## Current: v2.11.0 — Investor Demo (March 2026)
 
 ### Completed
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -95,6 +95,14 @@
 - [x] Production D1 seeded: 32 users, 14 properties, 38 rooms
 - [x] All auth endpoints verified on production
 - [x] Worker deployed to nest-match-uae.pushkar-nagela.workers.dev
+
+### Completed (Sessions 10 + 14 — Inbox System Phase 2B)
+- [x] Backend: inbox_messages table + 5 API routes deployed
+- [x] Backend: 7 demo messages seeded for 4 users
+- [x] Frontend: InboxPage.tsx with 3-tab layout
+- [x] Frontend: InboxBadge.tsx with red unread count
+- [x] Frontend: Added to Navbar + App.tsx routes
+- [x] Frontend: api.ts inbox methods with mock fallback
 
 ### Completed (Session 13 — ComplianceFlow Phase 2A)
 - [x] ComplianceFlow.tsx: 6-step animated compliance verification
