@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.13.1] — 2026-03-20 · UI Polish: UserBadge, Tier-Gated Profiles, Chat Fixes
+
+### Post-migration UI improvements
+
+### Added
+- UserBadge.tsx: reusable UserBadgePill component for tier/role display
+- ListingDetailPage: tier-gated roommate visibility
+  - Tier 2 Gold: full profile with name, lifestyle tags, GCC score, link to profile
+  - Tier 0/1: blurred overlay with upgrade prompt (KYC or UAE PASS)
+- Profile links now use user ID consistently (/profile/:id)
+- Navbar isActive improved to match nested routes
+
+### Changed
+- ChatPage: various fixes for new ID format
+- ProfilePage: updated for new ID references
+- Navbar: profile link uses currentUser.id, mobile nav updated
+- mockData.ts: minor data fixes post-migration
+
+---
+
 ## [2.13.0] — 2026-03-20 · ID Format Migration
 
 ### Complete ID scheme migration per PRD v2.13.0

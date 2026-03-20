@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { chatChannels, chatMessages, users, listings, getInitials, formatTime, formatDate } from '@/data/mockData';
 import type { ChatChannelType } from '@/types';
 import { Send, Users as UsersIcon, Home, CheckCircle2, Phone, Video, Search, Menu, X, ChevronDown, Building2, CalendarCheck, MessageSquare } from 'lucide-react';
+import { UserBadgePill } from '@/components/UserBadge';
 
 export default function ChatPage() {
     const { currentUser } = useAuth();
@@ -255,11 +256,9 @@ export default function ChatPage() {
                                                             <div className="avatar avatar-sm" style={{ width: '28px', height: '28px', fontSize: '0.625rem' }}>
                                                                 {getInitials(p.name)}
                                                             </div>
-                                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
                                                                 <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{p.name} {p.id === currentUser.id ? '(You)' : ''}</span>
-                                                                <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-                                                                    {p.type === 'landlord' ? 'Landlord' : p.type === 'letting_agent' ? 'Agent' : 'Tenant'}
-                                                                </span>
+                                                                <UserBadgePill user={p} />
                                                             </div>
                                                         </a>
                                                     )

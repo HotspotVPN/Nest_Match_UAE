@@ -138,4 +138,25 @@ Complete ID scheme migration per PRD v2.13.0. Deleted 17 non-canonical users + 2
 ### Commit
 - Version: v2.13.0
 - Message: "v2.13.0 — ID Format Migration"
-- Pushed: Pending
+- Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.13.1 UI Polish
+
+### Summary
+Post-migration UI improvements. Created UserBadge component for tier/role display. Added tier-gated roommate visibility on ListingDetailPage (Gold sees full profiles, others see blurred overlay with upgrade prompt). Fixed profile links, chat page, navbar active state for new ID format.
+
+### Files Created
+- src/components/UserBadge.tsx
+
+### Files Modified
+- src/pages/ListingDetailPage.tsx — tier-gated roommate section
+- src/pages/ChatPage.tsx — ID format fixes
+- src/pages/ProfilePage.tsx — profile link fixes
+- src/components/Navbar.tsx — isActive improvement, profile link
+- src/data/mockData.ts — minor data fixes
+
+### Commit
+- Version: v2.13.1
+- Pushed: Yes

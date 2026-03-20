@@ -36,6 +36,7 @@ import { api } from "@/services/api";
 import { getTierLabel, getTierColor } from "@/utils/accessControl";
 import PassportKycModal from "@/components/PassportKycModal";
 import UAEPassOverlay from "@/components/UAEPassOverlay";
+import { UserBadgeDropdown } from "@/components/UserBadge";
 
 // ─── GCC Score Factors (expandable) ──────────────────────────
 function GccScoreFactors({ displayUser }: { displayUser: User }) {
@@ -279,12 +280,6 @@ export default function ProfilePage() {
               >
                 <h2 style={{ margin: 0 }}>{displayUser.name}</h2>
 
-                <span className={`badge ${displayUser.verification_tier === 'tier2_uae_pass' ? 'badge-uaepass' : displayUser.verification_tier === 'tier0_passport' ? 'badge-orange' : 'badge-orange'}`}>
-                    <ShieldCheck size={12} /> {getTierLabel(displayUser.verification_tier)}
-                  </span>
-
-                {displayUser.isPremium && <span className="badge badge-gold">⭐ Premium</span>}
-
                 {gccQualified && (
                   <span className="gcc-badge">
                     <Award size={12} /> Verified GCC
@@ -292,15 +287,10 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <p style={{ fontSize: "0.875rem", marginBottom: "0.75rem" }}>
-                {displayUser.type === "letting_agent"
-                  ? `RERA Agent ${displayUser.agency_name ? `— ${displayUser.agency_name}` : ""}`
-                  : displayUser.type === "landlord"
-                  ? "Property Owner"
-                  : displayUser.resident_role === "residing"
-                  ? "Residing Roommate"
-                  : "Searching Roommate"}
-              </p>
+              {/* Combined role + tier badge with dropdown */}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <UserBadgeDropdown user={displayUser} />
+              </div>
 
               <p
                 style={{

@@ -10,9 +10,10 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { canRequestViewing } from '@/utils/accessControl';
+import { canRequestViewing, getTierLabel } from '@/utils/accessControl';
 import PassportKycModal from '@/components/PassportKycModal';
 import ComplianceFlow from '@/components/ComplianceFlow';
+import { UserBadgePill } from '@/components/UserBadge';
 
 // Generate next 7 days as date chips
 function getNextDays(count: number): { label: string; value: string }[] {
@@ -203,6 +204,106 @@ export default function ListingDetailPage() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Current Roommates — tier-gated visibility */}
+                        {(() => {
+                            // Filter out the current user so they don't see themselves in the list
+                            const coTenantIds = listing.current_roommates.filter(id => id !== currentUser?.id);
+                            if (coTenantIds.length === 0) return null;
+                            return (
+                            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', position: 'relative' }}>
+                                <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <UsersIcon size={20} style={{ color: 'var(--brand-purple-light)' }} /> {isResident ? 'Your Co-Tenants' : 'Current Roommates'}
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>({coTenantIds.length})</span>
+                                </h3>
+
+                                {/* Tier 2 Gold — full access to roommate profiles */}
+                                {currentUser?.verification_tier === 'tier2_uae_pass' ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        {coTenantIds.map(tenantId => {
+                                            const tenant = users.find(u => u.id === tenantId);
+                                            if (!tenant) return null;
+                                            return (
+                                                <Link key={tenant.id} to={`/profile/${tenant.slug || tenant.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', transition: 'border-color 0.2s', cursor: 'pointer' }}
+                                                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--primary)')}
+                                                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                                                    >
+                                                        <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem' }}>{tenant.name}</div>
+                                                            <UserBadgePill user={tenant} />
+                                                            {tenant.lifestyle_tags && tenant.lifestyle_tags.length > 0 && (
+                                                                <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.375rem', flexWrap: 'wrap' }}>
+                                                                    {tenant.lifestyle_tags.slice(0, 3).map(tag => (
+                                                                        <span key={tag} style={{ fontSize: '0.5625rem', padding: '0.0625rem 0.375rem', borderRadius: '999px', background: 'rgba(124,58,237,0.1)', color: 'var(--brand-purple-light)', border: '1px solid rgba(124,58,237,0.2)' }}>{tag}</span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {tenant.gccScore > 0 && (
+                                                            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                                                                <div style={{ fontSize: '1.125rem', fontWeight: 800, color: '#f59e0b' }}>{tenant.gccScore}</div>
+                                                                <div style={{ fontSize: '0.5625rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GCC</div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    /* Tier 0/1 — blurred overlay with upgrade prompt */
+                                    <div style={{ position: 'relative' }}>
+                                        {/* Blurred preview */}
+                                        <div style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
+                                            {coTenantIds.map((tenantId, i) => (
+                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)', marginBottom: i < coTenantIds.length - 1 ? '0.5rem' : 0 }}>
+                                                    <div className="avatar avatar-md" style={{ background: 'var(--bg-surface-3)' }}>??</div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem' }}>Roommate Profile</div>
+                                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Lifestyle tags, GCC score, compatibility</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {/* Upgrade overlay */}
+                                        <div style={{
+                                            position: 'absolute', inset: 0,
+                                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                            background: 'rgba(0,0,0,0.15)', borderRadius: 'var(--radius-md)',
+                                        }}>
+                                            <Lock size={24} style={{ color: 'var(--brand-purple-light)', marginBottom: '0.5rem' }} />
+                                            <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center', marginBottom: '0.25rem' }}>
+                                                {currentUser?.verification_tier === 'tier1_unverified'
+                                                    ? 'Upgrade to UAE PASS to see who lives here'
+                                                    : currentUser?.verification_tier === 'tier0_passport'
+                                                    ? 'Complete KYC to unlock roommate profiles'
+                                                    : 'Verify identity to see roommate profiles'
+                                                }
+                                            </div>
+                                            <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginBottom: '0.75rem', textAlign: 'center' }}>
+                                                See lifestyle compatibility, GCC scores, and shared habits
+                                            </div>
+                                            {currentUser?.verification_tier === 'tier1_unverified' ? (
+                                                <button onClick={() => setShowUpgradeModal(true)} className="btn btn-uaepass btn-sm">
+                                                    <ShieldCheck size={14} /> Upgrade to Gold
+                                                </button>
+                                            ) : currentUser?.verification_tier === 'tier0_passport' ? (
+                                                <button onClick={() => setShowKycModal(true)} className="btn btn-primary btn-sm">
+                                                    <ShieldCheck size={14} /> Upload Documents
+                                                </button>
+                                            ) : (
+                                                <Link to="/register/tenant" className="btn btn-primary btn-sm">
+                                                    <ShieldCheck size={14} /> Sign Up to View
+                                                </Link>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            );
+                        })()}
 
                         {/* Amenities */}
                         <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
@@ -684,8 +785,8 @@ export default function ListingDetailPage() {
                                         <div key={tenant.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--bg-surface-2)', borderRadius: 'var(--radius-md)' }}>
                                             <div className="avatar avatar-md">{getInitials(tenant.name)}</div>
                                             <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{tenant.name}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GCC Score: <ShieldCheck size={10} style={{ display: 'inline', color: '#f59e0b' }}/> {tenant.gccScore || 0}</div>
+                                                <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem' }}>{tenant.name}</div>
+                                                <UserBadgePill user={tenant} />
                                             </div>
                                             <Link to={`/chat`} className="btn btn-ghost btn-sm"><MessageSquare size={14} /></Link>
                                         </div>

@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInitials } from '@/data/mockData';
 import InboxBadge from '@/components/InboxBadge';
+import { getTierLabel } from '@/utils/accessControl';
 import {
     User, ShieldCheck, Users, LayoutDashboard,
     LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2, FileText, Bell
@@ -114,9 +115,14 @@ export default function Navbar() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <div className="avatar avatar-sm">{getInitials(currentUser.name)}</div>
-                                    <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-                                        {currentUser.name.split(' ')[0]}
-                                    </span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                                            {currentUser.name.split(' ')[0]}
+                                        </span>
+                                        <span style={{ fontSize: '0.5625rem', color: currentUser.verification_tier === 'tier2_uae_pass' ? '#f59e0b' : currentUser.verification_tier === 'tier1_unverified' ? '#94a3b8' : '#b4824f', fontWeight: 600 }}>
+                                            {getTierLabel(currentUser.verification_tier).split(' — ')[1]}
+                                        </span>
+                                    </div>
                                 </div>
                                 <InboxBadge />
                                 <Link to={`/profile/${currentUser.id}`} className="btn btn-ghost btn-sm">
