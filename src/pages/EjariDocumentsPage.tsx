@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { FileText, Upload, AlertTriangle, CheckCircle2, XCircle, Loader2, Building2, Calendar, DollarSign } from 'lucide-react';
+import { FileText, Upload, AlertTriangle, CheckCircle2, XCircle, Loader2, Building2, Calendar, DollarSign, Download, ShieldCheck } from 'lucide-react';
 
 interface EjariDocument {
     id: string;
@@ -216,6 +216,39 @@ export default function EjariDocumentsPage() {
                                                         <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>({formatCurrency(doc.annual_rent)}/yr)</span>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            {/* DocuSign Verification + PDF Download */}
+                                            <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                                                <div style={{
+                                                    display: 'flex', alignItems: 'center', gap: '0.375rem',
+                                                    padding: '0.375rem 0.75rem', borderRadius: 'var(--radius-md)',
+                                                    background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)',
+                                                    fontSize: '0.6875rem', fontWeight: 600, color: '#16a34a',
+                                                }}>
+                                                    <ShieldCheck size={12} />
+                                                    DocuSign Verified — Both Parties Signed
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const pdfUrl = `/samples/ejari-${doc.ejari_number}.pdf`;
+                                                        const link = document.createElement('a');
+                                                        link.href = pdfUrl;
+                                                        link.download = `NestMatch_Ejari_${doc.ejari_number}.pdf`;
+                                                        link.target = '_blank';
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                    }}
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '0.25rem',
+                                                        padding: '0.375rem 0.75rem', borderRadius: 'var(--radius-md)',
+                                                        background: 'var(--brand-purple)', color: '#fff',
+                                                        border: 'none', cursor: 'pointer', fontSize: '0.6875rem', fontWeight: 600,
+                                                    }}
+                                                >
+                                                    <Download size={12} /> Download PDF
+                                                </button>
                                             </div>
 
                                             {isExpiringSoon && (

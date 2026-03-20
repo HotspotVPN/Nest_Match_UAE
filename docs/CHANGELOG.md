@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.13.3] — 2026-03-20 · DocuSign Banners, PDF Downloads, Sample Documents
+
+### Viewing agreement and Ejari document enhancements
+
+### Added
+- ViewingAgreementModal: DocuSign verification banners
+  - Green banner for fully_signed: "VERIFIED — Both Parties Signed" with dates
+  - Blue banner for pending: "PENDING — Awaiting Signatures"
+- ViewingAgreementModal: PDF download handler for signed agreements
+- 7 sample PDF files in public/samples/:
+  - 5 Ejari certificate samples (EJ-2025/2026 series)
+  - 1 Ejari contract sample
+  - 1 DLD Viewing Agreement sample (NM-VA-2026-IEW01)
+
+### Changed
+- EjariDocumentsPage: updates
+- ProfilePage: updates
+
+---
+
 ## [2.13.2] — 2026-03-20 · LoginPage Tier Order, DemoControls, Nav Polish
 
 ### Login and navigation improvements

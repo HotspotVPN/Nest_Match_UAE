@@ -197,7 +197,16 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
     };
 
     const handleDownloadPdf = () => {
-        window.print();
+        // Download pre-generated DLD Viewing Agreement PDF
+        const agNum = agreement?.agreement_number || getAgreementNumber();
+        const pdfUrl = `/samples/va-${agNum}.pdf`;
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `NestMatch_Viewing_Agreement_${agNum}.pdf`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     // Canvas drawing
@@ -400,6 +409,30 @@ export default function ViewingAgreementModal({ viewing, property, tenant, agent
                                 ))}
                             </div>
                         </div>
+
+                        {/* DocuSign Verification Banner */}
+                        {agreement.status === 'fully_signed' && (
+                            <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, #16a34a, #15803d)', marginBottom: '1.5rem', color: '#fff' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <ShieldCheck size={18} />
+                                    <span style={{ fontWeight: 800, fontSize: '0.9375rem' }}>DocuSign Digital Verification</span>
+                                </div>
+                                <div style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.75rem', opacity: 0.9 }}>VERIFIED — Both Parties Signed</div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', opacity: 0.85 }}>
+                                    <span>Broker: {agent.name} — {agreement.signatures.find(s => s.signer_role === 'broker')?.signed_at ? new Date(agreement.signatures.find(s => s.signer_role === 'broker')!.signed_at).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}</span>
+                                    <span>Tenant: {tenant.name} — {agreement.signatures.find(s => s.signer_role === 'tenant')?.signed_at ? new Date(agreement.signatures.find(s => s.signer_role === 'tenant')!.signed_at).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}</span>
+                                </div>
+                            </div>
+                        )}
+                        {agreement.status !== 'fully_signed' && (
+                            <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, #0077C8, #005a9e)', marginBottom: '1.5rem', color: '#fff' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <ShieldCheck size={18} />
+                                    <span style={{ fontWeight: 800, fontSize: '0.9375rem' }}>DocuSign Digital Verification</span>
+                                </div>
+                                <div style={{ fontSize: '0.8125rem', fontWeight: 600, opacity: 0.9 }}>PENDING — Awaiting Signatures</div>
+                            </div>
+                        )}
 
                         {/* Signing Status */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>

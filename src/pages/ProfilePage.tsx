@@ -9,6 +9,7 @@ import {
     viewingBookings,
     listings as mockListings2,
     users as mockUsers,
+    getEjariForUser,
 } from "@/data/mockData";
 import type { User, Listing } from "@/types";
 import {
@@ -1143,6 +1144,85 @@ export default function ProfilePage() {
 
         {/* Viewing History */}
         <ViewingHistory displayUser={displayUser} />
+
+        {/* Ejari Documents */}
+        {(() => {
+          const ejariDocs = getEjariForUser(displayUser.id);
+          if (ejariDocs.length === 0) return null;
+          return (
+            <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <FileText size={18} style={{ color: 'var(--brand-purple)' }} /> Ejari Documents
+                </h3>
+                <Link to="/ejari" style={{ fontSize: '0.75rem', color: 'var(--brand-purple-light)', textDecoration: 'none', fontWeight: 600 }}>
+                  View All →
+                </Link>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                {ejariDocs.map(doc => (
+                  <div key={doc.id} style={{
+                    padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)',
+                    background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.25rem' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.8125rem' }}>{doc.property_title || 'Property'}</span>
+                        {doc.property_district && (
+                          <span style={{
+                            fontSize: '0.5625rem', fontWeight: 600, padding: '0.0625rem 0.375rem',
+                            borderRadius: 'var(--radius-full)', background: 'rgba(124,58,237,0.1)',
+                            color: 'var(--brand-purple-light)', textTransform: 'uppercase',
+                          }}>{doc.property_district}</span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                        {doc.ejari_number}
+                      </div>
+                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '0.125rem' }}>
+                        {new Date(doc.contract_start_date).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' })} — {new Date(doc.contract_end_date).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{
+                        display: 'flex', alignItems: 'center', gap: '0.25rem',
+                        fontSize: '0.625rem', fontWeight: 700, padding: '0.125rem 0.5rem',
+                        borderRadius: 'var(--radius-full)',
+                        background: doc.ejari_status === 'active' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+                        color: doc.ejari_status === 'active' ? 'var(--success)' : '#ef4444',
+                      }}>
+                        {doc.ejari_status === 'active' ? <CheckCircle2 size={10} /> : null}
+                        {doc.ejari_status === 'active' ? 'Active' : 'Expired'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          const pdfUrl = `/samples/ejari-${doc.ejari_number}.pdf`;
+                          const link = document.createElement('a');
+                          link.href = pdfUrl;
+                          link.download = `NestMatch_Ejari_${doc.ejari_number}.pdf`;
+                          link.target = '_blank';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.25rem',
+                          padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)',
+                          background: 'var(--brand-purple)', color: '#fff',
+                          border: 'none', cursor: 'pointer', fontSize: '0.625rem', fontWeight: 600,
+                        }}
+                        title="Download Ejari PDF"
+                      >
+                        <FileText size={10} /> PDF
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* RERA License (Agents) */}
         {displayUser.rera_license && (
