@@ -3,6 +3,46 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.14.0] — 2026-03-20 · UX Enhancement Release: P2–P6 + Homepage Search
+
+### Added
+- **RegisterLandingPage**: Complete rewrite as 4-step UK-style wizard
+  - Step 1: Role selection (Tenant vs Landlord) with info panels
+  - Step 2: Account creation (UAE PASS / Google / Email) — pure pass-through, no login
+  - Step 3: Document upload demo with animated verify flow
+  - Step 4: Completion with tier-aware status display
+  - Fully decoupled from signin flow — zero `login()` calls
+- **ListingDetailPage**: Image carousel with prev/next, dot indicators, photo counter
+- **ListingDetailPage**: Neighbourhood & Landmarks section with clickable Google Maps links
+- **ListingDetailPage**: Property Tags section with color-coded pills
+- **BrowsePage**: Color-coded transport line badges on property cards
+- **BrowsePage**: Listing tag pills on property cards (grid view)
+- **BrowsePage**: Property Tags filter section in sidebar (11 tag types)
+- **BrowsePage**: URL search param support (`?q=`, `?tags=`, `?transport=`)
+- **ViewingsPage**: Calendar view with monthly grid, status-colored dots, date details
+- **ViewingsPage**: List/Calendar view toggle
+- **ViewingsPage**: Counter-proposal modal for suggesting alternative viewing times
+- **GccDashboardPage**: Score history bar chart (6-month trend)
+- **GccDashboardPage**: Progress bars on score factor cards
+- **GccDashboardPage**: "How to Boost Your Score" improvement tips section
+- **ProfilePage**: Local Recommendations section with category-colored cards
+- **HomePage**: Functional search bar replacing static link
+  - Real text input for free-text search
+  - 10 quick-filter tag chips (Budget, Premium, Metro Access, Red/Green Line, etc.)
+  - Navigates to `/browse` with query params pre-populated
+
+### Changed
+- App.tsx: `/register/tenant` and `/register/landlord` now redirect to unified `/register?role=`
+- CLAUDE.md: version bump to v2.14.0
+- package.json: version 2.14.0
+
+### UX-Only Constraint
+- Zero data model changes — all 15 personas and 12 properties unchanged
+- Zero backend changes — no API routes added or modified
+- Zero compliance impact — all legal pages and disclaimers preserved
+
+---
+
 ## [2.13.3] — 2026-03-20 · DocuSign Banners, PDF Downloads, Gov Templates, PD Signoff
 
 ### Gate G6 — Pre-Demo Signoff (approved by Product Director)

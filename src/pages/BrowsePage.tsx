@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     formatCurrency,
@@ -12,6 +12,7 @@ import {
     Search, MapPin, Train, ShieldCheck, Users as UsersIcon,
     Filter, LayoutGrid, List, Building2,
     ArrowUpDown, X, Check, Star, Bus, ChevronDown, MapPinned,
+    BedDouble, Waves, Zap, TrainFront, Tag,
 } from 'lucide-react';
 
 // ─── Constants ───────────────────────────────────────────────
@@ -27,6 +28,20 @@ const TRANSPORT_FILTERS = [
     { label: 'Red Line', color: '#E21836' },
     { label: 'Green Line', color: '#009639' },
     { label: 'Bus', color: '#6366f1' },
+];
+
+const TAG_FILTERS: { value: string; label: string; color: string }[] = [
+    { value: 'budget', label: 'Budget', color: '#22c55e' },
+    { value: 'premium', label: 'Premium', color: '#f59e0b' },
+    { value: 'luxury', label: 'Luxury', color: '#f59e0b' },
+    { value: 'ultra-premium', label: 'Ultra Premium', color: '#ef4444' },
+    { value: 'metro-access', label: 'Metro Access', color: '#3b82f6' },
+    { value: 'private-room', label: 'Private Room', color: '#8b5cf6' },
+    { value: 'en-suite', label: 'En-suite', color: '#06b6d4' },
+    { value: 'villa', label: 'Villa', color: '#14b8a6' },
+    { value: 'sea-view', label: 'Sea View', color: '#0ea5e9' },
+    { value: 'lake-view', label: 'Lake View', color: '#0ea5e9' },
+    { value: 'new-building', label: 'New Building', color: '#a855f7' },
 ];
 
 type SortOption = 'top-rated' | 'price-low' | 'price-high' | 'newest' | 'available' | 'most-available';
@@ -49,12 +64,13 @@ const DISTRICT_COLORS: Record<string, string> = {
 
 export default function BrowsePage() {
     const { currentUser } = useAuth();
+    const [searchParams] = useSearchParams();
     const [listings, setListings] = useState<Listing[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // ─── Filter State ────────────────────────────────────────
-    const [searchQuery, setSearchQuery] = useState('');
+    // ─── Filter State (initialized from URL params if present) ──
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
     const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
     const [budgetMin, setBudgetMin] = useState(500);
     const [budgetMax, setBudgetMax] = useState(15000);
@@ -62,8 +78,15 @@ export default function BrowsePage() {
     const [verifiedOnly, setVerifiedOnly] = useState(false);
     const [availableOnly, setAvailableOnly] = useState(false);
     const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
-    const [selectedTransport, setSelectedTransport] = useState<string[]>([]);
+    const [selectedTransport, setSelectedTransport] = useState<string[]>(
+        searchParams.get('transport') ? searchParams.get('transport')!.split(',') : []
+    );
+    const [selectedTags, setSelectedTags] = useState<string[]>(
+        searchParams.get('tags') ? searchParams.get('tags')!.split(',') : []
+    );
     const [showFullyOccupied, setShowFullyOccupied] = useState(false);
+    const [selectedPropertySize, setSelectedPropertySize] = useState<number | null>(null);
+    const [selectedAvailableRooms, setSelectedAvailableRooms] = useState<number | null>(null);
     const [sortBy, setSortBy] = useState<SortOption>('top-rated');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [showFilters, setShowFilters] = useState(true);
@@ -96,9 +119,12 @@ export default function BrowsePage() {
         if (availableOnly) count++;
         if (selectedAmenities.length > 0) count++;
         if (selectedTransport.length > 0) count++;
+        if (selectedTags.length > 0) count++;
+        if (selectedPropertySize !== null) count++;
+        if (selectedAvailableRooms !== null) count++;
         if (searchQuery) count++;
         return count;
-    }, [selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, selectedAmenities, selectedTransport, searchQuery]);
+    }, [selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, selectedAmenities, selectedTransport, selectedTags, selectedPropertySize, selectedAvailableRooms, searchQuery]);
 
     // ─── Filtering + Sorting ─────────────────────────────────
     const filteredListings = useMemo(() => {
@@ -113,6 +139,20 @@ export default function BrowsePage() {
             if (verifiedOnly && !l.isApiVerified) return false;
             if (availableOnly && l.available_rooms === 0) return false;
             if (selectedAmenities.length > 0 && !selectedAmenities.every(a => l.amenities.some(la => la.toLowerCase().includes(a.toLowerCase())))) return false;
+            if (selectedPropertySize !== null) {
+                if (selectedPropertySize === 4) {
+                    if (l.total_rooms < 4) return false;
+                } else {
+                    if (l.total_rooms !== selectedPropertySize) return false;
+                }
+            }
+            if (selectedAvailableRooms !== null) {
+                if (selectedAvailableRooms === 3) {
+                    if (l.available_rooms < 3) return false;
+                } else {
+                    if (l.available_rooms !== selectedAvailableRooms) return false;
+                }
+            }
             if (selectedTransport.length > 0) {
                 const hasTransport = selectedTransport.some(tf => {
                     if (tf === 'Bus') return l.transport_chips?.some(tc => tc.type === 'bus');
@@ -120,6 +160,7 @@ export default function BrowsePage() {
                 });
                 if (!hasTransport) return false;
             }
+            if (selectedTags.length > 0 && !selectedTags.some(t => l.tags?.includes(t))) return false;
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 if (!l.title.toLowerCase().includes(q) && !l.address.toLowerCase().includes(q) && !l.district.toLowerCase().includes(q) && !l.description.toLowerCase().includes(q)) return false;
@@ -138,16 +179,17 @@ export default function BrowsePage() {
         }
 
         return result;
-    }, [listings, selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, showFullyOccupied, selectedAmenities, selectedTransport, searchQuery, sortBy]);
+    }, [listings, selectedDistricts, budgetMin, budgetMax, billsIncluded, verifiedOnly, availableOnly, showFullyOccupied, selectedAmenities, selectedTransport, selectedTags, selectedPropertySize, selectedAvailableRooms, searchQuery, sortBy]);
 
     const toggleDistrict = (d: string) => setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
     const toggleAmenity = (a: string) => setSelectedAmenities(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
     const toggleTransport = (t: string) => setSelectedTransport(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+    const toggleTag = (t: string) => setSelectedTags(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
 
     const clearAllFilters = () => {
         setSelectedDistricts([]); setBudgetMin(500); setBudgetMax(15000);
         setBillsIncluded(false); setVerifiedOnly(false); setAvailableOnly(false);
-        setSelectedAmenities([]); setSelectedTransport([]); setSearchQuery('');
+        setSelectedAmenities([]); setSelectedTransport([]); setSelectedTags([]); setSelectedPropertySize(null); setSelectedAvailableRooms(null); setSearchQuery('');
     };
 
     // ─── Render ──────────────────────────────────────────────
@@ -237,19 +279,37 @@ export default function BrowsePage() {
                         <p style={{ color: 'var(--text-muted)' }}>Fetching verified listings...</p>
                     </div>
                 ) : (
-                    <>
-                        {/* Filter Panel */}
+                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
+                        {/* ─── Sidebar Filter Panel ─────────────────── */}
                         {showFilters && (
-                            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div className="glass-card" style={{
+                                padding: '1.25rem', width: '290px', minWidth: '290px', flexShrink: 0,
+                                position: 'sticky', top: '5rem', maxHeight: 'calc(100vh - 6rem)',
+                                overflowY: 'auto', overflowX: 'hidden',
+                            }}>
+                                {/* Sidebar Header */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                                    <span style={{ fontWeight: 700, fontSize: '0.9375rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <Filter size={15} style={{ color: 'var(--brand-purple-light)' }} /> Filters
+                                    </span>
+                                    {activeFilterCount > 0 && (
+                                        <button onClick={clearAllFilters} style={{ background: 'none', border: 'none', color: 'var(--error)', fontSize: '0.6875rem', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            <X size={12} /> Clear All
+                                        </button>
+                                    )}
+                                </div>
+
                                 {/* Districts */}
                                 <div style={{ marginBottom: '1.25rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                                        <label className="form-label" style={{ margin: 0 }}>DISTRICT</label>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.625rem' }}>
+                                        <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                            <MapPin size={12} style={{ color: 'var(--brand-purple-light)' }} /> District
+                                        </label>
                                         {selectedDistricts.length > 0 && (
-                                            <button onClick={() => setSelectedDistricts([])} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.6875rem', cursor: 'pointer', textDecoration: 'underline' }}>Clear</button>
+                                            <button onClick={() => setSelectedDistricts([])} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.625rem', cursor: 'pointer', textDecoration: 'underline' }}>Clear</button>
                                         )}
                                     </div>
-                                    <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
                                         {DISTRICTS.map(d => {
                                             const active = selectedDistricts.includes(d);
                                             return (
@@ -257,7 +317,7 @@ export default function BrowsePage() {
                                                     key={d}
                                                     onClick={() => toggleDistrict(d)}
                                                     style={{
-                                                        padding: '0.375rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600,
+                                                        padding: '0.3rem 0.625rem', borderRadius: '9999px', fontSize: '0.6875rem', fontWeight: 600,
                                                         border: `1px solid ${active ? 'var(--brand-purple)' : 'var(--border-subtle)'}`,
                                                         background: active ? 'rgba(99,102,241,0.15)' : 'transparent',
                                                         color: active ? 'var(--brand-purple-light)' : 'var(--text-muted)',
@@ -271,107 +331,188 @@ export default function BrowsePage() {
                                     </div>
                                 </div>
 
+                                {/* Property Size (total rooms) */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <Building2 size={12} style={{ color: 'var(--brand-purple-light)' }} /> Property Size
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '0.375rem' }}>
+                                        {[1, 2, 3, 4].map(n => {
+                                            const active = selectedPropertySize === n;
+                                            return (
+                                                <button key={n} onClick={() => setSelectedPropertySize(active ? null : n)} style={{
+                                                    flex: 1, padding: '0.5rem 0', borderRadius: 'var(--radius-md)', fontSize: '0.75rem', fontWeight: 700,
+                                                    border: `1px solid ${active ? 'var(--brand-purple)' : 'var(--border-subtle)'}`,
+                                                    background: active ? 'rgba(99,102,241,0.15)' : 'transparent',
+                                                    color: active ? 'var(--brand-purple-light)' : 'var(--text-muted)',
+                                                    cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
+                                                }}>
+                                                    {n === 4 ? '4+' : `${n}-bed`}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <div style={{ fontSize: '0.5625rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>Total bedrooms in the property</div>
+                                </div>
+
+                                {/* Rooms Available */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <BedDouble size={12} style={{ color: 'var(--brand-purple-light)' }} /> Rooms Available
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '0.375rem' }}>
+                                        {[1, 2, 3].map(n => {
+                                            const active = selectedAvailableRooms === n;
+                                            return (
+                                                <button key={n} onClick={() => setSelectedAvailableRooms(active ? null : n)} style={{
+                                                    flex: 1, padding: '0.5rem 0', borderRadius: 'var(--radius-md)', fontSize: '0.75rem', fontWeight: 700,
+                                                    border: `1px solid ${active ? 'rgba(34,197,94,0.6)' : 'var(--border-subtle)'}`,
+                                                    background: active ? 'rgba(34,197,94,0.12)' : 'transparent',
+                                                    color: active ? 'var(--success)' : 'var(--text-muted)',
+                                                    cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
+                                                }}>
+                                                    {n === 3 ? '3+' : n}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <div style={{ fontSize: '0.5625rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>Vacant rooms matching X/{selectedPropertySize || 'N'} on listing</div>
+                                </div>
+
                                 {/* Budget Range */}
                                 <div style={{ marginBottom: '1.25rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                        <label className="form-label" style={{ margin: 0 }}>BUDGET (AED / month)</label>
-                                        <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--brand-purple-light)' }}>
+                                        <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                            <Waves size={12} style={{ color: 'var(--brand-purple-light)' }} /> Budget
+                                        </label>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--brand-purple-light)' }}>
                                             {formatCurrency(budgetMin)} – {formatCurrency(budgetMax)}
                                         </span>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                         <input type="range" min={500} max={15000} step={100} value={budgetMin}
                                             onChange={e => setBudgetMin(Math.min(Number(e.target.value), budgetMax - 100))}
                                             style={{ width: '100%', accentColor: 'var(--brand-purple)' }} />
-                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>to</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.625rem', whiteSpace: 'nowrap' }}>to</span>
                                         <input type="range" min={500} max={15000} step={100} value={budgetMax}
                                             onChange={e => setBudgetMax(Math.max(Number(e.target.value), budgetMin + 100))}
                                             style={{ width: '100%', accentColor: 'var(--brand-purple)' }} />
                                     </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
+                                        <span style={{ fontSize: '0.5625rem', color: 'var(--text-muted)' }}>AED 500</span>
+                                        <span style={{ fontSize: '0.5625rem', color: 'var(--text-muted)' }}>AED 15,000</span>
+                                    </div>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
-                                    {/* Toggles */}
-                                    <div>
-                                        <label className="form-label">QUICK FILTERS</label>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                            {[
-                                                { label: 'Bills Included', active: billsIncluded, toggle: () => setBillsIncluded(!billsIncluded) },
-                                                { label: 'DLD Verified Only', active: verifiedOnly, toggle: () => setVerifiedOnly(!verifiedOnly) },
-                                                { label: 'Available Rooms Only', active: availableOnly, toggle: () => setAvailableOnly(!availableOnly) },
-                                                { label: 'Show Fully Occupied', active: showFullyOccupied, toggle: () => setShowFullyOccupied(!showFullyOccupied) },
-                                            ].map(f => (
-                                                <button key={f.label} onClick={f.toggle} style={{
-                                                    display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem',
-                                                    borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', fontWeight: 600,
-                                                    background: f.active ? 'rgba(34,197,94,0.1)' : 'transparent',
-                                                    border: `1px solid ${f.active ? 'rgba(34,197,94,0.3)' : 'var(--border-subtle)'}`,
-                                                    color: f.active ? 'var(--success)' : 'var(--text-muted)',
+                                {/* Quick Toggles */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <Zap size={12} style={{ color: 'var(--brand-purple-light)' }} /> Quick Filters
+                                    </label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                                        {[
+                                            { label: 'Bills Included', active: billsIncluded, toggle: () => setBillsIncluded(!billsIncluded) },
+                                            { label: 'DLD Verified Only', active: verifiedOnly, toggle: () => setVerifiedOnly(!verifiedOnly) },
+                                            { label: 'Available Rooms Only', active: availableOnly, toggle: () => setAvailableOnly(!availableOnly) },
+                                            { label: 'Show Fully Occupied', active: showFullyOccupied, toggle: () => setShowFullyOccupied(!showFullyOccupied) },
+                                        ].map(f => (
+                                            <button key={f.label} onClick={f.toggle} style={{
+                                                display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4375rem 0.625rem',
+                                                borderRadius: 'var(--radius-md)', fontSize: '0.75rem', fontWeight: 600,
+                                                background: f.active ? 'rgba(34,197,94,0.1)' : 'transparent',
+                                                border: `1px solid ${f.active ? 'rgba(34,197,94,0.3)' : 'var(--border-subtle)'}`,
+                                                color: f.active ? 'var(--success)' : 'var(--text-muted)',
+                                                cursor: 'pointer', transition: 'all 0.15s',
+                                            }}>
+                                                {f.active ? <Check size={13} /> : <div style={{ width: 13 }} />} {f.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Amenities */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <Star size={12} style={{ color: 'var(--brand-purple-light)' }} /> Amenities
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                                        {AMENITIES.map(a => {
+                                            const active = selectedAmenities.includes(a);
+                                            return (
+                                                <button key={a} onClick={() => toggleAmenity(a)} style={{
+                                                    padding: '0.3rem 0.5rem', borderRadius: '9999px', fontSize: '0.625rem', fontWeight: 600,
+                                                    border: `1px solid ${active ? 'rgba(56,189,248,0.5)' : 'var(--border-subtle)'}`,
+                                                    background: active ? 'rgba(56,189,248,0.1)' : 'transparent',
+                                                    color: active ? 'var(--brand-blue-light)' : 'var(--text-muted)',
                                                     cursor: 'pointer', transition: 'all 0.15s',
                                                 }}>
-                                                    {f.active ? <Check size={14} /> : <div style={{ width: 14 }} />} {f.label}
+                                                    {a}
                                                 </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Amenities */}
-                                    <div>
-                                        <label className="form-label">AMENITIES</label>
-                                        <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
-                                            {AMENITIES.map(a => {
-                                                const active = selectedAmenities.includes(a);
-                                                return (
-                                                    <button key={a} onClick={() => toggleAmenity(a)} style={{
-                                                        padding: '0.375rem 0.625rem', borderRadius: '9999px', fontSize: '0.6875rem', fontWeight: 600,
-                                                        border: `1px solid ${active ? 'rgba(56,189,248,0.5)' : 'var(--border-subtle)'}`,
-                                                        background: active ? 'rgba(56,189,248,0.1)' : 'transparent',
-                                                        color: active ? 'var(--brand-blue-light)' : 'var(--text-muted)',
-                                                        cursor: 'pointer', transition: 'all 0.15s',
-                                                    }}>
-                                                        {a}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    {/* Transport */}
-                                    <div>
-                                        <label className="form-label">TRANSPORT</label>
-                                        <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
-                                            {TRANSPORT_FILTERS.map(t => {
-                                                const active = selectedTransport.includes(t.label);
-                                                return (
-                                                    <button key={t.label} onClick={() => toggleTransport(t.label)} style={{
-                                                        padding: '0.375rem 0.75rem', borderRadius: '9999px', fontSize: '0.6875rem', fontWeight: 700,
-                                                        border: `1px solid ${active ? t.color + '80' : 'var(--border-subtle)'}`,
-                                                        background: active ? t.color + '15' : 'transparent',
-                                                        color: active ? t.color : 'var(--text-muted)',
-                                                        cursor: 'pointer', transition: 'all 0.15s',
-                                                        display: 'flex', alignItems: 'center', gap: '0.375rem',
-                                                    }}>
-                                                        {t.label === 'Bus' ? <Bus size={12} /> : <Train size={12} />} {t.label}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                {/* Clear All */}
+                                {/* Transport */}
+                                <div style={{ marginBottom: activeFilterCount > 0 ? '1rem' : 0 }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <TrainFront size={12} style={{ color: 'var(--brand-purple-light)' }} /> Transport
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                                        {TRANSPORT_FILTERS.map(t => {
+                                            const active = selectedTransport.includes(t.label);
+                                            return (
+                                                <button key={t.label} onClick={() => toggleTransport(t.label)} style={{
+                                                    padding: '0.3rem 0.625rem', borderRadius: '9999px', fontSize: '0.625rem', fontWeight: 700,
+                                                    border: `1px solid ${active ? t.color + '80' : 'var(--border-subtle)'}`,
+                                                    background: active ? t.color + '15' : 'transparent',
+                                                    color: active ? t.color : 'var(--text-muted)',
+                                                    cursor: 'pointer', transition: 'all 0.15s',
+                                                    display: 'flex', alignItems: 'center', gap: '0.375rem',
+                                                }}>
+                                                    {t.label === 'Bus' ? <Bus size={12} /> : <Train size={12} />} {t.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Property Tags */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ margin: 0, fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.625rem' }}>
+                                        <Tag size={12} style={{ color: 'var(--brand-purple-light)' }} /> Property Tags
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                                        {TAG_FILTERS.map(t => {
+                                            const active = selectedTags.includes(t.value);
+                                            return (
+                                                <button key={t.value} onClick={() => toggleTag(t.value)} style={{
+                                                    padding: '0.3rem 0.5rem', borderRadius: '9999px', fontSize: '0.625rem', fontWeight: 600,
+                                                    border: `1px solid ${active ? t.color + '80' : 'var(--border-subtle)'}`,
+                                                    background: active ? t.color + '15' : 'transparent',
+                                                    color: active ? t.color : 'var(--text-muted)',
+                                                    cursor: 'pointer', transition: 'all 0.15s',
+                                                }}>
+                                                    {t.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Active Filter Summary */}
                                 {activeFilterCount > 0 && (
-                                    <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                                            {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active · {filteredListings.length} result{filteredListings.length !== 1 ? 's' : ''}
+                                    <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', textAlign: 'center' }}>
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} · <span style={{ color: 'var(--brand-purple-light)', fontWeight: 700 }}>{filteredListings.length}</span> result{filteredListings.length !== 1 ? 's' : ''}
                                         </span>
-                                        <button onClick={clearAllFilters} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }}>
-                                            <X size={14} /> Clear All
-                                        </button>
                                     </div>
                                 )}
                             </div>
                         )}
+
+                        {/* ─── Listing Content Area ─────────────────── */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
 
                         {/* Listing Grid / List */}
                         {filteredListings.length > 0 ? (
@@ -421,8 +562,19 @@ export default function BrowsePage() {
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                                                             {listing.transport_chips?.slice(0, 2).map((chip, i) => (
-                                                                <span key={i} className="tag" style={{ fontSize: '0.5625rem', padding: '0.2rem 0.5rem' }}>
-                                                                    <Train size={9} style={{ color: chip.line_color || 'var(--text-muted)' }} /> {chip.label} · {chip.walk_time}
+                                                                <span key={i} style={{
+                                                                    display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+                                                                    fontSize: '0.5625rem', padding: '0.2rem 0.4375rem',
+                                                                    borderRadius: 'var(--radius-md)',
+                                                                    background: `${chip.line_color || '#888'}12`,
+                                                                    border: `1px solid ${chip.line_color || '#888'}30`,
+                                                                    color: 'var(--text-secondary)',
+                                                                }}>
+                                                                    <Train size={9} style={{ color: chip.line_color || 'var(--text-muted)' }} />
+                                                                    {chip.label} · {chip.walk_time}
+                                                                    {chip.lines?.map(line => (
+                                                                        <span key={line} style={{ fontSize: '0.5rem', fontWeight: 700, padding: '0 0.25rem', borderRadius: '2px', background: chip.line_color || '#888', color: '#fff' }}>{line}</span>
+                                                                    ))}
                                                                 </span>
                                                             ))}
                                                             {listing.amenities.slice(0, 3).map(a => (
@@ -568,13 +720,30 @@ export default function BrowsePage() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Transport Chips */}
+                                                    {/* Transport Chips — color-coded line badges */}
                                                     {listing.transport_chips && listing.transport_chips.length > 0 && (
-                                                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+                                                        <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
                                                             {listing.transport_chips.slice(0, 2).map((chip, i) => (
-                                                                <span key={i} className="tag" style={{ fontSize: '0.5625rem', padding: '0.2rem 0.5rem' }}>
-                                                                    <Train size={9} style={{ color: chip.line_color || 'var(--text-muted)' }} />
-                                                                    {chip.label} · {chip.walk_time}
+                                                                <span key={i} style={{
+                                                                    display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+                                                                    fontSize: '0.625rem', padding: '0.25rem 0.5rem 0.25rem 0.375rem',
+                                                                    borderRadius: 'var(--radius-md)',
+                                                                    background: `${chip.line_color || 'var(--text-muted)'}12`,
+                                                                    border: `1px solid ${chip.line_color || 'var(--text-muted)'}30`,
+                                                                    color: 'var(--text-secondary)',
+                                                                }}>
+                                                                    <Train size={10} style={{ color: chip.line_color || 'var(--text-muted)' }} />
+                                                                    <span style={{ fontWeight: 600 }}>{chip.label}</span>
+                                                                    <span style={{ opacity: 0.6 }}>·</span>
+                                                                    <span>{chip.walk_time}</span>
+                                                                    {chip.lines?.map(line => (
+                                                                        <span key={line} style={{
+                                                                            fontSize: '0.5rem', fontWeight: 700,
+                                                                            padding: '0.0625rem 0.3125rem', borderRadius: '3px',
+                                                                            background: chip.line_color || '#888',
+                                                                            color: '#fff', lineHeight: 1.3,
+                                                                        }}>{line}</span>
+                                                                    ))}
                                                                 </span>
                                                             ))}
                                                         </div>
@@ -589,6 +758,26 @@ export default function BrowsePage() {
                                                             <span className="tag" style={{ fontSize: '0.5625rem', padding: '0.2rem 0.5rem', color: 'var(--brand-purple-light)' }}>+{listing.amenities.length - 3}</span>
                                                         )}
                                                     </div>
+
+                                                    {/* P5: Listing Tags — compact pills */}
+                                                    {listing.tags && listing.tags.length > 0 && (
+                                                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                                                            {listing.tags.slice(0, 3).map(tag => (
+                                                                <span key={tag} style={{
+                                                                    fontSize: '0.5625rem', fontWeight: 600,
+                                                                    padding: '0.125rem 0.4375rem', borderRadius: '999px',
+                                                                    background: tag.includes('budget') ? 'rgba(34,197,94,0.1)' :
+                                                                               tag.includes('metro') ? 'rgba(59,130,246,0.08)' :
+                                                                               'rgba(124,58,237,0.08)',
+                                                                    color: tag.includes('budget') ? 'var(--success)' :
+                                                                           tag.includes('metro') ? 'var(--info)' :
+                                                                           'var(--brand-purple-light)',
+                                                                }}>
+                                                                    {tag.replace(/-/g, ' ')}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
 
                                                     {/* Footer: Landlord + roommates */}
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
@@ -648,7 +837,8 @@ export default function BrowsePage() {
                                 ))}
                             </div>
                         </div>
-                    </>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

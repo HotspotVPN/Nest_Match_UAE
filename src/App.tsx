@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DemoStateProvider } from '@/contexts/DemoStateContext';
 import { ToastProvider } from '@/contexts/ToastContext';
@@ -23,8 +23,6 @@ import ViewingAnalyticsPage from '@/pages/ViewingAnalyticsPage';
 import MaintenancePage from '@/pages/MaintenancePage';
 import LandlordDashboardPage from '@/pages/LandlordDashboardPage';
 import RegisterLandingPage from '@/pages/RegisterLandingPage';
-import TenantSignupPage from '@/pages/TenantSignupPage';
-import LandlordSignupPage from '@/pages/LandlordSignupPage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsPage from '@/pages/TermsPage';
 import MyPropertiesPage from '@/pages/MyPropertiesPage';
@@ -64,8 +62,8 @@ export default function App() {
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/login" element={<LoginPage />} />
                                 <Route path="/register" element={<RegisterLandingPage />} />
-                                <Route path="/register/tenant" element={<TenantSignupPage />} />
-                                <Route path="/register/landlord" element={<LandlordSignupPage />} />
+                                <Route path="/register/tenant" element={<Navigate to="/register?role=tenant" replace />} />
+                                <Route path="/register/landlord" element={<Navigate to="/register?role=landlord" replace />} />
                                 <Route path="/browse" element={<BrowsePage />} />
                                 <Route path="/listing/:id" element={<ListingDetailPage />} />
                                 <Route path="/profile/:id?" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ShieldCheck, Mail, Lock, AlertTriangle, CheckCircle2, Building2, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,8 +7,13 @@ import UAEPassOverlay from '@/components/UAEPassOverlay';
 
 export default function LandlordSignupPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
     const { showToast } = useToast();
+
+    // Redirect already-authenticated users
+    useEffect(() => {
+        if (isAuthenticated) navigate('/browse', { replace: true });
+    }, [isAuthenticated, navigate]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);

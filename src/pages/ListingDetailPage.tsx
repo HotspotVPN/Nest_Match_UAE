@@ -5,7 +5,7 @@ import { useDemoState } from '@/contexts/DemoStateContext';
 import { listings, users, formatCurrency, getInitials, viewingBookings, propertyRatings } from '@/data/mockData';
 import {
     MapPin, Train, ShieldCheck, Users as UsersIcon, Star, CalendarCheck,
-    ChevronLeft, Check, AlertTriangle, Building2, Award, Lock,
+    ChevronLeft, ChevronRight, Check, AlertTriangle, Building2, Award, Lock,
     MessageSquare, Edit2, X, CheckCircle2, Home, Wrench, LogOut, Loader2, ArrowRight, Clock
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -56,8 +56,10 @@ export default function ListingDetailPage() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const navigate = useNavigate();
     const dateChips = getNextDays(7);
+    const [carouselIdx, setCarouselIdx] = useState(0);
+    const totalImages = listing?.images?.length || 0;
 
-    useEffect(() => { window.scrollTo(0, 0); }, [id]);
+    useEffect(() => { window.scrollTo(0, 0); setCarouselIdx(0); }, [id]);
 
     // Detect if current user lives here
     const isResident = currentUser?.current_house_id === listing?.id;
@@ -107,10 +109,59 @@ export default function ListingDetailPage() {
                     </div>
                 )}
 
-                {/* Property Image */}
-                <div style={{ height: '320px', borderRadius: 'var(--radius-lg)', background: listing.images?.[0] ? 'none' : 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
+                {/* Property Image Carousel */}
+                <div style={{ height: '380px', borderRadius: 'var(--radius-lg)', background: listing.images?.[0] ? 'none' : 'linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
                     {listing.images?.[0] ? (
-                        <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '320px', objectFit: 'cover', borderRadius: 'var(--radius-lg)' }} />
+                        <>
+                            <img
+                                src={listing.images[carouselIdx] || listing.images[0]}
+                                alt={`${listing.title} — photo ${carouselIdx + 1}`}
+                                style={{ width: '100%', height: '380px', objectFit: 'cover', borderRadius: 'var(--radius-lg)', transition: 'opacity 0.3s ease' }}
+                            />
+                            {/* Prev / Next arrows */}
+                            {totalImages > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setCarouselIdx(i => (i - 1 + totalImages) % totalImages)}
+                                        aria-label="Previous image"
+                                        style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', backdropFilter: 'blur(4px)', transition: 'background 0.2s' }}
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => setCarouselIdx(i => (i + 1) % totalImages)}
+                                        aria-label="Next image"
+                                        style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', backdropFilter: 'blur(4px)', transition: 'background 0.2s' }}
+                                    >
+                                        <ChevronRight size={20} />
+                                    </button>
+                                </>
+                            )}
+                            {/* Dot indicators */}
+                            {totalImages > 1 && (
+                                <div style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.5rem' }}>
+                                    {listing.images.map((_, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => setCarouselIdx(i)}
+                                            aria-label={`View photo ${i + 1}`}
+                                            style={{
+                                                width: carouselIdx === i ? 24 : 8, height: 8, borderRadius: 999,
+                                                background: carouselIdx === i ? '#fff' : 'rgba(255,255,255,0.5)',
+                                                border: 'none', cursor: 'pointer', padding: 0,
+                                                transition: 'all 0.3s ease',
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                            {/* Photo counter */}
+                            {totalImages > 1 && (
+                                <div style={{ position: 'absolute', top: '1rem', left: '1rem', padding: '0.25rem 0.625rem', borderRadius: 'var(--radius-md)', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.75rem', fontWeight: 600, backdropFilter: 'blur(4px)' }}>
+                                    {carouselIdx + 1} / {totalImages}
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div style={{ textAlign: 'center' }}>
                             <Building2 size={48} style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }} />
@@ -352,6 +403,73 @@ export default function ListingDetailPage() {
                                                 <span key={line} className="badge" style={{ marginLeft: 'auto', background: `${chip.line_color}20`, color: chip.line_color, border: `1px solid ${chip.line_color}40`, fontSize: '0.625rem' }}>{line}</span>
                                             ))}
                                         </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* P5: Neighbourhood & Landmarks */}
+                        {listing.location && (
+                            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+                                <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <MapPin size={18} style={{ color: 'var(--brand-teal)' }} /> Neighbourhood
+                                </h3>
+                                {listing.location.area_description && (
+                                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
+                                        {listing.location.area_description}
+                                    </p>
+                                )}
+                                {listing.location.nearby_amenities && listing.location.nearby_amenities.length > 0 && (
+                                    <div>
+                                        <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, marginBottom: '0.5rem' }}>Nearby Landmarks</div>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                            {listing.location.nearby_amenities.map(a => (
+                                                <a
+                                                    key={a}
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a + ' Dubai')}`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    style={{
+                                                        display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+                                                        padding: '0.375rem 0.75rem', borderRadius: '999px',
+                                                        background: 'rgba(45,212,191,0.08)', border: '1px solid rgba(45,212,191,0.25)',
+                                                        color: 'var(--brand-teal)', fontSize: '0.8125rem', fontWeight: 600,
+                                                        textDecoration: 'none', transition: 'all 0.2s',
+                                                    }}
+                                                >
+                                                    <Building2 size={13} /> {a}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* P5: Listing Tags */}
+                        {listing.tags && listing.tags.length > 0 && (
+                            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+                                <h3 style={{ marginBottom: '0.75rem' }}>Property Tags</h3>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                    {listing.tags.map(tag => (
+                                        <span key={tag} style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+                                            padding: '0.3125rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600,
+                                            background: tag.includes('budget') ? 'rgba(34,197,94,0.1)' :
+                                                         tag.includes('metro') ? 'rgba(59,130,246,0.1)' :
+                                                         tag.includes('premium') || tag.includes('luxury') ? 'rgba(245,158,11,0.1)' :
+                                                         'rgba(124,58,237,0.08)',
+                                            color: tag.includes('budget') ? 'var(--success)' :
+                                                   tag.includes('metro') ? 'var(--info)' :
+                                                   tag.includes('premium') || tag.includes('luxury') ? '#f59e0b' :
+                                                   'var(--brand-purple-light)',
+                                            border: `1px solid ${tag.includes('budget') ? 'rgba(34,197,94,0.2)' :
+                                                                  tag.includes('metro') ? 'rgba(59,130,246,0.2)' :
+                                                                  tag.includes('premium') || tag.includes('luxury') ? 'rgba(245,158,11,0.2)' :
+                                                                  'rgba(124,58,237,0.15)'}`,
+                                        }}>
+                                            {tag.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                                        </span>
                                     ))}
                                 </div>
                             </div>

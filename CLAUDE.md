@@ -5,10 +5,10 @@
 | Field | Value |
 |-------|-------|
 | **Gate** | G6 — Pre-Demo (feature development complete) |
-| **Version** | v2.13.3 |
-| **Last Session** | 20 Mar 2026 — DocuSign Banners, PDF Downloads, Gov Templates, PD Signoff Report |
+| **Version** | v2.14.0 |
+| **Last Session** | 20 Mar 2026 — UX Enhancement Release P2–P6, homepage search, wizard signup |
 | **Blockers** | None — demo ready |
-| **Next Priority** | QA testing, then Phase 2C (DocuSign integration) |
+| **Next Priority** | Homepage carousels, enriched listing images, location showcases, agent profiles |
 | **Risk Level** | 🟢 Green — no licence-requiring features in scope |
 
 **Quick Context:**
@@ -30,7 +30,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.13.3
+**Current version:** v2.14.0
 
 ---
 

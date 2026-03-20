@@ -828,6 +828,41 @@ export default function ProfilePage() {
             </div>
           )}
 
+        {/* P6: Local Recommendations */}
+        {displayUser.local_recommendations && displayUser.local_recommendations.length > 0 && (
+          <div className="glass-card" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
+            <h3 style={{ marginBottom: "0.25rem" }}>Local Recommendations</h3>
+            <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
+              Places {isOwnProfile ? "you" : displayUser.name.split(" ")[0]} recommend{isOwnProfile ? "" : "s"} in Dubai
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.75rem" }}>
+              {displayUser.local_recommendations.map((rec, i) => {
+                const catColors: Record<string, { bg: string; text: string; icon: string }> = {
+                  activity: { bg: 'rgba(34,197,94,0.08)', text: 'var(--success)', icon: 'var(--success)' },
+                  food: { bg: 'rgba(245,158,11,0.08)', text: '#f59e0b', icon: '#f59e0b' },
+                  landmark: { bg: 'rgba(59,130,246,0.08)', text: 'var(--info)', icon: 'var(--info)' },
+                  sport: { bg: 'rgba(124,58,237,0.08)', text: 'var(--brand-purple-light)', icon: 'var(--brand-purple-light)' },
+                  nightlife: { bg: 'rgba(236,72,153,0.08)', text: '#ec4899', icon: '#ec4899' },
+                  culture: { bg: 'rgba(168,85,247,0.08)', text: '#a855f7', icon: '#a855f7' },
+                };
+                const cat = catColors[rec.category] || catColors.landmark;
+                return (
+                  <div key={i} style={{ padding: "0.75rem", borderRadius: "var(--radius-md)", background: cat.bg, border: `1px solid ${cat.text}20` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.25rem" }}>
+                      <MapPin size={12} style={{ color: cat.icon }} />
+                      <span style={{ fontWeight: 700, fontSize: "0.8125rem", color: cat.text }}>{rec.name}</span>
+                    </div>
+                    <p style={{ fontSize: "0.6875rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>{rec.description}</p>
+                    {rec.distance && (
+                      <span style={{ fontSize: "0.5625rem", color: "var(--text-muted)", marginTop: "0.25rem", display: "block" }}>{rec.distance}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Current Accommodation */}
         {currentListing && (
           <div

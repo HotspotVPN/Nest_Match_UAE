@@ -1,9 +1,9 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { viewingBookings, listings, users, getInitials, formatDate, getOrCreateChatChannel } from '@/data/mockData';
-import { CalendarCheck, CalendarX, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle, Loader2 } from 'lucide-react';
+import { CalendarCheck, CalendarX, Clock, MapPin, CheckCircle2, XCircle, ShieldCheck, FileText, AlertTriangle, Loader2, List, CalendarDays, ChevronLeft, ChevronRight, Send, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { ViewingStatus, ViewingBooking } from '@/types';
 import ViewingAgreementModal from '@/components/ViewingAgreementModal';
 import LeaseHandoffCard from '@/components/LeaseHandoffCard';
@@ -39,6 +39,60 @@ export default function ViewingsPage() {
     const [agreementModalViewing, setAgreementModalViewing] = useState<ViewingBooking | null>(null);
     const [noShowPicker, setNoShowPicker] = useState<string | null>(null);
     const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
+    // P3: Calendar view state
+    const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+    const [calMonth, setCalMonth] = useState(() => {
+        const now = new Date();
+        return { year: now.getFullYear(), month: now.getMonth() };
+    });
+    const [selectedCalDate, setSelectedCalDate] = useState<string | null>(null);
+
+    // P3: Counter-proposal state
+    const [counterProposal, setCounterProposal] = useState<{ viewingId: string; date: string; time: string } | null>(null);
+    const [counterSending, setCounterSending] = useState(false);
+
+    // Calendar helpers
+    const calDaysInMonth = new Date(calMonth.year, calMonth.month + 1, 0).getDate();
+    const calFirstDay = new Date(calMonth.year, calMonth.month, 1).getDay(); // 0=Sun
+    const calMonthLabel = new Date(calMonth.year, calMonth.month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const viewingsByDate = useMemo(() => {
+        const map: Record<string, ViewingBooking[]> = {};
+        viewings.forEach(v => {
+            const d = v.requested_date.split('T')[0];
+            if (!map[d]) map[d] = [];
+            map[d].push(v);
+        });
+        return map;
+    }, [viewings]);
+
+    const statusDotColor = (status: ViewingStatus) => {
+        if (['PENDING', 'PENDING_LANDLORD_APPROVAL'].includes(status)) return 'var(--warning)';
+        if (['CONFIRMED', 'AGREEMENT_SENT', 'AGENT_SIGNED', 'FULLY_SIGNED'].includes(status)) return 'var(--success)';
+        if (status === 'COMPLETED') return 'var(--info)';
+        return 'var(--error)';
+    };
+
+    const handleCounterSubmit = () => {
+        if (!counterProposal) return;
+        setCounterSending(true);
+        setTimeout(() => {
+            setViewings(prev => prev.map(v => {
+                if (v.id !== counterProposal.viewingId) return v;
+                return {
+                    ...v,
+                    requested_date: `${counterProposal.date}T${counterProposal.time.replace(/\s/g, '')}:00Z`,
+                    time_slot: counterProposal.time,
+                    status: 'PENDING' as ViewingStatus,
+                    updated_at: new Date().toISOString(),
+                };
+            }));
+            setCounterSending(false);
+            setCounterProposal(null);
+            showToast('Counter-proposal sent! Awaiting response.', 'info');
+        }, 1200);
+    };
 
     const updateViewingStatus = (id: string, newStatus: ViewingStatus) => {
         setLoadingAction(`${id}-${newStatus}`);
@@ -108,16 +162,27 @@ export default function ViewingsPage() {
         <div className="section" style={{ paddingTop: '2rem' }}>
             <div className="container" style={{ maxWidth: '900px' }}>
                 <h2 style={{ marginBottom: '0.5rem' }}>Viewing Bookings</h2>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>
                         {currentUser.type === 'roommate' ? 'Your scheduled property viewings' : 'Incoming viewing requests for your properties'}
                     </p>
-                    <select className="form-input form-select" style={{ width: 'auto', padding: '0.25rem 2rem 0.25rem 0.75rem', fontSize: '0.8125rem' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                        <option value="All">All Viewings</option>
-                        <option value="Upcoming">Upcoming</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled / No-Show</option>
-                    </select>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        {/* View mode toggle */}
+                        <div style={{ display: 'flex', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '2px', gap: '2px' }}>
+                            <button onClick={() => setViewMode('list')} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 600, background: viewMode === 'list' ? 'var(--bg-primary)' : 'transparent', color: viewMode === 'list' ? 'var(--text-primary)' : 'var(--text-muted)', border: viewMode === 'list' ? '1px solid var(--border-subtle)' : '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                <List size={13} /> List
+                            </button>
+                            <button onClick={() => setViewMode('calendar')} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 600, background: viewMode === 'calendar' ? 'var(--bg-primary)' : 'transparent', color: viewMode === 'calendar' ? 'var(--text-primary)' : 'var(--text-muted)', border: viewMode === 'calendar' ? '1px solid var(--border-subtle)' : '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                <CalendarDays size={13} /> Calendar
+                            </button>
+                        </div>
+                        <select className="form-input form-select" style={{ width: 'auto', padding: '0.25rem 2rem 0.25rem 0.75rem', fontSize: '0.8125rem' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                            <option value="All">All Viewings</option>
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled / No-Show</option>
+                        </select>
+                    </div>
                 </div>
 
                 {/* Stats */}
@@ -134,6 +199,106 @@ export default function ViewingsPage() {
                         </div>
                     ))}
                 </div>
+
+                {/* P3: Calendar View */}
+                {viewMode === 'calendar' && (
+                    <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '2rem' }}>
+                        {/* Month nav */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <button onClick={() => setCalMonth(p => { const d = new Date(p.year, p.month - 1); return { year: d.getFullYear(), month: d.getMonth() }; })} className="btn btn-ghost btn-sm" style={{ padding: '0.25rem' }}><ChevronLeft size={18} /></button>
+                            <span style={{ fontWeight: 700, fontSize: '1rem' }}>{calMonthLabel}</span>
+                            <button onClick={() => setCalMonth(p => { const d = new Date(p.year, p.month + 1); return { year: d.getFullYear(), month: d.getMonth() }; })} className="btn btn-ghost btn-sm" style={{ padding: '0.25rem' }}><ChevronRight size={18} /></button>
+                        </div>
+                        {/* Day headers */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: '0.5rem' }}>
+                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                                <div key={d} style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.25rem 0' }}>{d}</div>
+                            ))}
+                        </div>
+                        {/* Day cells */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                            {Array.from({ length: calFirstDay }).map((_, i) => <div key={`e-${i}`} />)}
+                            {Array.from({ length: calDaysInMonth }).map((_, i) => {
+                                const day = i + 1;
+                                const dateStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                const dayViewings = viewingsByDate[dateStr] || [];
+                                const isToday = dateStr === new Date().toISOString().split('T')[0];
+                                const isSelected = dateStr === selectedCalDate;
+                                return (
+                                    <button
+                                        key={day}
+                                        onClick={() => setSelectedCalDate(isSelected ? null : dateStr)}
+                                        style={{
+                                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
+                                            padding: '0.375rem 0.25rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                                            background: isSelected ? 'var(--brand-teal)' : isToday ? 'rgba(45,212,191,0.08)' : 'transparent',
+                                            color: isSelected ? '#fff' : 'var(--text-primary)',
+                                            border: isToday && !isSelected ? '1px solid rgba(45,212,191,0.4)' : '1px solid transparent',
+                                            transition: 'all 0.15s',
+                                            minHeight: '48px',
+                                        }}
+                                    >
+                                        <span style={{ fontSize: '0.8125rem', fontWeight: isToday ? 700 : 500 }}>{day}</span>
+                                        {dayViewings.length > 0 && (
+                                            <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                                {dayViewings.slice(0, 3).map(v => (
+                                                    <span key={v.id} style={{
+                                                        width: '6px', height: '6px', borderRadius: '50%',
+                                                        background: isSelected ? 'rgba(255,255,255,0.8)' : statusDotColor(v.status),
+                                                    }} />
+                                                ))}
+                                                {dayViewings.length > 3 && (
+                                                    <span style={{ fontSize: '0.5rem', color: isSelected ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>+{dayViewings.length - 3}</span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Selected date details */}
+                        {selectedCalDate && (viewingsByDate[selectedCalDate] || []).length > 0 && (
+                            <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
+                                <div style={{ fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>
+                                    {new Date(selectedCalDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                                </div>
+                                {(viewingsByDate[selectedCalDate] || []).map(v => {
+                                    const l = listings.find(x => x.id === v.property_id);
+                                    const config = STATUS_CONFIG[v.status];
+                                    const isLandlord = currentUser.id === v.landlord_id;
+                                    const otherParty = users.find(u => u.id === (isLandlord ? v.searcher_id : v.landlord_id));
+                                    return (
+                                        <div key={v.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', marginBottom: '0.5rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: statusDotColor(v.status), flexShrink: 0 }} />
+                                                <div>
+                                                    <div style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{l?.title || 'Unknown'}</div>
+                                                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                                        <Clock size={10} /> {v.time_slot} &middot; {otherParty?.name}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span className={`badge ${config.badge}`} style={{ fontSize: '0.625rem' }}>{config.label}</span>
+                                                {(v.status === 'PENDING' || v.status === 'PENDING_LANDLORD_APPROVAL') && (
+                                                    <button onClick={() => setCounterProposal({ viewingId: v.id, date: selectedCalDate, time: '' })} className="btn btn-ghost btn-sm" style={{ fontSize: '0.6875rem', padding: '0.125rem 0.375rem' }} title="Suggest different time">
+                                                        <Clock size={11} /> Reschedule
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                        {selectedCalDate && (viewingsByDate[selectedCalDate] || []).length === 0 && (
+                            <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem', textAlign: 'center' }}>
+                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>No viewings on this date</p>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Viewing Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -201,6 +366,9 @@ export default function ViewingsPage() {
                                             </button>
                                             <button onClick={() => updateViewingStatus(viewing.id, 'CANCELLED')} className="btn btn-ghost btn-sm" style={{ color: 'var(--error)' }} disabled={!!loadingAction}>
                                                 {loadingAction === `${viewing.id}-CANCELLED` ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <XCircle size={14} />} Decline
+                                            </button>
+                                            <button onClick={() => setCounterProposal({ viewingId: viewing.id, date: viewing.requested_date.split('T')[0], time: '' })} className="btn btn-ghost btn-sm" style={{ color: 'var(--info)', fontSize: '0.75rem' }} disabled={!!loadingAction}>
+                                                <Clock size={12} /> Suggest Different Time
                                             </button>
                                         </div>
                                     </div>
@@ -367,6 +535,73 @@ export default function ViewingsPage() {
                         onClose={() => setAgreementModalViewing(null)}
                         onAgreementUpdate={handleAgreementUpdate}
                     />
+                );
+            })()}
+
+            {/* P3: Counter-Proposal Modal */}
+            {counterProposal && (() => {
+                const cpViewing = viewings.find(v => v.id === counterProposal.viewingId);
+                const cpListing = cpViewing ? listings.find(l => l.id === cpViewing.property_id) : null;
+                return (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setCounterProposal(null)}>
+                        <div className="glass-card" style={{ width: '100%', maxWidth: '420px', padding: '1.5rem', position: 'relative' }} onClick={e => e.stopPropagation()}>
+                            <button onClick={() => setCounterProposal(null)} style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+                            <h3 style={{ marginBottom: '0.25rem', fontSize: '1rem' }}>Suggest Different Time</h3>
+                            <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+                                Propose an alternative date and time for viewing{cpListing ? ` at ${cpListing.title}` : ''}.
+                            </p>
+
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>Proposed Date</label>
+                                <input
+                                    type="date"
+                                    className="form-input"
+                                    value={counterProposal.date}
+                                    onChange={e => setCounterProposal(p => p ? { ...p, date: e.target.value } : null)}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    style={{ width: '100%' }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>Proposed Time Slot</label>
+                                <select
+                                    className="form-input form-select"
+                                    value={counterProposal.time}
+                                    onChange={e => setCounterProposal(p => p ? { ...p, time: e.target.value } : null)}
+                                    style={{ width: '100%' }}
+                                >
+                                    <option value="">Select a time slot</option>
+                                    {['9:00 AM - 9:30 AM', '9:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM',
+                                      '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '1:00 PM - 1:30 PM',
+                                      '1:30 PM - 2:00 PM', '2:00 PM - 2:30 PM', '2:30 PM - 3:00 PM', '3:00 PM - 3:30 PM',
+                                      '3:30 PM - 4:00 PM', '4:00 PM - 4:30 PM', '4:30 PM - 5:00 PM', '5:00 PM - 5:30 PM',
+                                      '5:30 PM - 6:00 PM', '6:00 PM - 6:30 PM'].map(slot => (
+                                        <option key={slot} value={slot}>{slot}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {cpViewing && (
+                                <div style={{ padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                    <span style={{ fontWeight: 600 }}>Original request:</span> {formatDate(cpViewing.requested_date)} at {cpViewing.time_slot}
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button onClick={() => setCounterProposal(null)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+                                <button
+                                    onClick={handleCounterSubmit}
+                                    className="btn btn-primary"
+                                    style={{ flex: 1 }}
+                                    disabled={!counterProposal.date || !counterProposal.time || counterSending}
+                                >
+                                    {counterSending ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={14} />}
+                                    {counterSending ? ' Sending...' : ' Send Proposal'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 );
             })()}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ShieldCheck, Mail, LogIn, ChevronRight, Eye, EyeOff, LayoutPanelLeft, AlertTriangle, Globe } from 'lucide-react';
@@ -6,12 +6,22 @@ import { getTierLabel, getTierColor } from '@/utils/accessControl';
 import type { VerificationTier } from '@/types';
 
 export default function LoginPage() {
-    const { loginWithEmail, loginWithUaePass } = useAuth();
+    const { loginWithEmail, loginWithUaePass, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+    // Redirect already-authenticated users away from login page
+    useEffect(() => {
+        if (isAuthenticated) {
+            const params = new URLSearchParams(window.location.search);
+            const returnPath = params.get('return');
+            navigate(returnPath ? decodeURIComponent(returnPath) : '/browse', { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showDemo, setShowDemo] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleUaePassLogin = () => {
         loginWithUaePass('uae-pass-ahmed'); // Mocking an ID
@@ -154,14 +164,23 @@ export default function LoginPage() {
 
                         <form onSubmit={handleEmailLogin} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <div className="form-group">
-                                <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.375rem', display: 'block' }}>Email</label>
-                                <input type="email" className="form-control" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} style={{ background: 'rgba(255,255,255,0.03)' }} />
+                                <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.375rem', display: 'block' }}>Email</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                                    <input type="email" className="form-control" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--text-primary)', paddingLeft: '38px', fontSize: '0.9375rem' }} />
+                                </div>
                             </div>
                             <div className="form-group">
-                                <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.375rem', display: 'block' }}>Password</label>
-                                <input type="password" className="form-control" placeholder="--------" value={password} onChange={e => setPassword(e.target.value)} style={{ background: 'rgba(255,255,255,0.03)' }} />
+                                <label style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.375rem', display: 'block' }}>Password</label>
+                                <div style={{ position: 'relative' }}>
+                                    <ShieldCheck size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                                    <input type={showPassword ? 'text' : 'password'} className="form-control" placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--text-primary)', paddingLeft: '38px', paddingRight: '42px', fontSize: '0.9375rem' }} />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
-                            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.75rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.875rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', fontSize: '0.9375rem', fontWeight: 600, marginTop: '0.25rem' }}>
                                 <LogIn size={16} /> Sign In <ChevronRight size={16} />
                             </button>
                         </form>

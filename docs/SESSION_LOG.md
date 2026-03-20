@@ -204,3 +204,33 @@ Government-template PDF generation using actual DLD/Ejari PDFs as base templates
 ### Commit
 - Version: v2.13.3
 - Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.14.0 UX Enhancement Release (P2–P6 + Homepage Search)
+
+### Summary
+Major UX enhancement release covering phases P2–P6 from the UX Enhancement Roadmap. All changes are UX-only — zero data model changes, zero backend modifications. RegisterLandingPage fully rewritten as 4-step wizard (UK-style) completely decoupled from signin. Image carousels on listings. Calendar view for viewings with counter-proposals. Tag-based filtering on BrowsePage. Neighbourhood & landmark sections on ListingDetailPage. GCC dashboard polish with score trends and improvement tips. Profile local recommendations. Homepage search bar made functional with 10 quick-filter tag chips that pass URL params to BrowsePage.
+
+### Files Modified
+- src/App.tsx — route consolidation for /register
+- src/pages/RegisterLandingPage.tsx — complete rewrite as 4-step wizard
+- src/pages/ListingDetailPage.tsx — image carousel, neighbourhood, property tags
+- src/pages/BrowsePage.tsx — transport chips, tag pills, tag filter sidebar, URL params
+- src/pages/ViewingsPage.tsx — calendar view, counter-proposal modal
+- src/pages/GccDashboardPage.tsx — score history, progress bars, improvement tips
+- src/pages/ProfilePage.tsx — local recommendations section
+- src/pages/HomePage.tsx — functional search bar + quick-filter tag chips
+- CLAUDE.md — version v2.14.0
+- package.json — version 2.14.0
+- docs/CHANGELOG.md — v2.14.0 entry
+- docs/SESSION_LOG.md — this entry
+
+### Decisions Made
+- Signup completely decoupled from signin (no login() calls in registration)
+- Tag filter uses OR logic (any matching tag shows listing)
+- Calendar view defaults to list view, toggle preserved per session
+
+### Commit
+- Version: v2.14.0
+- Pushed: Pending

@@ -1,7 +1,48 @@
-import { Link } from 'react-router-dom';
-import { ShieldCheck, Building2, Users, Search, CheckCircle2, ArrowRight, FileText, BarChart2, UserPlus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShieldCheck, Building2, Users, Search, CheckCircle2, ArrowRight, FileText, BarChart2, UserPlus, Train, Tag, MapPin, TreePine } from 'lucide-react';
+import { useState } from 'react';
+
+const QUICK_TAGS: { label: string; value: string; param: 'tags' | 'transport'; color: string; icon: 'tag' | 'train' | 'pin' | 'park' }[] = [
+    { label: 'Budget', value: 'budget', param: 'tags', color: '#22c55e', icon: 'tag' },
+    { label: 'Premium', value: 'premium', param: 'tags', color: '#f59e0b', icon: 'tag' },
+    { label: 'Metro Access', value: 'metro-access', param: 'tags', color: '#3b82f6', icon: 'train' },
+    { label: 'Red Line', value: 'Red Line', param: 'transport', color: '#E21836', icon: 'train' },
+    { label: 'Green Line', value: 'Green Line', param: 'transport', color: '#009639', icon: 'train' },
+    { label: 'En-suite', value: 'en-suite', param: 'tags', color: '#06b6d4', icon: 'tag' },
+    { label: 'Sea View', value: 'sea-view', param: 'tags', color: '#0ea5e9', icon: 'pin' },
+    { label: 'Villa', value: 'villa', param: 'tags', color: '#14b8a6', icon: 'park' },
+    { label: 'Private Room', value: 'private-room', param: 'tags', color: '#8b5cf6', icon: 'tag' },
+    { label: 'New Building', value: 'new-building', param: 'tags', color: '#a855f7', icon: 'park' },
+];
+
+const TAG_ICON_MAP = { tag: Tag, train: Train, pin: MapPin, park: TreePine };
 
 export default function HomePage() {
+    const navigate = useNavigate();
+    const [heroQuery, setHeroQuery] = useState('');
+    const [activeTags, setActiveTags] = useState<string[]>([]);
+    const [activeTransport, setActiveTransport] = useState<string[]>([]);
+
+    const toggleQuickTag = (t: typeof QUICK_TAGS[number]) => {
+        if (t.param === 'tags') {
+            setActiveTags(prev => prev.includes(t.value) ? prev.filter(x => x !== t.value) : [...prev, t.value]);
+        } else {
+            setActiveTransport(prev => prev.includes(t.value) ? prev.filter(x => x !== t.value) : [...prev, t.value]);
+        }
+    };
+
+    const isTagActive = (t: typeof QUICK_TAGS[number]) =>
+        t.param === 'tags' ? activeTags.includes(t.value) : activeTransport.includes(t.value);
+
+    const handleSearch = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        const params = new URLSearchParams();
+        if (heroQuery.trim()) params.set('q', heroQuery.trim());
+        if (activeTags.length > 0) params.set('tags', activeTags.join(','));
+        if (activeTransport.length > 0) params.set('transport', activeTransport.join(','));
+        navigate(`/browse${params.toString() ? '?' + params.toString() : ''}`);
+    };
+
     return (
         <div className="home-page">
             {/* ═══ Section 1 — Hero (full viewport) ═══ */}
@@ -24,16 +65,57 @@ export default function HomePage() {
                         NestMatch digitises the official DLD Property Viewing Agreement and connects UAE PASS-verified landlords with identity-verified tenants. Every viewing is documented. Every listing is permitted.
                     </p>
 
-                    {/* Search Bar */}
-                    <Link to="/browse" style={{ textDecoration: 'none' }}>
-                        <div style={{ maxWidth: '560px', margin: '0 auto', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(124,58,237,0.35)', borderRadius: '12px', padding: '0.5rem 0.5rem 0.5rem 1.25rem', gap: '0.75rem' }}>
+                    {/* Search Bar — functional */}
+                    <form onSubmit={handleSearch} style={{ maxWidth: '620px', margin: '0 auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(124,58,237,0.35)', borderRadius: '12px', padding: '0.5rem 0.5rem 0.5rem 1.25rem', gap: '0.75rem' }}>
                             <Search size={20} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-                            <span style={{ flex: 1, textAlign: 'left', color: 'var(--text-muted)', fontSize: '0.9375rem' }}>Search by area, building, or district...</span>
-                            <button className="btn btn-primary" style={{ padding: '0.625rem 1.25rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.375rem', pointerEvents: 'none' }}>
+                            <input
+                                type="text"
+                                value={heroQuery}
+                                onChange={e => setHeroQuery(e.target.value)}
+                                placeholder="Search for rooms by area, district, or keyword..."
+                                style={{
+                                    flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                                    color: 'var(--text-primary)', fontSize: '0.9375rem',
+                                    fontFamily: 'inherit',
+                                }}
+                            />
+                            <button type="submit" className="btn btn-primary" style={{ padding: '0.625rem 1.25rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                                 Search <ArrowRight size={16} />
                             </button>
                         </div>
-                    </Link>
+
+                        {/* Quick filter chips */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', justifyContent: 'center', marginTop: '1rem' }}>
+                            {QUICK_TAGS.map(t => {
+                                const active = isTagActive(t);
+                                const Icon = TAG_ICON_MAP[t.icon];
+                                return (
+                                    <button
+                                        key={t.value}
+                                        type="button"
+                                        onClick={() => toggleQuickTag(t)}
+                                        style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                                            padding: '0.3rem 0.625rem', borderRadius: '999px',
+                                            fontSize: '0.6875rem', fontWeight: 600, cursor: 'pointer',
+                                            background: active ? `${t.color}18` : 'rgba(255,255,255,0.04)',
+                                            border: `1px solid ${active ? `${t.color}60` : 'rgba(255,255,255,0.08)'}`,
+                                            color: active ? t.color : 'var(--text-muted)',
+                                            transition: 'all 0.15s',
+                                        }}
+                                    >
+                                        <Icon size={11} /> {t.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {(activeTags.length > 0 || activeTransport.length > 0) && (
+                            <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '0.625rem', textAlign: 'center' }}>
+                                {activeTags.length + activeTransport.length} filter{activeTags.length + activeTransport.length !== 1 ? 's' : ''} selected — hit Search to apply
+                            </p>
+                        )}
+                    </form>
 
                     {/* Secondary CTAs */}
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ShieldCheck, Mail, Lock, X, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,8 +6,13 @@ import { useToast } from '@/contexts/ToastContext';
 
 export default function TenantSignupPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
     const { showToast } = useToast();
+
+    // Redirect already-authenticated users
+    useEffect(() => {
+        if (isAuthenticated) navigate('/browse', { replace: true });
+    }, [isAuthenticated, navigate]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
@@ -29,7 +34,7 @@ export default function TenantSignupPage() {
             setEmailLoading(false);
             setSubmitted(true);
             showToast('Welcome to NestMatch!', 'success');
-            setTimeout(() => navigate('/profile'), 800);
+            setTimeout(() => navigate('/browse'), 800);
         }, 1200);
     };
 
@@ -50,7 +55,7 @@ export default function TenantSignupPage() {
             setShowGooglePicker(false);
             setGooglePickerLoading(null);
             showToast('Welcome to NestMatch!', 'success');
-            navigate(`/profile/${slug}`);
+            navigate('/browse');
         }, 1000);
     };
 
@@ -94,7 +99,7 @@ export default function TenantSignupPage() {
                         <div style={{ textAlign: 'center' }}>
                             <ShieldCheck size={48} style={{ color: 'var(--success)', marginBottom: '1rem' }} />
                             <h2 style={{ marginBottom: '0.5rem' }}>Account created</h2>
-                            <p style={{ color: 'var(--text-secondary)' }}>Redirecting to your profile...</p>
+                            <p style={{ color: 'var(--text-secondary)' }}>Redirecting to browse listings...</p>
                         </div>
                     ) : (
                         <>
