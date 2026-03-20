@@ -3,6 +3,21 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.13.2] — 2026-03-20 · LoginPage Tier Order, DemoControls, Nav Polish
+
+### Login and navigation improvements
+
+### Fixed
+- LoginPage: Tier order corrected — Tier 2 → Tier 1 → Tier 0 (was 2 → 0 → 1)
+- LoginPage: Added Residing/Searching labels to Tier 0 and Tier 1 personas
+- DemoControls: All 15 personas with tier-grouped display and Residing/Searching badges
+- Navbar: Browse link for tenants, Sign In/Sign Up for unauthenticated, tier label under name
+
+### Changed
+- apiMappers.ts: Mock data fallback for images/roommates
+
+---
+
 ## [2.13.1] — 2026-03-20 · UI Polish: UserBadge, Tier-Gated Profiles, Chat Fixes
 
 ### Post-migration UI improvements

@@ -82,20 +82,20 @@ export default function LoginPage() {
             ],
         },
         {
-            label: 'Tenants — Tier 0 — Explorer',
-            color: '#f59e0b',
-            entries: [
-                { email: 'james@nestmatch.ae', name: 'James Okafor', desc: 'Nigerian · Pending KYC', tier: 'tier0_passport' as VerificationTier },
-                { email: 'sofia@nestmatch.ae', name: 'Sofia Kowalski', desc: 'Polish · Approved KYC', tier: 'tier0_passport' as VerificationTier },
-                { email: 'ravi.menon@gmail.com', name: 'Ravi Menon', desc: 'Indian · No docs yet', tier: 'tier0_passport' as VerificationTier },
-            ],
-        },
-        {
             label: 'Tenants — Tier 1 — Verified',
             color: 'var(--text-muted)',
             entries: [
-                { email: 'liam@nestmatch.ae', name: 'Liam O\'Brien', desc: 'Irish · Job-seeker visa', tier: 'tier1_unverified' as VerificationTier },
-                { email: 'amara.diallo@email.com', name: 'Amara Diallo', desc: 'Senegalese · Exploratory visit', tier: 'tier1_unverified' as VerificationTier },
+                { email: 'liam@nestmatch.ae', name: 'Liam O\'Brien', desc: 'Residing · Irish · Job-seeker visa', tier: 'tier1_unverified' as VerificationTier },
+                { email: 'amara.diallo@email.com', name: 'Amara Diallo', desc: 'Searching · Senegalese · Exploratory visit', tier: 'tier1_unverified' as VerificationTier },
+            ],
+        },
+        {
+            label: 'Tenants — Tier 0 — Explorer',
+            color: '#f59e0b',
+            entries: [
+                { email: 'james@nestmatch.ae', name: 'James Okafor', desc: 'Searching · Nigerian · Pending KYC', tier: 'tier0_passport' as VerificationTier },
+                { email: 'sofia@nestmatch.ae', name: 'Sofia Kowalski', desc: 'Residing · Polish · Approved KYC', tier: 'tier0_passport' as VerificationTier },
+                { email: 'ravi.menon@gmail.com', name: 'Ravi Menon', desc: 'Searching · Indian · No docs yet', tier: 'tier0_passport' as VerificationTier },
             ],
         },
         {

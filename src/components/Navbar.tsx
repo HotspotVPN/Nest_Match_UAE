@@ -26,9 +26,12 @@ export default function Navbar() {
 
                     {isAuthenticated && currentUser && (
                         <div className="navbar-links">
-                            {/* Residing Tenants: full nav with property chat, maintenance, ejari */}
+                            {/* Residing Tenants: browse + full nav with property chat, maintenance, ejari */}
                             {currentUser.type === 'roommate' && currentUser.resident_role === 'residing' && (
                                 <>
+                                    <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
+                                        <Search size={16} /> Browse
+                                    </Link>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings
                                     </Link>
@@ -43,9 +46,12 @@ export default function Navbar() {
                                     </Link>
                                 </>
                             )}
-                            {/* Searching Tenants: viewings + viewing chat only, no maintenance/ejari */}
+                            {/* Searching Tenants: browse + viewings + viewing chat only, no maintenance/ejari */}
                             {currentUser.type === 'roommate' && currentUser.resident_role !== 'residing' && (
                                 <>
+                                    <Link to="/browse" className={`navbar-link ${isActive('/browse')}`}>
+                                        <Search size={16} /> Browse
+                                    </Link>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings
                                     </Link>
@@ -133,9 +139,14 @@ export default function Navbar() {
                                 </button>
                             </div>
                         ) : (
-                            <Link to="/register" className="btn btn-primary btn-sm">
-                                Sign Up
-                            </Link>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Link to="/login" className="btn btn-ghost btn-sm">
+                                    Sign In
+                                </Link>
+                                <Link to="/register" className="btn btn-primary btn-sm">
+                                    Sign Up
+                                </Link>
+                            </div>
                         )}
                     </div>
                 </div>

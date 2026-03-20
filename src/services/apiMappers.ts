@@ -1,4 +1,5 @@
 import type { Listing, User, PropertyRating } from '@/types';
+import { listings as mockListings } from '@/data/mockData';
 
 /**
  * Robust JSON parser for SQLite fields which are stored as text.
@@ -88,7 +89,11 @@ export interface ApiRoommateProfile {
  * Precisely bridges D1 snake_case SQLite results to Frontend camelCase Listing type.
  */
 export function mapApiRoomListingToListing(api: ApiRoomListing): Listing {
-  const images = (api as any).images || []; // Placeholder for R2 logic later
+  // Use API images if available, otherwise fall back to mock data images for the same property ID
+  const apiImages = (api as any).images;
+  const images = (apiImages && apiImages.length > 0)
+    ? apiImages
+    : (mockListings.find(m => m.id === api.id)?.images || []);
 
   return {
     id: api.id,
@@ -113,8 +118,8 @@ export function mapApiRoomListingToListing(api: ApiRoomListing): Listing {
     bills_breakdown: api.bills_breakdown,
     deposit: api.deposit,
 
-    current_roommates: [], // To be populated via join/separate fetch
-    occupancy_status: [],
+    current_roommates: mockListings.find(m => m.id === api.id)?.current_roommates || [],
+    occupancy_status: mockListings.find(m => m.id === api.id)?.occupancy_status || [],
 
     tags: safeJsonParse<string[]>(api.tags, []),
 
