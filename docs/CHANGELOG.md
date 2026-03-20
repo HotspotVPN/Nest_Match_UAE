@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.14.3] — 2026-03-20 · Line-ending normalisation, docs sync
+
+### Fixed
+- Normalised line endings (CRLF → LF) across 63 files for cross-platform consistency
+- README, CHANGELOG, SESSION_LOG, PRODUCT_ROADMAP version aligned to v2.14.3
+
+### Note
+- Zero functional code changes — purely whitespace/line-ending normalisation
+
+---
+
 ## [2.14.1] — 2026-03-20 · HomePage Rewrite, Search Improvements, Data Refresh
 
 ### Changed

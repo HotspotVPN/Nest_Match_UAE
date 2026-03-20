@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.14.1 — Investor Demo (March 2026) — Gate G6 SIGNED OFF ✓
+## Current: v2.14.3 — Investor Demo (March 2026) — Gate G6 SIGNED OFF ✓
 
 ### Completed (Core Platform)
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)

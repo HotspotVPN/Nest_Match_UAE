@@ -252,4 +252,22 @@ HomePage complete rewrite with enhanced layout and visual polish. BrowsePage sea
 
 ### Commit
 - Version: v2.14.1
+- Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.14.3 Line-ending normalisation + docs sync
+
+### Summary
+Normalised line endings (CRLF → LF) across 63 files for cross-platform consistency. Updated README, CHANGELOG, SESSION_LOG, PRODUCT_ROADMAP to v2.14.3. Zero functional code changes.
+
+### Files Modified
+- 63 source files — line-ending normalisation only
+- README.md — version 2.14.3
+- docs/CHANGELOG.md — v2.14.3 entry
+- docs/SESSION_LOG.md — this entry
+- docs/PRODUCT_ROADMAP.md — version 2.14.3
+
+### Commit
+- Version: v2.14.3
 - Pushed: Pending
