@@ -17,18 +17,18 @@ interface Persona {
 
 const PERSONAS: Persona[] = [
   // Tenants
-  { id: 'roommate-1', name: 'Priya Sharma', shortName: 'Priya', tier: 'T3 Gold', role: 'Residing', group: 'tenant' },
-  { id: 'roommate-7', name: 'Aisha Patel', shortName: 'Aisha', tier: 'T3 Gold', role: 'Searching', group: 'tenant' },
-  { id: 'tier0-2', name: 'Sofia Kowalski', shortName: 'Sofia', tier: 'T1 KYC', role: 'Approved', group: 'tenant' },
-  { id: 'tier0-1', name: 'James Okafor', shortName: 'James', tier: 'T1 Pending', role: 'KYC', group: 'tenant' },
-  { id: 'tier1-1', name: "Liam O'Brien", shortName: 'Liam', tier: 'T0', role: 'Explorer', group: 'tenant' },
+  { id: 'S001', name: 'Priya Sharma', shortName: 'Priya', tier: 'T3 Gold', role: 'Residing', group: 'tenant' },
+  { id: 'S003', name: 'Aisha Patel', shortName: 'Aisha', tier: 'T3 Gold', role: 'Searching', group: 'tenant' },
+  { id: 'S006', name: 'Sofia Kowalski', shortName: 'Sofia', tier: 'T1 KYC', role: 'Approved', group: 'tenant' },
+  { id: 'S005', name: 'James Okafor', shortName: 'James', tier: 'T1 Pending', role: 'KYC', group: 'tenant' },
+  { id: 'S008', name: "Liam O'Brien", shortName: 'Liam', tier: 'T0', role: 'Explorer', group: 'tenant' },
   // Landlords
-  { id: 'landlord-1', name: 'Ahmed Al Maktoum', shortName: 'Ahmed', tier: '', role: 'Landlord', group: 'landlord' },
-  { id: 'agent-1', name: 'Khalid Al Rashid', shortName: 'Khalid', tier: '', role: 'Agent', group: 'landlord' },
-  { id: 'landlord-2', name: 'Fatima Hassan', shortName: 'Fatima', tier: '', role: 'Landlord', group: 'landlord' },
+  { id: 'L001', name: 'Ahmed Al Maktoum', shortName: 'Ahmed', tier: '', role: 'Landlord', group: 'landlord' },
+  { id: 'A001', name: 'Khalid Al Rashid', shortName: 'Khalid', tier: '', role: 'Agent', group: 'landlord' },
+  { id: 'L002', name: 'Fatima Hassan', shortName: 'Fatima', tier: '', role: 'Landlord', group: 'landlord' },
   // Admins
-  { id: 'admin-1', name: 'Sara Al Hashimi', shortName: 'Sara', tier: '', role: 'Compliance', group: 'admin' },
-  { id: 'admin-3', name: 'Rashid Khalil', shortName: 'Rashid', tier: '', role: 'Operations', group: 'admin' },
+  { id: 'ADM001', name: 'Sara Al Hashimi', shortName: 'Sara', tier: '', role: 'Compliance', group: 'admin' },
+  { id: 'ADM002', name: 'Rashid Khalil', shortName: 'Rashid', tier: '', role: 'Operations', group: 'admin' },
 ];
 
 // Role-gated pages: if current path requires a specific role, redirect on mismatch

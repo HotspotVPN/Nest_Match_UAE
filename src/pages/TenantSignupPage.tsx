@@ -25,7 +25,7 @@ export default function TenantSignupPage() {
         if (!email.trim() || !password.trim()) return;
         setEmailLoading(true);
         setTimeout(() => {
-            login('tier0-3'); // Ravi Menon
+            login('S007'); // Ravi Menon
             setEmailLoading(false);
             setSubmitted(true);
             showToast('Welcome to NestMatch!', 'success');
@@ -43,7 +43,7 @@ export default function TenantSignupPage() {
 
     const handleGoogleAccountSelect = (accountEmail: string) => {
         setGooglePickerLoading(accountEmail);
-        const userId = accountEmail === 'james.okafor@gmail.com' ? 'tier0-1' : 'tier0-2';
+        const userId = accountEmail === 'james.okafor@gmail.com' ? 'S005' : 'S006';
         const slug = accountEmail === 'james.okafor@gmail.com' ? 'james-okafor' : 'sofia-kowalski';
         setTimeout(() => {
             login(userId);

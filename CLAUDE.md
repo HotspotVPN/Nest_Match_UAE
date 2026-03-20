@@ -5,8 +5,8 @@
 | Field | Value |
 |-------|-------|
 | **Gate** | G6 — Pre-Demo (feature development complete) |
-| **Version** | v2.12.1 |
-| **Last Session** | 20 Mar 2026 — Enhanced CLAUDE.md, Session Protocol, Session Log |
+| **Version** | v2.13.0 |
+| **Last Session** | 20 Mar 2026 — ID Format Migration (48+ columns, 22 tables) |
 | **Blockers** | None — demo ready |
 | **Next Priority** | QA testing, then Phase 2C (DocuSign integration) |
 | **Risk Level** | 🟢 Green — no licence-requiring features in scope |
@@ -30,7 +30,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.12.1
+**Current version:** v2.13.0
 
 ---
 
@@ -465,21 +465,21 @@ All Claude Code sessions MUST follow these rules.
 
 | ID | Name | Role | Tier | Email |
 |----|------|------|------|-------|
-| landlord-1 | Ahmed Al Maktoum | Landlord | tier2_uae_pass | ahmed@nestmatch.ae |
-| landlord-2 | Fatima Hassan | Landlord | tier2_uae_pass | fatima@nestmatch.ae |
-| agent-1 | Khalid Al Rashid | Agent | tier2_uae_pass | khalid@dubaipropertygroup.ae |
-| agent-2 | Tariq Mahmood | Agent | tier2_uae_pass | tariq@agency.ae |
-| roommate-1 | Priya Sharma | Residing Tenant | tier2_uae_pass | priya@nestmatch.ae |
-| roommate-2 | Marcus Chen | Residing Tenant | tier2_uae_pass | marcus.chen@email.com |
-| roommate-7 | Aisha Patel | Searching Tenant | tier2_uae_pass | aisha.patel@email.com |
-| roommate-6 | James Morrison | Searching Tenant | tier2_uae_pass | james.morrison@email.com |
-| tier0-1 | James Okafor | Searching Tenant | tier0_passport | james@nestmatch.ae |
-| tier0-2 | Sofia Kowalski | Searching Tenant | tier0_passport | sofia@nestmatch.ae |
-| tier0-3 | Ravi Menon | Searching Tenant | tier0_passport | ravi.menon@gmail.com |
-| tier1-1 | Liam O'Brien | Searching Tenant | tier1_unverified | liam@nestmatch.ae |
-| tier1-2 | Amara Diallo | Searching Tenant | tier1_unverified | amara.diallo@email.com |
-| admin-1 | Sara Al Hashimi | Compliance Admin | tier2_uae_pass | compliance@nestmatch.ae |
-| admin-3 | Rashid Khalil | Operations Admin | tier2_uae_pass | operations@nestmatch.ae |
+| L001 | Ahmed Al Maktoum | Landlord | tier2_uae_pass | ahmed@nestmatch.ae |
+| L002 | Fatima Hassan | Landlord | tier2_uae_pass | fatima@nestmatch.ae |
+| A001 | Khalid Al Rashid | Agent | tier2_uae_pass | khalid@dubaipropertygroup.ae |
+| A002 | Tariq Mahmood | Agent | tier2_uae_pass | tariq@agency.ae |
+| S001 | Priya Sharma | Residing Tenant | tier2_uae_pass | priya@nestmatch.ae |
+| S002 | Marcus Chen | Residing Tenant | tier2_uae_pass | marcus.chen@email.com |
+| S003 | Aisha Patel | Searching Tenant | tier2_uae_pass | aisha.patel@email.com |
+| S004 | James Morrison | Searching Tenant | tier2_uae_pass | james.morrison@email.com |
+| S005 | James Okafor | Searching Tenant | tier0_passport | james@nestmatch.ae |
+| S006 | Sofia Kowalski | Searching Tenant | tier0_passport | sofia@nestmatch.ae |
+| S007 | Ravi Menon | Searching Tenant | tier0_passport | ravi.menon@gmail.com |
+| S008 | Liam O'Brien | Searching Tenant | tier1_unverified | liam@nestmatch.ae |
+| S009 | Amara Diallo | Searching Tenant | tier1_unverified | amara.diallo@email.com |
+| ADM001 | Sara Al Hashimi | Compliance Admin | tier2_uae_pass | compliance@nestmatch.ae |
+| ADM002 | Rashid Khalil | Operations Admin | tier2_uae_pass | operations@nestmatch.ae |
 
 **This list is FINAL. Do not add, remove, or modify without explicit Product Director approval.**
 

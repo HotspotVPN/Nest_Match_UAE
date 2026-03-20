@@ -20,7 +20,7 @@ export default function LandlordSignupPage() {
         if (!email.trim() || !password.trim()) return;
         setEmailLoading(true);
         setTimeout(() => {
-            login('landlord-2'); // Fatima Hassan
+            login('L002'); // Fatima Hassan
             setEmailLoading(false);
             setSubmitted(true);
             showToast('Welcome to NestMatch!', 'success');
@@ -29,7 +29,7 @@ export default function LandlordSignupPage() {
     };
 
     const handleUaePassComplete = () => {
-        login('landlord-1'); // Ahmed Al Maktoum
+        login('L001'); // Ahmed Al Maktoum
         setShowUaePass(false);
         showToast('Welcome Ahmed. UAE PASS verified.', 'success');
         navigate('/dashboard');

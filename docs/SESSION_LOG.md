@@ -105,3 +105,37 @@ Backend: ejari_documents table, 5 demo records, 4 API routes, rent fix. Frontend
 - Version: v2.12.0
 - Message: "v2.12.0 — Ejari Documents, CORS fix, Auth fix"
 - Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.13.0 ID Format Migration
+
+### Summary
+Complete ID scheme migration per PRD v2.13.0. Deleted 17 non-canonical users + 2 non-canonical properties from D1 and mockData. Migrated all 15 user IDs (landlord-1→L001, roommate-1→S001, etc.) and 12 property IDs (list-entry-1→P001, etc.) across D1 (6 data-bearing tables, 102 queries) and frontend (mockData + 5 component files). Also: Enhanced CLAUDE.md with session protocol/risk gates, created SESSION_PROTOCOL.md and SESSION_LOG.md. Auth login() now syncs JWT with backend on persona switch. Ejari mock fallback added. Profile links use currentUser.id. Navbar isActive improved.
+
+### Files Created
+- backend/migrations/0014_id_migration.sql — D1 migration (11 phases)
+- backend/migrations/0014_id_migration_ROLLBACK.sql — reverse migration
+
+### Files Modified
+- src/data/mockData.ts — all IDs migrated, non-canonical deleted
+- src/components/DemoControls.tsx — 10 persona IDs
+- src/pages/LandlordSignupPage.tsx, TenantSignupPage.tsx, MaintenancePage.tsx — ID refs
+- src/contexts/AuthContext.tsx — login() syncs JWT with backend
+- src/services/api.ts — ejari mock fallback with getEjariForUser
+- src/pages/EjariDocumentsPage.tsx — passes currentUser.id to API
+- src/components/Navbar.tsx — profile link uses currentUser.id, isActive improved
+- src/pages/ChatPage.tsx, ProfilePage.tsx, src/types/index.ts — various fixes
+- CLAUDE.md — v2.13.0, new ID table, session protocol, risk gates
+- docs/SESSION_PROTOCOL.md, docs/SESSION_LOG.md — new governance files
+- README.md, docs/CHANGELOG.md, docs/PRODUCT_ROADMAP.md — version + entries
+
+### Decisions Made
+- Delete non-canonical users/properties (PD approved)
+- Property mapping starts at list-entry-1→P001 (not list-entry-0)
+- Rollback SQL included but cannot restore deleted data
+
+### Commit
+- Version: v2.13.0
+- Message: "v2.13.0 — ID Format Migration"
+- Pushed: Pending

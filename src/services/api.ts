@@ -6,6 +6,7 @@ import {
     payments as mockPayments, propertyRatings as mockRatings,
     getUserById as mockGetUserById, getListingById as mockGetListingById,
     getViewingsForUser as mockGetViewingsForUser, getPaymentsForUser as mockGetPaymentsForUser,
+    getEjariForUser as mockGetEjariForUser,
 } from '@/data/mockData';
 
 // ─── Configuration ───────────────────────────────────────────
@@ -566,11 +567,23 @@ export const api = {
     },
 
     // ── Ejari Documents ─────────────────────────────────────────
-    getEjariDocuments: async (status?: string): Promise<{
+    getEjariDocuments: async (status?: string, currentUserId?: string): Promise<{
         documents: any[]; counts: { active: number; expired: number; cancelled: number };
     }> => {
         const isUp = await checkBackend();
-        if (!isUp) return { documents: [], counts: { active: 0, expired: 0, cancelled: 0 } };
+        if (!isUp) {
+            // Mock fallback: filter by current user
+            const docs = currentUserId ? mockGetEjariForUser(currentUserId) : [];
+            const filtered = status ? docs.filter(d => d.ejari_status === status) : docs;
+            return {
+                documents: filtered,
+                counts: {
+                    active: docs.filter(d => d.ejari_status === 'active').length,
+                    expired: docs.filter(d => d.ejari_status === 'expired').length,
+                    cancelled: 0,
+                },
+            };
+        }
 
         const params = status ? `?status=${status}` : '';
         const res = await apiFetch<any>(`/api/ejari${params}`);
@@ -578,12 +591,29 @@ export const api = {
         return { documents: res.data.documents || [], counts: res.data.counts || { active: 0, expired: 0, cancelled: 0 } };
     },
 
-    getEjariStats: async (): Promise<{
+    getEjariStats: async (currentUserId?: string): Promise<{
         total_documents: number; active: number; expired: number;
         total_annual_rent: number; expiring_soon: number;
     } | null> => {
         const isUp = await checkBackend();
-        if (!isUp) return null;
+        if (!isUp) {
+            if (!currentUserId) return null;
+            const docs = mockGetEjariForUser(currentUserId);
+            const active = docs.filter(d => d.ejari_status === 'active');
+            const now = new Date();
+            const soon = active.filter(d => {
+                const end = new Date(d.contract_end_date);
+                const diff = (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+                return diff > 0 && diff <= 90;
+            });
+            return {
+                total_documents: docs.length,
+                active: active.length,
+                expired: docs.filter(d => d.ejari_status === 'expired').length,
+                total_annual_rent: active.reduce((sum, d) => sum + (d.annual_rent || 0), 0),
+                expiring_soon: soon.length,
+            };
+        }
 
         const res = await apiFetch<any>('/api/ejari/stats/summary');
         if (!res.ok) return null;

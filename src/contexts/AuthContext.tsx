@@ -72,7 +72,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = (userId: string) => {
         const user = mockUsers.find((u) => u.id === userId);
-        if (user) setCurrentUser(user);
+        if (user) {
+            // Clear stale token BEFORE switching persona to prevent race conditions
+            // where API calls fire with the old user's JWT.
+            localStorage.removeItem('nm_token');
+            setCurrentUser(user);
+            // Then authenticate with backend to get the correct JWT for this persona.
+            if (user.email) {
+                fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: user.email, password: 'demo2026' })
+                }).then(res => {
+                    if (res.ok) return res.json();
+                    throw new Error('Backend login failed');
+                }).then(data => {
+                    if (data.token) localStorage.setItem('nm_token', data.token);
+                }).catch(() => {
+                    // Backend unavailable — token already cleared, mock fallback will be used
+                });
+            }
+        }
     };
 
     const loginWithEmail = async (email: string, password = 'demo2026') => {

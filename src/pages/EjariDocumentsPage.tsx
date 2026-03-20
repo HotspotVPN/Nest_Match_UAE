@@ -56,8 +56,8 @@ export default function EjariDocumentsPage() {
         if (!currentUser) return;
         setLoading(true);
         Promise.all([
-            api.getEjariDocuments(),
-            api.getEjariStats(),
+            api.getEjariDocuments(undefined, currentUser.id),
+            api.getEjariStats(currentUser.id),
         ]).then(([docData, statsData]) => {
             setDocuments(docData.documents);
             setCounts(docData.counts);

@@ -4,14 +4,14 @@ import { getInitials } from '@/data/mockData';
 import InboxBadge from '@/components/InboxBadge';
 import {
     User, ShieldCheck, Users, LayoutDashboard,
-    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2, FileText
+    LogOut, CalendarCheck, MessageSquare, Wrench, BarChart2, HelpCircle, Search, Building2, FileText, Bell
 } from 'lucide-react';
 
 export default function Navbar() {
     const { currentUser, logout, isAuthenticated } = useAuth();
     const location = useLocation();
 
-    const isActive = (path: string) => location.pathname === path ? 'active' : '';
+    const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/') ? 'active' : '';
 
     return (
         <>
@@ -25,7 +25,8 @@ export default function Navbar() {
 
                     {isAuthenticated && currentUser && (
                         <div className="navbar-links">
-                            {currentUser.type === 'roommate' && (
+                            {/* Residing Tenants: full nav with property chat, maintenance, ejari */}
+                            {currentUser.type === 'roommate' && currentUser.resident_role === 'residing' && (
                                 <>
                                     <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
                                         <CalendarCheck size={16} /> Viewings
@@ -36,11 +37,20 @@ export default function Navbar() {
                                     <Link to="/maintenance" className={`navbar-link ${isActive('/maintenance')}`}>
                                         <Wrench size={16} /> Maintenance
                                     </Link>
-                                    {currentUser.resident_role === 'residing' && (
-                                        <Link to="/ejari" className={`navbar-link ${isActive('/ejari')}`}>
-                                            <FileText size={16} /> Ejari
-                                        </Link>
-                                    )}
+                                    <Link to="/ejari" className={`navbar-link ${isActive('/ejari')}`}>
+                                        <FileText size={16} /> Ejari
+                                    </Link>
+                                </>
+                            )}
+                            {/* Searching Tenants: viewings + viewing chat only, no maintenance/ejari */}
+                            {currentUser.type === 'roommate' && currentUser.resident_role !== 'residing' && (
+                                <>
+                                    <Link to="/viewings" className={`navbar-link ${isActive('/viewings')}`}>
+                                        <CalendarCheck size={16} /> Viewings
+                                    </Link>
+                                    <Link to="/chat" className={`navbar-link ${isActive('/chat')}`}>
+                                        <MessageSquare size={16} /> Chat
+                                    </Link>
                                 </>
                             )}
                             {(currentUser.type === 'landlord' || currentUser.type === 'letting_agent') && (
@@ -109,7 +119,7 @@ export default function Navbar() {
                                     </span>
                                 </div>
                                 <InboxBadge />
-                                <Link to="/profile" className="btn btn-ghost btn-sm">
+                                <Link to={`/profile/${currentUser.id}`} className="btn btn-ghost btn-sm">
                                     <User size={16} /> Profile
                                 </Link>
                                 <button onClick={() => { logout(); }} className="btn btn-ghost btn-sm" title="Sign out">
@@ -134,7 +144,7 @@ export default function Navbar() {
                     <Link to="/chat" className={`mobile-nav-link ${isActive('/chat')}`}>
                         <MessageSquare size={20} /> Chat
                     </Link>
-                    <Link to="/profile" className={`mobile-nav-link ${isActive('/profile')}`}>
+                    <Link to={`/profile/${currentUser.id}`} className={`mobile-nav-link ${isActive('/profile')}`}>
                         <User size={20} /> Profile
                     </Link>
                 </div>

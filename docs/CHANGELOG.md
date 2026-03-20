@@ -3,6 +3,33 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.13.0] — 2026-03-20 · ID Format Migration
+
+### Complete ID scheme migration per PRD v2.13.0
+
+### Backend (D1 Migration 0014)
+- Deleted 17 non-canonical users from D1 (landlord-3/4, agent-3, roommate-3/4/5/8/9/10, srch-0-3, res-new-0-3)
+- Deleted 2 non-canonical properties (list-entry-13, list-entry-14)
+- Migrated 15 user IDs: landlord-1→L001, roommate-1→S001, tier0-1→S005, admin-1→ADM001, etc.
+- Migrated 12 property IDs: list-entry-1→P001 through list-entry-12→P012
+- Updated all FK references across 6 data-bearing tables
+- Recalculated occupancy counts post-migration
+- Rollback SQL included (0014_id_migration_ROLLBACK.sql)
+
+### Frontend
+- mockData.ts: All IDs migrated, 17 non-canonical users deleted, 2 non-canonical properties deleted
+- DemoControls.tsx: 10 persona IDs updated
+- LandlordSignupPage.tsx: 2 login() calls updated
+- TenantSignupPage.tsx: 3 ID references updated
+- MaintenancePage.tsx: 1 property fallback updated
+
+### Verification
+- D1: 15 users, 12 properties, 0 old-format IDs remaining
+- Login returns L001 for Ahmed (confirmed)
+- TSC: zero errors (frontend + backend)
+
+---
+
 ## [2.12.1] — 2026-03-19 · Enhanced CLAUDE.md + Session Protocol
 
 ### Governance framework upgrade

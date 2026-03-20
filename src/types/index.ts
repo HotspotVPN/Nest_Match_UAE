@@ -296,10 +296,13 @@ export interface ChatMessage {
     created_at: string;
 }
 
+export type ChatChannelType = 'property' | 'viewing';
+
 export interface ChatChannel {
     id: string;
     listing_id: string;
     name: string;
+    channel_type: ChatChannelType;
     participants: string[];
     created_at: string;
     last_message?: ChatMessage;

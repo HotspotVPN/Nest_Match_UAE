@@ -8,6 +8,7 @@ import {
     getInitials,
     viewingBookings,
     listings as mockListings2,
+    users as mockUsers,
 } from "@/data/mockData";
 import type { User, Listing } from "@/types";
 import {
@@ -163,21 +164,28 @@ export default function ProfilePage() {
       return;
     }
 
-    // Parallel fetch for users and listings
+    // Parallel fetch for users and listings — fall back to mock data on failure
+    setLoading(true);
     Promise.all([
         api.getUsers(),
         api.getProperties()
     ]).then(([fetchedUsers, fetchedListings]) => {
-        setUsers(fetchedUsers);
-        setListings(fetchedListings);
+        setUsers(fetchedUsers.length > 0 ? fetchedUsers : mockUsers);
+        setListings(fetchedListings.length > 0 ? fetchedListings : mockListings2);
         setLoading(false);
     }).catch(err => {
         console.error("Profile page fetch failure:", err);
+        // Always fall back to mock data so the page never goes blank
+        setUsers(mockUsers);
+        setListings(mockListings2);
         setLoading(false);
     });
   }, [currentUser, navigate]);
 
-  const displayUser = id ? users.find((u) => u.slug === id || u.id === id) : currentUser;
+  // Resolve display user: URL param → API users → currentUser fallback
+  const displayUser = id
+    ? users.find((u) => u.slug === id || u.id === id) || mockUsers.find((u) => u.slug === id || u.id === id) || currentUser
+    : currentUser;
 
   useEffect(() => {
     if (!loading && !displayUser && !currentUser) {
