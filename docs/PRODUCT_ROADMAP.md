@@ -1,6 +1,6 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.13.3 — Investor Demo (March 2026) — Gate G6 SIGNED OFF ✓
+## Current: v2.14.1 — Investor Demo (March 2026) — Gate G6 SIGNED OFF ✓
 
 ### Completed (Core Platform)
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
@@ -19,6 +19,12 @@
 - [x] Viewing analytics dashboard (/analytics)
 - [x] LeaseHandoffCard replacing ContractManagerPage
 - [x] Full applicant profile visibility (blind match removed)
+
+### Completed (v2.14.1 — HomePage Rewrite + Search Improvements)
+- [x] HomePage: Complete rewrite with enhanced layout and visual polish
+- [x] BrowsePage: Smart search with stop-word filtering and multi-word OR matching
+- [x] BrowsePage: Tag-inclusive search haystack (searches tags alongside title/address/district)
+- [x] mockData: Full data refresh with updated property and user metadata
 
 ### Completed (v2.13.3 — Document Generation + PD Signoff)
 - [x] Government-template PDF generation (DLD Form 85 + Ejari Unified Tenancy)

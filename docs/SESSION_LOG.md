@@ -233,4 +233,23 @@ Major UX enhancement release covering phases P2–P6 from the UX Enhancement Roa
 
 ### Commit
 - Version: v2.14.0
+- Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.14.1 HomePage Rewrite + Search Improvements
+
+### Summary
+HomePage complete rewrite with enhanced layout and visual polish. BrowsePage search upgraded with stop-word filtering, multi-word OR matching, and tag-inclusive search haystack. Full mockData refresh with updated property and user metadata.
+
+### Files Modified
+- src/pages/HomePage.tsx — complete rewrite
+- src/pages/BrowsePage.tsx — smart search (stop-words, multi-word, tags in haystack)
+- src/data/mockData.ts — full data refresh
+- README.md — version 2.14.1, search feature noted
+- docs/CHANGELOG.md — v2.14.1 entry
+- docs/SESSION_LOG.md — this entry
+
+### Commit
+- Version: v2.14.1
 - Pushed: Pending

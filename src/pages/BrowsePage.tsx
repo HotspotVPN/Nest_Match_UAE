@@ -162,8 +162,10 @@ export default function BrowsePage() {
             }
             if (selectedTags.length > 0 && !selectedTags.some(t => l.tags?.includes(t))) return false;
             if (searchQuery) {
-                const q = searchQuery.toLowerCase();
-                if (!l.title.toLowerCase().includes(q) && !l.address.toLowerCase().includes(q) && !l.district.toLowerCase().includes(q) && !l.description.toLowerCase().includes(q)) return false;
+                const haystack = `${l.title} ${l.address} ${l.district} ${l.description} ${(l.tags || []).join(' ')}`.toLowerCase();
+                const stopWords = ['in', 'a', 'the', 'for', 'at', 'of', 'near', 'with', 'rooms', 'room', 'shared'];
+                const words = searchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 1 && !stopWords.includes(w));
+                if (words.length > 0 && !words.some(w => haystack.includes(w))) return false;
             }
             return true;
         });

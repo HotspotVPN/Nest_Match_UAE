@@ -3,6 +3,20 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.14.1] — 2026-03-20 · HomePage Rewrite, Search Improvements, Data Refresh
+
+### Changed
+- **HomePage**: Complete rewrite with enhanced layout, sections, and visual polish
+- **BrowsePage**: Smart search — stop-word filtering, multi-word matching, tag-inclusive haystack
+- **mockData.ts**: Full data refresh — updated property/user attributes and metadata
+
+### Improved
+- Search now strips common stop words (in, a, the, for, near, rooms, etc.)
+- Search matches against tags in addition to title, address, district, description
+- Multi-word queries use OR matching for better discovery
+
+---
+
 ## [2.14.0] — 2026-03-20 · UX Enhancement Release: P2–P6 + Homepage Search
 
 ### Added
