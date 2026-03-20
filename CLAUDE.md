@@ -1,6 +1,26 @@
 # NestMatch UAE — Claude Code Project Context
 
+## 🚦 PROJECT STATUS (update every session)
+
+| Field | Value |
+|-------|-------|
+| **Gate** | G6 — Pre-Demo (feature development complete) |
+| **Version** | v2.12.1 |
+| **Last Session** | 20 Mar 2026 — Enhanced CLAUDE.md, Session Protocol, Session Log |
+| **Blockers** | None — demo ready |
+| **Next Priority** | QA testing, then Phase 2C (DocuSign integration) |
+| **Risk Level** | 🟢 Green — no licence-requiring features in scope |
+
+**Quick Context:**
+- Frontend: React 19 + TypeScript + Vite → Vercel
+- Backend: Cloudflare Workers + Hono + D1 + R2
+- 15 canonical personas (LOCKED)
+- 12 canonical properties (LOCKED)
+
+---
+
 ## Project
+
 NestMatch UAE is a compliance-first property discovery platform for Dubai shared housing.
 Frontend: React 19 + TypeScript + Vite on Vercel.
 Backend: Cloudflare Workers + Hono + D1 + R2.
@@ -10,17 +30,19 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.8.0
+**Current version:** v2.12.1
 
 ---
 
 ## Hard constraints (never violate)
+
 - No payment processing (no CBUAE/DIFC licence)
 - No lease/tenancy contract drafting (no RERA broker licence)
 - No escrow, deposit holding, rent collection
 - Star-only ratings (no text — UAE Cybercrime Law)
 
 ### Listing compliance rules (Law No. 4 of 2026)
+
 - NestMatch lists ROOMS, not bed-spaces
 - Maximum occupancy per bedroom: 1 tenant
 - Never create listings with "twin share", "shared bedroom",
@@ -37,6 +59,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Never set verification_tier to 'gold' without UAE PASS OAuth completing
 
 ### Legal pages (never remove)
+
 - src/pages/PrivacyPolicyPage.tsx — UAE Federal Law No. 45 compliance
 - src/pages/TermsPage.tsx — legal boundary statements
 - src/components/Footer.tsx — contains legal disclaimer
@@ -45,6 +68,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
   must appear on every public page. Never remove or weaken this text.
 
 ### Anonymisation rules (premium features)
+
 - Occupant profiles shown to searchers must NEVER include:
   name, photo, nationality, employer, exact age, contact info
 - Occupant profiles may include: lifestyle tags, work schedule,
@@ -56,12 +80,14 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Resident review signals are advisory — landlord has final authority
 
 ### Premium Features (no licence required)
+
 - Premium tenant matching: occupant profiles, resident reviews
 - GCC Score gamification: review points, rejection penalties
 - Premium = Tier 2 Gold automatically (no payment until CBUAE licence)
 - NEVER store free-text rejection reasons — predefined codes only
 
 ### TODO: Coming Soon Listings (premium feature, not yet built)
+
 - Add 'coming_soon' as a Listing status value in types/index.ts
 - Coming Soon = pre-market listings visible only to Tier 2 Gold users
 - Landlords can list properties before they're publicly available
@@ -71,6 +97,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - This is NOT "coming soon" placeholder text — it's a product feature
 
 ## Deleted files (never recreate)
+
 - src/services/mockStripeService.ts
 - src/pages/ContractManagerPage.tsx
 
@@ -94,11 +121,13 @@ Never hardcode tier strings. Always use these functions.
 ## Frontend Architecture
 
 ### Key directories
+
 ```
 src/pages/           — one file per route
 src/components/      — reusable UI (Navbar, ChatPanel, ViewingsPanel,
                        ViewingAgreementModal, LeaseHandoffCard,
-                       DemoControls, Toast, UAEPassOverlay, PassportKycModal)
+                       DemoControls, Toast, UAEPassOverlay, PassportKycModal,
+                       ComplianceFlow, InboxBadge, ProtectedRoute)
 src/contexts/        — AuthContext, DemoStateContext, ToastContext
 src/data/            — mockData.ts (fallback when backend is down)
 src/services/        — api.ts (smart fallback), apiMappers.ts
@@ -107,6 +136,7 @@ src/utils/           — accessControl.ts (tier gating + display labels)
 ```
 
 ### Routes (all in App.tsx)
+
 ```
 /                    → HomePage (public)
 /login               → LoginPage (public)
@@ -116,25 +146,26 @@ src/utils/           — accessControl.ts (tier gating + display labels)
 /browse              → BrowsePage (public)
 /how-it-works        → HowItWorksPage (public)
 /listing/:id         → ListingDetailPage (public, supports slug or ID)
-/profile/:id?        → ProfilePage (authenticated, supports slug or ID)
+/profile/:id?        → ProfilePage (authenticated)
 /viewings            → ViewingsPage (authenticated)
 /chat                → ChatPage (authenticated)
 /maintenance         → MaintenancePage (roommate)
+/inbox               → InboxPage (authenticated)
+/ejari               → EjariDocumentsPage (authenticated)
 /dashboard           → LandlordDashboardPage (landlord/agent)
 /residing-dashboard  → ResidingDashboardPage (landlord/agent)
 /analytics           → ViewingAnalyticsPage (operations/compliance admin)
 /compliance          → CompliancePage (compliance admin)
 /customers           → CustomerDatabasePage (operations admin)
 /gcc                 → GccDashboardPage (authenticated)
-/wallet              → LandlordWalletPage (landlord/agent)
 /add-property        → AddPropertyPage (landlord/agent)
-/ledger              → RentLedgerPage (authenticated)
 /my-properties       → MyPropertiesPage (landlord/agent)
 /privacy             → PrivacyPolicyPage (public)
 /terms               → TermsPage (public)
 ```
 
 ### Premium Status (layered on top of tiers)
+
 | Status | Who | Access |
 |---|---|---|
 | Standard | All users by default | Normal platform features per tier |
@@ -145,19 +176,24 @@ is automatically premium. A Tier 1 Verified user must upgrade to
 Tier 2 first. Tier 0 Explorers cannot access premium features.
 
 ### Slug routing
+
 All listings and users have a `slug` field generated from their name/title.
 Lookup pattern: try slug first, fall back to ID.
+
 ```tsx
 const listing = listings.find(l => l.slug === id || l.id === id);
 ```
 
 ### Foundation systems (available to all components)
-- **DemoStateContext** (`useDemoState()`): Mutable state layer over mockData. Holds viewingOverrides, tierOverrides, kycSubmissions, occupancyOverrides, applicantDecisions, etc. Components read mockData first, then check demoState for overrides.
-- **ToastContext** (`useToast()`): `showToast(message, type)` where type = 'success' | 'error' | 'info' | 'warning'. Auto-dismiss 4s. Use for all user feedback.
-- **DemoControls**: Floating bottom-right panel for persona switching + quick actions. Renders when authenticated.
-- **UAEPassOverlay**: Reusable mock UAE PASS authentication modal. Used in landlord signup and tenant Tier 2 upgrade.
+
+- **DemoStateContext** (`useDemoState()`): Mutable state layer over mockData.
+- **ToastContext** (`useToast()`): `showToast(message, type)` where type = 'success' | 'error' | 'info' | 'warning'. Auto-dismiss 4s.
+- **DemoControls**: Floating bottom-right panel for persona switching + quick actions.
+- **UAEPassOverlay**: Reusable mock UAE PASS authentication modal.
+- **ProtectedRoute**: Auth guard — redirects to /login?return=... if not authenticated.
 
 ### API fallback pattern
+
 1. Frontend health-checks backend on first API call (3s timeout)
 2. Result cached for 30 seconds
 3. If backend live → real D1 data via apiMappers.ts
@@ -172,6 +208,7 @@ The backend is NOT just CRUD. Every major entity has a state machine.
 Before building any backend route, read the relevant state machine here.
 
 ### Room occupancy states
+
 ```
 available → pending_approval → occupied → notice_given → available
 available → viewing_confirmed → occupied
@@ -185,6 +222,7 @@ Every state transition MUST:
 4. Never go below 0 or above maxLegalOccupancy
 
 ### Viewing states
+
 ```
 PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED →
 FULLY_SIGNED → COMPLETED | NO_SHOW_TENANT | NO_SHOW_LANDLORD | CANCELLED
@@ -196,6 +234,7 @@ Every state transition MUST:
 3. If FULLY_SIGNED: trigger room_occupancy → pending_approval
 
 ### User verification states
+
 ```
 explorer → verified (passport upload) → gold (UAE PASS)
 explorer → verified (emirates_id upload) → gold (UAE PASS)
@@ -206,7 +245,7 @@ Every state transition MUST:
 2. Write to kyc_documents (if document uploaded)
 3. Write to verification_events (audit log)
 
-### D1 Tables (all built)
+### D1 Tables (24 built)
 
 **Core tables (migration 0001-0003):**
 users, properties, room_occupancy, viewing_bookings,
@@ -218,44 +257,43 @@ oauth_tokens, kyc_documents, occupancy_events,
 viewing_agreements, agreement_signatures,
 tenancy_events, verification_events
 
+**Feature tables (migration 0008-0011):**
+inbox_messages, ejari_documents
+
 **Schema additions (migration 0005):**
 slug columns on users and properties
 
-### API Routes (23 built)
+### API Routes (28+ built)
 
-| Category | Route | Status |
-|---|---|---|
-| Auth | POST /register, /login, GET /me | Built |
-| Auth OAuth | POST /auth/google, /auth/uae-pass | Built (mock) |
-| Properties | GET /, GET /:id, POST / | Built |
-| Users | GET /me, PATCH /me, GET /:id | Built |
-| Viewings | GET /, POST /, PATCH /:id/accept, /:id/decline | Built |
-| KYC | POST /upload, GET /my-documents, PATCH /:id/review | Built |
-| Occupancy | PATCH /rooms/:num, POST /notice, /move-out | Built |
-| GCC | POST /users/:id/recalculate-gcc | Built |
-| Ratings | GET /:propertyId/ratings, POST /:propertyId/ratings | Built |
-| Payments | GET /, POST / | Built |
-
-### API routes NOT yet built
-```
-POST /api/agreements           (create DLD viewing agreement in D1)
-PATCH /api/agreements/:id/sign (persist signature to D1)
-POST /api/tenancy/move-in      (confirm tenant moves in)
-```
+| Category | Routes |
+|---|---|
+| Auth | POST /register, /login, GET /me, POST /auth/google, /auth/uae-pass |
+| Properties | GET /, GET /:id, POST / |
+| Users | GET /me, PATCH /me, GET /:id |
+| Viewings | GET /, POST /, PATCH /:id/accept, /:id/decline |
+| Agreements | GET /:id, POST /, PATCH /:id/sign |
+| KYC | POST /upload, GET /my-documents, PATCH /:id/review |
+| Occupancy | PATCH /rooms/:num, POST /notice, /move-out |
+| GCC | POST /users/:id/recalculate-gcc |
+| Ratings | GET /:propertyId/ratings, POST /:propertyId/ratings |
+| Payments | GET /, POST / |
+| Inbox | GET /, GET /unread-count, PATCH /:id/read, POST /mark-all-read, PATCH /:id/action |
+| Ejari | GET /, GET /stats/summary, GET /:id, POST / |
+| Maintenance | GET / |
+| Chat | GET /channels |
 
 ### Rule for Claude Code
-Never build a frontend feature that requires one of the
-missing routes above. If a frontend action needs backend
-data that doesn't exist, either:
-A) Use mock data fallback (already implemented) and
-   add a `// TODO: wire to [route]` comment
+
+Never build a frontend feature that requires a missing backend route. Either:
+A) Use mock data fallback and add `// TODO: wire to [route]`
 B) Ask the user before proceeding
-Never silently build a fake implementation that looks
-real but writes nowhere.
+
+Never silently build a fake implementation that looks real but writes nowhere.
 
 ---
 
 ## After every code change
+
 Run: `npx tsc --noEmit` — zero errors required.
 
 ---
@@ -263,11 +301,13 @@ Run: `npx tsc --noEmit` — zero errors required.
 ## Git Rules — read carefully, never deviate
 
 ### NEVER do these without explicit user confirmation:
+
 - git commit
 - git push
 - git add (as part of a commit flow)
 
 ### ALWAYS do this instead:
+
 When a session's work is complete, present this summary
 and WAIT for the user to say "yes commit" or "commit and push":
 
@@ -294,6 +334,7 @@ Type "confirm commit and push" to commit + push to Vercel.
 ```
 
 ### When user confirms commit only:
+
 1. Update docs/CHANGELOG.md with this session's changes
 2. Update docs/PRODUCT_ROADMAP.md — tick completed items
 3. Update README.md if routes, users, stack, or setup changed
@@ -303,17 +344,20 @@ Type "confirm commit and push" to commit + push to Vercel.
 7. Report: "Committed. Run 'confirm push' when ready to deploy."
 
 ### When user confirms commit AND push:
+
 1-6. Same as above
 7. git push origin [branch]
 8. Report: "Pushed. Vercel will auto-deploy —
    check vercel.com/dashboard to confirm build passes."
 
 ### Version numbering rule
+
 PATCH (v2.0.x) — bug fixes, copy changes, style tweaks
 MINOR (v2.x.0) — new feature, new page, new component
 MAJOR (vx.0.0) — phase unlock (e.g. wallet system, RERA licence)
 
 ### README.md update rules
+
 The README must always reflect:
 - Current version number at the top
 - Accurate demo login list (all tiers shown)
@@ -323,6 +367,7 @@ The README must always reflect:
 - Removed features listed under "Out of scope" section
 
 ### Branch safety
+
 Before any commit, always run:
   git remote -v
   git branch --show-current
@@ -339,11 +384,13 @@ Every session that changes the product MUST update the relevant
 docs file before committing. This is non-negotiable.
 
 ### Rule
+
 If you built it, changed it, or deleted it — document it.
 The docs folder is the source of truth for any new developer,
 investor, or legal reviewer reading this repo cold.
 
 ### Files to maintain
+
 - docs/CHANGELOG.md — every version bump and what changed
 - docs/ARCHITECTURE.md — current tech stack and system design
 - docs/DECISIONS.md — why things were removed or changed
@@ -351,6 +398,7 @@ investor, or legal reviewer reading this repo cold.
 - docs/COMPLIANCE.md — legal constraints and what's in scope
 
 ### On every commit, update at minimum:
+
 - CHANGELOG.md with what changed this session
 - DECISIONS.md if anything was deleted or a constraint was hit
 
@@ -363,6 +411,7 @@ NestMatch-specific overrides that take precedence over
 any Superpowers skill:
 
 ### brainstorming skill override
+
 When brainstorming fires before any new feature:
 - Always check the Constraints section of this file first
 - Any feature touching payments, escrow, rent collection,
@@ -372,6 +421,7 @@ When brainstorming fires before any new feature:
 - Save design docs to docs/superpowers/specs/ as instructed
 
 ### subagent-driven-development override
+
 When dispatching subagents:
 - Every subagent must receive the hard constraints
   section from this CLAUDE.md in its context
@@ -380,12 +430,14 @@ When dispatching subagents:
 - Each subagent must run npx tsc --noEmit on completion
 
 ### systematic-debugging override
+
 When debugging:
 - Check accessControl.ts getTierLabel() FIRST
   for any tier display bug — this is the source of truth
 - Never hardcode tier strings as a debugging fix
 
 ### finishing-a-development-branch override
+
 When finishing a branch:
 - Always update docs/CHANGELOG.md before merge
 - Always present the git remote -v output to the
@@ -393,6 +445,7 @@ When finishing a branch:
 - Never auto-push — wait for explicit confirmation
 
 ### verification-before-completion override
+
 Before marking any task complete:
 - npx tsc --noEmit must return zero errors
 - grep for 'mockStripeService\|ContractManager' in src/
@@ -509,6 +562,7 @@ writes to no persistent storage.
 ## Agent Coordination Protocol
 
 ### File boundaries
+
 - **Frontend agent** owns: `src/`, `public/`, `index.html`, `vite.config.ts`,
   `tsconfig.json`, `package.json` (root), `.env.*`
 - **Backend agent** owns: `backend/` (all files within)
@@ -518,6 +572,7 @@ writes to no persistent storage.
   `backend/src/` files, backend agent must not edit `src/` files
 
 ### Coordination points
+
 - `src/services/api.ts` — frontend reads this; backend defines
   the routes it calls. If backend adds/changes a route, frontend
   must update api.ts to match.
@@ -529,7 +584,9 @@ writes to no persistent storage.
   camelCase. Must be updated when backend schema changes.
 
 ### Progress reporting format
+
 Each agent reports progress as:
+
 ```
 [AGENT] [STATUS] [FILE] — [what changed]
 Example:
@@ -554,3 +611,169 @@ Example:
 - Both agents coordinate timing
 - Backend deploys first (to avoid 404s)
 - Frontend deploys 30s later (after backend health check passes)
+
+---
+
+## SESSION PROTOCOL (NEW — FRAMEWORK ADDITION)
+
+Every Claude Code session MUST follow this protocol.
+See `docs/SESSION_PROTOCOL.md` for full details.
+
+### Session Start Ritual
+
+1. Read this CLAUDE.md completely
+2. Check PROJECT STATUS table at top
+3. Read `docs/SESSION_LOG.md` for last session summary
+4. Run `npx tsc --noEmit` to verify clean state
+5. Announce: "Session started. Last session: [X]. Current gate: [Y]. Ready for instructions."
+
+### Session End Ritual
+
+1. Run `npx tsc --noEmit` — must be zero errors
+2. Run `grep -r 'mockStripeService\|ContractManager' src/` — must be empty
+3. Update PROJECT STATUS table at top of this file
+4. Append session summary to `docs/SESSION_LOG.md`
+5. Present commit summary (per Git Rules above)
+
+### Context Persistence
+
+If session is interrupted or context is compacted:
+- Read `/mnt/transcripts/` for conversation history
+- Read `docs/SESSION_LOG.md` for structured state
+- Re-verify with `npx tsc --noEmit` before resuming
+
+---
+
+## PRE-DEPLOY CHECKLIST (NEW — FRAMEWORK ADDITION)
+
+Before any deployment to production (Vercel or Cloudflare), ALL items must pass:
+
+### Code Quality
+
+- [ ] `npx tsc --noEmit` returns zero errors
+- [ ] `npm run build` completes successfully
+- [ ] `grep -r 'mockStripeService\|ContractManager' src/` returns nothing
+- [ ] No `console.log` statements in production code (except error handlers)
+- [ ] No hardcoded tier strings (all use `getTierLabel()`)
+
+### Compliance
+
+- [ ] Footer disclaimer present on all public pages
+- [ ] No payment/escrow/contract features added
+- [ ] No bed-space language in any listing
+- [ ] Identity fields masked in UI
+- [ ] KYC docs only in R2 KYC_DOCS bucket
+
+### Data Integrity
+
+- [ ] No new users added without approval
+- [ ] No new properties added without approval
+- [ ] Canonical 15 personas unchanged
+- [ ] All state transitions write to audit logs
+
+### Documentation
+
+- [ ] CHANGELOG.md updated
+- [ ] DECISIONS.md updated (if constraints hit)
+- [ ] README.md version number matches
+- [ ] SESSION_LOG.md updated
+
+### Git Safety
+
+- [ ] `git remote -v` shown to user
+- [ ] `git branch --show-current` shown to user
+- [ ] User explicitly confirmed "commit and push"
+
+---
+
+## RISK-GATED FEATURES (NEW — FRAMEWORK ADDITION)
+
+Some features require extra scrutiny before implementation.
+
+### 🔴 RED — Never Build (licence required)
+
+- Payment processing
+- Escrow / deposit holding
+- Rent collection
+- Tenancy contract drafting
+- Security deposit management
+
+If a feature request touches these, STOP immediately and say:
+> "This feature requires [CBUAE/RERA] licence. Out of scope. Would you like me to brainstorm an alternative that stays in scope?"
+
+### 🟡 YELLOW — Build with Caution
+
+- Anything touching verification_tier
+- Anything modifying room_occupancy counts
+- Anything with legal implications (agreements, signatures)
+- Anything that could store PII beyond what's already stored
+
+For yellow features:
+1. Present risk assessment before building
+2. Get explicit "proceed" from user
+3. Add extra audit logging
+4. Document in DECISIONS.md
+
+### 🟢 GREEN — Build Freely
+
+- UI improvements
+- Bug fixes
+- New pages that don't touch restricted data
+- Performance optimizations
+- Documentation updates
+
+---
+
+## STAKEHOLDER APPROVALS (NEW — FRAMEWORK ADDITION)
+
+Track approvals for major decisions.
+
+### Approval Log
+
+| Date | Decision | Approved By | Gate |
+|------|----------|-------------|------|
+| 17 Mar 2026 | Lock 15 canonical personas | Product Director | G3 |
+| 17 Mar 2026 | Lock 12 canonical properties | Product Director | G3 |
+| 17 Mar 2026 | Discard Session 9E (tier value change) | Product Director | G6 |
+| 18 Mar 2026 | Phase 2A (ComplianceFlow) approved | Product Director | G6 |
+| 18 Mar 2026 | Phase 2B (Inbox) approved | Product Director | G6 |
+| 19 Mar 2026 | Ejari Document Storage approved | Product Director | G6 |
+
+### Who Approves What
+
+| Decision Type | Approver | How to Request |
+|---------------|----------|----------------|
+| Data model changes | Product Director | DATA MODEL CHANGE REQUEST format |
+| New features | Product Director | Feature spec in docs/superpowers/specs/ |
+| Compliance changes | Legal | Email + DECISIONS.md entry |
+| Infrastructure changes | Tech Lead | Architecture doc update |
+
+---
+
+## Quick Reference (NEW — FRAMEWORK ADDITION)
+
+### Commands to run before any commit
+
+```bash
+npx tsc --noEmit
+npm run build
+grep -r 'mockStripeService\|ContractManager' src/
+git remote -v
+git branch --show-current
+```
+
+### Files to update on every commit
+
+- docs/CHANGELOG.md
+- docs/SESSION_LOG.md
+- PROJECT STATUS table (top of this file)
+
+### Files to update when constraints are hit
+
+- docs/DECISIONS.md
+- docs/COMPLIANCE.md
+
+### Never recreate these files
+
+- src/services/mockStripeService.ts
+- src/pages/ContractManagerPage.tsx

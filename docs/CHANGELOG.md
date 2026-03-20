@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.12.1] — 2026-03-19 · Enhanced CLAUDE.md + Session Protocol
+
+### Governance framework upgrade
+
+### Added
+- CLAUDE.md: Complete rewrite with PROJECT STATUS table, session protocol,
+  pre-deploy checklist, risk-gated features, stakeholder approvals, quick reference
+- docs/SESSION_PROTOCOL.md — session start/end rituals, context recovery,
+  emergency procedures, progress reporting format
+- docs/SESSION_LOG.md — full session history from v2.8.1 through v2.12.0
+
+### Changed
+- CLAUDE.md: routes list updated to include /inbox, /ejari, all new routes
+- CLAUDE.md: API routes table updated to 28+ (was 23)
+- CLAUDE.md: D1 tables updated to 24 (was ~20)
+- CLAUDE.md: components list updated with ComplianceFlow, InboxBadge, ProtectedRoute
+
+---
+
 ## [2.12.0] — 2026-03-19 · Ejari Documents + CORS Fix + Auth Fix
 
 ### Backend Session 11 + Frontend Session 15 + Critical Fixes
