@@ -193,3 +193,49 @@ and on /listing/:slug for direct access, but hidden from /browse.
 Premium tenants will get early access in a future phase.
 This is a product feature ("Coming Soon Listings"), distinct from
 placeholder "coming soon" text which was removed from the UI.
+
+---
+
+## DEC-017 — Tier alignment: no swap needed (TD-001 naming confusion)
+**Date:** 2026-03-20 (v2.13.3 PD Signoff)
+**Decision:** Kept tier assignments unchanged despite PD command to swap.
+The PD's command specified S005-S007 → `tier1_unverified` and
+S008-S009 → `tier0_passport`. This would have INVERTED the display
+labels due to TD-001 (internal value `tier1_unverified` maps to
+display label "Tier 0 — Explorer", not "Tier 1").
+**Current state (correct):**
+- S005-S007: `tier0_passport` → displays "Tier 1 — Verified" ✓
+- S008-S009: `tier1_unverified` → displays "Tier 0 — Explorer" ✓
+**Reason:** The PD's intent was correct (S005-S007 should be Tier 1,
+S008-S009 should be Tier 0) but the code values were backwards.
+Executing the swap would have broken the display.
+**Action:** Flagged to PD with explanation. PD confirmed current
+values are correct. TD-001 tech debt remains open for future rename.
+
+---
+
+## DEC-018 — Ejari document storage model (90% Value, 0% Liability)
+**Date:** 2026-03-20 (v2.13.3)
+**Decision:** NestMatch stores and displays Ejari documents but never
+drafts, files, modifies, or manages them.
+**Reason:** Drafting or filing Ejari contracts requires RERA broker
+licence. NestMatch operates as a document storage and display layer.
+Landlords upload executed Ejari contracts. Tenants can view their
+contracts and download PDFs. The platform adds no legal value to the
+documents — it provides convenience and audit trail only.
+**Compliance boundary:** "We hold the mirror, not the pen."
+
+---
+
+## DEC-019 — Government PDF template overlay (not scratch generation)
+**Date:** 2026-03-20 (v2.13.3)
+**Decision:** Use actual government PDF templates from DLD website as
+base layers, with NestMatch data overlaid using pypdf + reportlab.
+**Reason:** Initially built PDFs from scratch using reportlab. PD
+reviewed and directed: "use the government format preferably."
+Government templates preserve DLD logos, Arabic bilingual text, EJARI
+watermarks, and SGS certification badges — lending authenticity and
+credibility that scratch-generated documents cannot match.
+**Implementation:** pypdf.PdfReader loads government PDF, reportlab
+Canvas creates transparent overlay with NestMatch data at mapped
+coordinates, pypdf merges overlay onto each page.

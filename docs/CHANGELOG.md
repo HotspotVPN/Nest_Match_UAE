@@ -3,23 +3,38 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
-## [2.13.3] — 2026-03-20 · DocuSign Banners, PDF Downloads, Sample Documents
+## [2.13.3] — 2026-03-20 · DocuSign Banners, PDF Downloads, Gov Templates, PD Signoff
 
-### Viewing agreement and Ejari document enhancements
+### Gate G6 — Pre-Demo Signoff (approved by Product Director)
 
 ### Added
+- Government-template PDF generation using actual DLD/Ejari PDFs as base templates
+  - pypdf + reportlab overlay engine (scripts/fill_govt_templates.py)
+  - Preserves DLD logos, Arabic bilingual text, EJARI watermarks, SGS badges
+  - DocuSign Digital Verification page appended to each document
 - ViewingAgreementModal: DocuSign verification banners
   - Green banner for fully_signed: "VERIFIED — Both Parties Signed" with dates
   - Blue banner for pending: "PENDING — Awaiting Signatures"
 - ViewingAgreementModal: PDF download handler for signed agreements
-- 7 sample PDF files in public/samples/:
-  - 5 Ejari certificate samples (EJ-2025/2026 series)
-  - 1 Ejari contract sample
-  - 1 DLD Viewing Agreement sample (NM-VA-2026-IEW01)
+- EjariDocumentsPage: DocuSign verified badges + PDF download buttons per card
+- ProfilePage: Ejari Documents section with active/expired contracts and PDF downloads
+- 8 sample PDF files in public/samples/:
+  - 3 Viewing Agreements (James Morrison, Aisha Patel fully signed; Sofia Kowalski pending)
+  - 5 Ejari Contracts (Priya/P010, Marcus/P010, Aisha/P011, James/P009 expired, Liam/P008)
+- Product Director Signoff Report (NestMatch_UAE_Product_Report_v2.13.3.docx)
 
 ### Changed
-- EjariDocumentsPage: updates
-- ProfilePage: updates
+- package.json: version aligned from 1.4.0 → 2.13.3
+- CLAUDE.md: PROJECT STATUS updated to v2.13.3, last session updated
+- README.md: already at v2.13.3 (confirmed)
+
+### Verified
+- Tier assignments confirmed correct: S005-S007 = tier0_passport (Tier 1 Verified), S008-S009 = tier1_unverified (Tier 0 Explorer)
+- S006 (Sofia) and S008 (Liam) confirmed as resident_role: 'residing' in mockData
+- npx tsc --noEmit: zero errors
+- grep mockStripeService/ContractManager: zero results
+- 15 canonical personas unchanged
+- 12 canonical properties unchanged
 
 ---
 

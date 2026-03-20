@@ -110,8 +110,8 @@ NestMatch UAE is a **compliance-first property discovery platform** for Dubai sh
 | Styling | Vanilla CSS + CSS variables |
 | Icons | lucide-react |
 | Routing | react-router-dom v7 |
-| Backend | Cloudflare Workers + Hono (deployed, 23+ endpoints) |
-| Database | Cloudflare D1 (SQLite at edge, 32 users + 14 properties seeded) |
+| Backend | Cloudflare Workers + Hono (deployed, 28+ endpoints) |
+| Database | Cloudflare D1 (SQLite at edge, 15 users + 12 properties, 24 tables) |
 | Storage | Cloudflare R2 (images, KYC docs, avatars) |
 | Frontend Deploy | Vercel (auto-deploy on push) |
 | Backend Deploy | Cloudflare Workers |

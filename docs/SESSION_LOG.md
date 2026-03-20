@@ -160,3 +160,47 @@ Post-migration UI improvements. Created UserBadge component for tier/role displa
 ### Commit
 - Version: v2.13.1
 - Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.13.2 LoginPage + DemoControls + Nav Polish
+
+### Summary
+LoginPage tier order corrected (Tier 2 → 1 → 0). All 15 personas in DemoControls with tier-grouped display and Residing/Searching badges. Navbar browse link for tenants, sign in/up for unauthenticated.
+
+### Commit
+- Version: v2.13.2
+- Pushed: Yes
+
+---
+
+## Session: 20 Mar 2026 — v2.13.3 DocuSign Banners, Gov Templates, PD Signoff
+
+### Summary
+Government-template PDF generation using actual DLD/Ejari PDFs as base templates. pypdf + reportlab overlay engine preserves DLD logos, Arabic text, EJARI watermarks, SGS badges. DocuSign Digital Verification page appended to each document. ViewingAgreementModal DocuSign banners (green for signed, blue for pending) + PDF download. EjariDocumentsPage DocuSign badges + PDF downloads. ProfilePage Ejari section. 8 sample PDFs generated. Product Director Signoff Report created (DOCX). package.json version aligned 1.4.0 → 2.13.3.
+
+### Gate G6 — Pre-Demo Signoff
+- Product Director approved development stage signoff
+- Tier assignments verified correct (no swap needed — PD command had TD-001 naming confusion)
+- S006 (Sofia) and S008 (Liam) confirmed as residing in mockData
+
+### Files Created
+- scripts/fill_govt_templates.py — government template overlay engine
+- scripts/generate_all_samples.py — master PDF generator
+- public/samples/*.pdf — 8 government-template PDFs
+- NestMatch_UAE_Product_Report_v2.13.3.docx — PD signoff report
+
+### Files Modified
+- src/components/ViewingAgreementModal.tsx — DocuSign banners + PDF download
+- src/pages/EjariDocumentsPage.tsx — DocuSign badges + PDF download buttons
+- src/pages/ProfilePage.tsx — Ejari Documents section
+- package.json — version 1.4.0 → 2.13.3
+- CLAUDE.md — version v2.13.0 → v2.13.3, last session updated
+- docs/CHANGELOG.md — v2.13.3 entry with full detail
+- docs/SESSION_LOG.md — this entry
+- docs/PRODUCT_ROADMAP.md — completed items added
+- docs/DECISIONS.md — DEC-017 tier alignment decision
+
+### Commit
+- Version: v2.13.3
+- Pushed: Yes

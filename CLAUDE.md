@@ -5,8 +5,8 @@
 | Field | Value |
 |-------|-------|
 | **Gate** | G6 — Pre-Demo (feature development complete) |
-| **Version** | v2.13.0 |
-| **Last Session** | 20 Mar 2026 — ID Format Migration (48+ columns, 22 tables) |
+| **Version** | v2.13.3 |
+| **Last Session** | 20 Mar 2026 — DocuSign Banners, PDF Downloads, Gov Templates, PD Signoff Report |
 | **Blockers** | None — demo ready |
 | **Next Priority** | QA testing, then Phase 2C (DocuSign integration) |
 | **Risk Level** | 🟢 Green — no licence-requiring features in scope |
@@ -30,7 +30,7 @@ Backend: Cloudflare Workers + Hono + D1 + R2.
 - Backend: https://nest-match-uae.pushkar-nagela.workers.dev
 - Repo: https://github.com/HotspotVPN/Nest_Match_UAE
 
-**Current version:** v2.13.0
+**Current version:** v2.13.3
 
 ---
 

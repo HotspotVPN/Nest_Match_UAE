@@ -1,8 +1,8 @@
 # Product Roadmap — NestMatch UAE
 
-## Current: v2.13.3 — Investor Demo (March 2026)
+## Current: v2.13.3 — Investor Demo (March 2026) — Gate G6 SIGNED OFF ✓
 
-### Completed
+### Completed (Core Platform)
 - [x] UAE-specific type system and mock data (15 districts, 12+ listings)
 - [x] Three-tier verification: UAE PASS, passport KYC, unverified
 - [x] Browse page with district filters, occupancy bars, transport chips
@@ -19,6 +19,17 @@
 - [x] Viewing analytics dashboard (/analytics)
 - [x] LeaseHandoffCard replacing ContractManagerPage
 - [x] Full applicant profile visibility (blind match removed)
+
+### Completed (v2.13.3 — Document Generation + PD Signoff)
+- [x] Government-template PDF generation (DLD Form 85 + Ejari Unified Tenancy)
+- [x] pypdf + reportlab overlay preserving DLD logos, Arabic text, EJARI watermarks
+- [x] DocuSign Digital Verification page appended to all generated PDFs
+- [x] ViewingAgreementModal: DocuSign banners (green=signed, blue=pending) + PDF download
+- [x] EjariDocumentsPage: DocuSign badges + PDF download buttons
+- [x] ProfilePage: Ejari Documents section with active/expired contracts
+- [x] 8 sample PDFs generated from government templates
+- [x] package.json version aligned to v2.13.3
+- [x] Product Director Signoff Report (DOCX) — Gate G6 approved
 
 ### Completed (Session 5)
 - [x] Three-tier verification UI overhaul
