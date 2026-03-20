@@ -7,6 +7,7 @@ import {
     getUserById as mockGetUserById, getListingById as mockGetListingById,
     getViewingsForUser as mockGetViewingsForUser, getPaymentsForUser as mockGetPaymentsForUser,
     getEjariForUser as mockGetEjariForUser,
+    getInboxForUser as mockGetInboxForUser,
 } from '@/data/mockData';
 
 // ─── Configuration ───────────────────────────────────────────
@@ -532,24 +533,36 @@ export const api = {
     },
 
     // ── Inbox ──────────────────────────────────────────────────
-    getInbox: async (category?: string): Promise<{
+    getInbox: async (category?: string, currentUserId?: string): Promise<{
         messages: any[]; unread: { action: number; message: number; update: number; total: number };
     }> => {
         const isUp = await checkBackend();
-        if (!isUp) return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+        if (!isUp) {
+            if (!currentUserId) return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+            return mockGetInboxForUser(currentUserId, category);
+        }
 
         const params = category ? `?category=${category}` : '';
         const res = await apiFetch<any>(`/api/inbox${params}`);
-        if (!res.ok) return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+        if (!res.ok) {
+            if (currentUserId) return mockGetInboxForUser(currentUserId, category);
+            return { messages: [], unread: { action: 0, message: 0, update: 0, total: 0 } };
+        }
         return { messages: res.data.messages || [], unread: res.data.unread || { action: 0, message: 0, update: 0, total: 0 } };
     },
 
-    getUnreadCount: async (): Promise<number> => {
+    getUnreadCount: async (currentUserId?: string): Promise<number> => {
         const isUp = await checkBackend();
-        if (!isUp) return 0;
+        if (!isUp) {
+            if (currentUserId) return mockGetInboxForUser(currentUserId).unread.total;
+            return 0;
+        }
 
         const res = await apiFetch<{ count: number }>('/api/inbox/unread-count');
-        if (!res.ok) return 0;
+        if (!res.ok) {
+            if (currentUserId) return mockGetInboxForUser(currentUserId).unread.total;
+            return 0;
+        }
         return res.data.count || 0;
     },
 

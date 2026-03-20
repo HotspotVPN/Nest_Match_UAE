@@ -162,9 +162,33 @@ export default function BrowsePage() {
             }
             if (selectedTags.length > 0 && !selectedTags.some(t => l.tags?.includes(t))) return false;
             if (searchQuery) {
-                const haystack = `${l.title} ${l.address} ${l.district} ${l.description} ${(l.tags || []).join(' ')}`.toLowerCase();
+                const queryLower = searchQuery.toLowerCase();
+
+                // Smart price detection: "under 1000", "below 2000", "max 1500", "budget for 800", "upto 3000", "around 2000"
+                const priceMatch = queryLower.match(/(?:under|below|max|budget|upto|up\s*to|less\s*than|around|within|at)\s*(?:for\s*|of\s*|at\s*)?(?:aed\s*)?(\d[\d,]*)/);
+                const priceCeiling = priceMatch ? parseInt(priceMatch[1].replace(/,/g, '')) : null;
+
+                // If price intent detected, apply price ceiling filter
+                if (priceCeiling !== null && l.rent_per_room > priceCeiling) return false;
+
+                // Enriched haystack: add computed price-tier labels so "budget" matches all affordable listings
+                const priceLabel = l.rent_per_room <= 1000 ? 'budget affordable cheap low-cost economy'
+                    : l.rent_per_room <= 2000 ? 'mid-range moderate mid'
+                    : l.rent_per_room <= 3000 ? 'premium upscale'
+                    : 'luxury high-end exclusive';
+                const haystack = `${l.title} ${l.address} ${l.district} ${l.description} ${(l.tags || []).join(' ')} ${priceLabel} ${l.rent_per_room}`.toLowerCase();
+
+                // Base stop words — always filtered out
                 const stopWords = ['in', 'a', 'the', 'for', 'at', 'of', 'near', 'with', 'rooms', 'room', 'shared'];
-                const words = searchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 1 && !stopWords.includes(w));
+                // When price intent detected, also filter out the price-pattern words from keyword matching
+                const priceStopWords = priceCeiling !== null ? ['under', 'below', 'max', 'upto', 'up', 'to', 'less', 'than', 'aed', 'around', 'within', 'budget'] : [];
+                const allStopWords = [...stopWords, ...priceStopWords];
+
+                const words = queryLower.split(/\s+/).filter(w =>
+                    w.length > 1 && !allStopWords.includes(w) && !(priceCeiling !== null && /^\d[\d,]*$/.test(w))
+                );
+
+                // Only apply keyword filter if there are non-price keywords remaining
                 if (words.length > 0 && !words.some(w => haystack.includes(w))) return false;
             }
             return true;

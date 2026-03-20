@@ -349,7 +349,7 @@ export const listings: Listing[] = [
         amenities: ['Balcony', 'Gym', 'Wi-Fi', 'Central AC'], house_rules: [], bills_included: true, deposit: 800,
         current_roommates: ['S006'],
         occupancy_status: [{ room_number: 1, tenant_id: 'S006', status: 'occupied' }, { room_number: 2, tenant_id: null, status: 'available' }, { room_number: 3, tenant_id: null, status: 'available' }, { room_number: 4, tenant_id: null, status: 'available' }],
-        tags: ['private-room', 'dafza'], listing_status: 'active', makaniNumber: '3344556677', trakheesiPermit: 'TRAK-2025-AQ-123', municipalityPermit: 'DM-SH-2026-AQ1',
+        tags: ['private-room', 'budget', 'dafza', 'metro-access'], listing_status: 'active', makaniNumber: '3344556677', trakheesiPermit: 'TRAK-2025-AQ-123', municipalityPermit: 'DM-SH-2026-AQ1',
         maxLegalOccupancy: 4, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [{ label: 'DAFZA Metro', type: 'metro', walk_time: '8m', lines: ['Green Line'], line_color: '#009639' }], rera_escrow_verified: true,
         location: { lat: 25.267, lng: 55.378, nearby_amenities: ['DAFZA'], area_description: 'Al Qusais — great for freezone workers.' },
@@ -365,7 +365,7 @@ export const listings: Listing[] = [
         amenities: ['En-suite', 'Balcony', 'Wi-Fi'], house_rules: ['Professionals only'], bills_included: false, bills_breakdown: 'DEWA shared', deposit: 1000,
         current_roommates: ['S004'],
         occupancy_status: [{ room_number: 1, tenant_id: 'S004', status: 'occupied' }, { room_number: 2, tenant_id: null, status: 'available' }],
-        tags: ['private-room', 'bur-dubai'], listing_status: 'active', makaniNumber: '4455667788', trakheesiPermit: 'TRAK-2025-BD-123', municipalityPermit: 'DM-SH-2026-BD1',
+        tags: ['private-room', 'budget', 'en-suite', 'bur-dubai', 'metro-access'], listing_status: 'active', makaniNumber: '4455667788', trakheesiPermit: 'TRAK-2025-BD-123', municipalityPermit: 'DM-SH-2026-BD1',
         maxLegalOccupancy: 2, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [{ label: 'ADCB Metro', type: 'metro', walk_time: '6m', lines: ['Red Line'], line_color: '#E21836' }], rera_escrow_verified: true,
         location: { lat: 25.250, lng: 55.300, nearby_amenities: ['BurJuman'], area_description: 'Bur Dubai — historic and incredibly well-connected.' },
@@ -379,7 +379,7 @@ export const listings: Listing[] = [
         amenities: ['Gym', 'Pool', 'Parking'], house_rules: [], bills_included: true, deposit: 1200,
         current_roommates: [],
         occupancy_status: [{ room_number: 1, tenant_id: null, status: 'available' }, { room_number: 2, tenant_id: null, status: 'available' }],
-        tags: ['al-nahda', 'new-building'], listing_status: 'active', makaniNumber: '5566778899', trakheesiPermit: 'TRAK-2025-AN-123', municipalityPermit: 'DM-SH-2026-AN1',
+        tags: ['private-room', 'al-nahda', 'new-building', 'metro-access'], listing_status: 'active', makaniNumber: '5566778899', trakheesiPermit: 'TRAK-2025-AN-123', municipalityPermit: 'DM-SH-2026-AN1',
         maxLegalOccupancy: 2, currentOccupants: 0, isActive: true, isApiVerified: true,
         transport_chips: [{ label: 'Stadium Metro', type: 'metro', walk_time: '15m', lines: ['Green Line'], line_color: '#009639' }], rera_escrow_verified: true,
         location: { lat: 25.291, lng: 55.364, nearby_amenities: ['Sahara Centre'], area_description: 'Al Nahda — great value on the border.' },
@@ -393,7 +393,7 @@ export const listings: Listing[] = [
         amenities: ['Community Pool', 'Tennis Court', 'Metro Access'], house_rules: [], bills_included: true, deposit: 1500,
         current_roommates: ['S003'],
         occupancy_status: [{ room_number: 1, tenant_id: 'S003', status: 'occupied' }, { room_number: 2, tenant_id: null, status: 'available' }],
-        tags: ['discovery-gardens', 'metro-access'], listing_status: 'active', makaniNumber: '6677889900', trakheesiPermit: 'TRAK-2025-DG-123', municipalityPermit: 'DM-SH-2026-DG1',
+        tags: ['private-room', 'discovery-gardens', 'metro-access'], listing_status: 'active', makaniNumber: '6677889900', trakheesiPermit: 'TRAK-2025-DG-123', municipalityPermit: 'DM-SH-2026-DG1',
         maxLegalOccupancy: 2, currentOccupants: 1, isActive: true, isApiVerified: true,
         transport_chips: [{ label: 'Discovery Gardens Metro', type: 'metro', walk_time: '4m', lines: ['Red Line'], line_color: '#E21836' }], rera_escrow_verified: true,
         location: { lat: 25.040, lng: 55.140, nearby_amenities: ['Ibn Battuta Mall'], area_description: 'Discovery Gardens — lush, green, affordable.' },
@@ -423,7 +423,7 @@ export const listings: Listing[] = [
         amenities: ['Pool', 'Gym', 'Covered Parking'], house_rules: [], bills_included: true, deposit: 2200,
         current_roommates: [],
         occupancy_status: [{ room_number: 1, tenant_id: null, status: 'available' }, { room_number: 2, tenant_id: null, status: 'available' }],
-        tags: ['private-room', 'dso'], listing_status: 'active', makaniNumber: '8899001122', trakheesiPermit: 'TRAK-2025-DSO-123', municipalityPermit: 'DM-SH-2026-DS1',
+        tags: ['private-room', 'dso', 'furnished'], listing_status: 'active', makaniNumber: '8899001122', trakheesiPermit: 'TRAK-2025-DSO-123', municipalityPermit: 'DM-SH-2026-DS1',
         maxLegalOccupancy: 2, currentOccupants: 0, isActive: true, isApiVerified: true,
         transport_chips: [{ label: '320 Bus', type: 'bus', walk_time: '1m', lines: ['320'] }], rera_escrow_verified: true,
         location: { lat: 25.120, lng: 55.380, nearby_amenities: ['Silicon Oasis Mall'], area_description: 'DSO — the tech hub of Dubai.' },
@@ -522,14 +522,24 @@ export const viewingBookings: ViewingBooking[] = [
         status: 'CONFIRMED', created_at: '2026-03-15', updated_at: '2026-03-16',
     },
     {
-        id: 'vb-priya-2', property_id: 'P011', searcher_id: 'S001', landlord_id: 'L002',
+        id: 'vb-ravi-1', property_id: 'P011', searcher_id: 'S007', landlord_id: 'L002',
         requested_date: '2026-03-25T14:00:00Z', time_slot: '2:00 PM - 2:30 PM',
         status: 'PENDING', created_at: '2026-03-17', updated_at: '2026-03-17',
     },
     {
         id: 'vb-priya-3', property_id: 'P010', searcher_id: 'S001', landlord_id: 'L001',
         requested_date: '2026-03-10T11:00:00Z', time_slot: '11:00 AM - 11:30 AM',
-        status: 'COMPLETED', resolution_date: '2026-03-10', created_at: '2026-03-05', updated_at: '2026-03-10',
+        status: 'COMPLETED', resolution_date: '2026-03-10',
+        agreement: {
+            id: 'va-priya-1', viewing_id: 'vb-priya-3', agreement_number: 'NM-VA-2026-PRI01',
+            generated_at: '2026-03-05T09:00:00Z',
+            signatures: [
+                { signer_id: 'L001', signer_name: 'Ahmed Al Maktoum', signer_role: 'broker', signed_at: '2026-03-05T10:00:00Z', signature_data: 'data:image/png;base64,demo', ip_simulated: '192.168.1.50' },
+                { signer_id: 'S001', signer_name: 'Priya Sharma', signer_role: 'tenant', signed_at: '2026-03-05T14:00:00Z', signature_data: 'data:image/png;base64,demo', ip_simulated: '192.168.1.70' },
+            ],
+            status: 'fully_signed',
+        },
+        created_at: '2026-03-05', updated_at: '2026-03-10',
     },
     {
         id: 'vb-aisha-1', property_id: 'P008', searcher_id: 'S003', landlord_id: 'L001',
@@ -609,11 +619,25 @@ export const chatChannels: ChatChannel[] = [
         last_message: { id: 'msg-pa-4', channel_id: 'ch-priya-ahmed', sender_id: 'L001', message_type: 'text', content: 'Viewing confirmed for Saturday at 10 AM. Please bring your Emirates ID.', read_by: ['L001'], created_at: '2026-03-17T10:30:00Z' },
     },
     {
-        id: 'ch-priya-fatima', listing_id: 'P011', name: 'JLT — Priya & Fatima',
+        id: 'ch-ravi-fatima', listing_id: 'P011', name: 'JLT — Ravi & Fatima',
         channel_type: 'viewing',
-        participants: ['S001', 'L002'],
+        participants: ['S007', 'L002'],
         created_at: '2026-03-17',
-        last_message: { id: 'msg-pf-2', channel_id: 'ch-priya-fatima', sender_id: 'L002', message_type: 'text', content: 'I will review your viewing request and get back to you shortly.', read_by: ['L002', 'S001'], created_at: '2026-03-17T09:00:00Z' },
+        last_message: { id: 'msg-rf-2', channel_id: 'ch-ravi-fatima', sender_id: 'L002', message_type: 'text', content: 'I will review your viewing request and get back to you shortly.', read_by: ['L002', 'S007'], created_at: '2026-03-17T09:00:00Z' },
+    },
+    {
+        id: 'ch-sofia-ahmed', listing_id: 'P012', name: 'Marina — Sofia & Ahmed',
+        channel_type: 'viewing',
+        participants: ['S006', 'L001'],
+        created_at: '2026-03-16',
+        last_message: { id: 'msg-sa-3', channel_id: 'ch-sofia-ahmed', sender_id: 'L001', message_type: 'text', content: 'DLD Viewing Agreement has been generated. Please sign when ready — the viewing is on 24 March.', read_by: ['L001'], created_at: '2026-03-17T12:00:00Z' },
+    },
+    {
+        id: 'ch-james-khalid', listing_id: 'P012', name: 'Marina — James & Khalid',
+        channel_type: 'viewing',
+        participants: ['S004', 'A001'],
+        created_at: '2026-03-10',
+        last_message: { id: 'msg-jk-3', channel_id: 'ch-james-khalid', sender_id: 'A001', message_type: 'text', content: 'Agreement is fully signed. See you on 20 March at 2 PM. Bring your Emirates ID.', read_by: ['A001', 'S004'], created_at: '2026-03-12T09:00:00Z' },
     },
     {
         id: 'ch-aisha-ahmed', listing_id: 'P008', name: 'DSO — Aisha & Ahmed',
@@ -646,9 +670,17 @@ export const chatMessages: ChatMessage[] = [
     { id: 'msg-pa-2', channel_id: 'ch-priya-ahmed', sender_id: 'L001', message_type: 'text', content: 'Yes, Room 3 is available. Would you like to schedule a viewing?', read_by: ['S001', 'L001'], created_at: '2026-03-15T14:15:00Z' },
     { id: 'msg-pa-3', channel_id: 'ch-priya-ahmed', sender_id: 'S001', message_type: 'text', content: 'Yes please! Saturday morning works for me.', read_by: ['S001', 'L001'], created_at: '2026-03-15T14:20:00Z' },
     { id: 'msg-pa-4', channel_id: 'ch-priya-ahmed', sender_id: 'L001', message_type: 'text', content: 'Viewing confirmed for Saturday at 10 AM. Please bring your Emirates ID.', read_by: ['L001'], created_at: '2026-03-17T10:30:00Z' },
-    // ── Viewing Chat: Priya ↔ Fatima (JLT enquiry) ──
-    { id: 'msg-pf-1', channel_id: 'ch-priya-fatima', sender_id: 'S001', message_type: 'text', content: 'Hi Fatima, I submitted a viewing request for the JLT property.', read_by: ['S001', 'L002'], created_at: '2026-03-17T08:30:00Z' },
-    { id: 'msg-pf-2', channel_id: 'ch-priya-fatima', sender_id: 'L002', message_type: 'text', content: 'I will review your viewing request and get back to you shortly.', read_by: ['L002', 'S001'], created_at: '2026-03-17T09:00:00Z' },
+    // ── Viewing Chat: Ravi ↔ Fatima (JLT enquiry) ──
+    { id: 'msg-rf-1', channel_id: 'ch-ravi-fatima', sender_id: 'S007', message_type: 'text', content: 'Hi Fatima, I saw the JLT Cluster D listing and submitted a viewing request. The location is ideal for my work commute.', read_by: ['S007', 'L002'], created_at: '2026-03-17T08:30:00Z' },
+    { id: 'msg-rf-2', channel_id: 'ch-ravi-fatima', sender_id: 'L002', message_type: 'text', content: 'I will review your viewing request and get back to you shortly.', read_by: ['L002', 'S007'], created_at: '2026-03-17T09:00:00Z' },
+    // ── Viewing Chat: Sofia ↔ Ahmed (Marina enquiry) ──
+    { id: 'msg-sa-1', channel_id: 'ch-sofia-ahmed', sender_id: 'S006', message_type: 'text', content: 'Hi Ahmed, I would love to see the Marina en-suite. I currently live in Al Qusais but looking to upgrade. Is the sea view room available?', read_by: ['S006', 'L001'], created_at: '2026-03-16T10:00:00Z' },
+    { id: 'msg-sa-2', channel_id: 'ch-sofia-ahmed', sender_id: 'L001', message_type: 'text', content: 'Hi Sofia! Yes, the sea view room is available. I have confirmed your viewing for 24 March at 4 PM. The DLD agreement will be sent shortly.', read_by: ['S006', 'L001'], created_at: '2026-03-16T11:00:00Z' },
+    { id: 'msg-sa-3', channel_id: 'ch-sofia-ahmed', sender_id: 'L001', message_type: 'text', content: 'DLD Viewing Agreement has been generated. Please sign when ready — the viewing is on 24 March.', read_by: ['L001'], created_at: '2026-03-17T12:00:00Z' },
+    // ── Viewing Chat: James ↔ Khalid (Marina viewing) ──
+    { id: 'msg-jk-1', channel_id: 'ch-james-khalid', sender_id: 'S004', message_type: 'text', content: 'Hi Khalid, I am interested in the Marina Princess Tower listing. When can I view it?', read_by: ['S004', 'A001'], created_at: '2026-03-10T09:00:00Z' },
+    { id: 'msg-jk-2', channel_id: 'ch-james-khalid', sender_id: 'A001', message_type: 'text', content: 'Great timing James! I have availability on 20 March at 2 PM. Let me generate the DLD agreement.', read_by: ['S004', 'A001'], created_at: '2026-03-10T10:00:00Z' },
+    { id: 'msg-jk-3', channel_id: 'ch-james-khalid', sender_id: 'A001', message_type: 'text', content: 'Agreement is fully signed. See you on 20 March at 2 PM. Bring your Emirates ID.', read_by: ['A001', 'S004'], created_at: '2026-03-12T09:00:00Z' },
     // ── Viewing Chat: Aisha ↔ Ahmed (DSO enquiry) ──
     { id: 'msg-aa-1', channel_id: 'ch-aisha-ahmed', sender_id: 'L001', message_type: 'text', content: 'Welcome Aisha! Your viewing at the DSO property has been confirmed.', read_by: ['L001', 'S003'], created_at: '2026-03-14T11:00:00Z' },
     { id: 'msg-aa-2', channel_id: 'ch-aisha-ahmed', sender_id: 'S003', message_type: 'text', content: 'Thank you! Looking forward to it.', read_by: ['L001', 'S003'], created_at: '2026-03-14T11:05:00Z' },
@@ -779,6 +811,168 @@ export const ejariDocuments: MockEjariDocument[] = [
 /** Get ejari documents visible to a given user (landlord sees uploaded, tenant sees own) */
 export function getEjariForUser(userId: string): MockEjariDocument[] {
     return ejariDocuments.filter(d => d.uploaded_by === userId || d.tenant_user_id === userId);
+}
+
+// ─── INBOX MESSAGES (Mock Fallback) ─────────────────────────
+export interface MockInboxMessage {
+    id: string;
+    user_id: string; // recipient
+    category: 'action' | 'message' | 'update';
+    type: string;
+    priority: 'high' | 'normal' | 'low';
+    title: string;
+    body: string;
+    cta_label?: string;
+    cta_link?: string;
+    // For agreement-related actions, store viewing_id so InboxPage can open the modal
+    viewing_id?: string;
+    agreement_number?: string;
+    sender_id?: string;
+    read_at: string | null;
+    created_at: string;
+}
+
+export const mockInboxMessages: MockInboxMessage[] = [
+    // ── Priya Sharma (S001) ──────────────────────────────────
+    // COMPLETED viewing at Business Bay → signed agreement ready
+    {
+        id: 'inbox-priya-1', user_id: 'S001', category: 'action', type: 'agreement_signed',
+        priority: 'normal',
+        title: 'Signed DLD Agreement Ready',
+        body: 'Your DLD Viewing Agreement for Premium En-Suite — Business Bay Canal View has been fully signed by both parties. Download your copy.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'vb-priya-3', agreement_number: 'NM-VA-2026-PRI01',
+        sender_id: 'L001', read_at: null, created_at: '2026-03-05T15:00:00Z',
+    },
+    // CONFIRMED viewing at Marina → sign agreement action
+    {
+        id: 'inbox-priya-2', user_id: 'S001', category: 'action', type: 'sign_agreement',
+        priority: 'high',
+        title: 'Sign Viewing Agreement',
+        body: 'Your viewing at Ultra-Premium Marina En-Suite — Ocean View has been confirmed. Please sign the DLD Viewing Agreement to proceed.',
+        cta_label: 'Sign Now', cta_link: '/viewings',
+        viewing_id: 'vb-priya-1',
+        sender_id: 'L001', read_at: null, created_at: '2026-03-16T09:00:00Z',
+    },
+    // PENDING viewing at JLT → request submitted update
+    {
+        id: 'inbox-priya-3', user_id: 'S001', category: 'update', type: 'viewing_requested',
+        priority: 'normal',
+        title: 'Viewing Request Submitted',
+        body: 'Your viewing request for Luxury JLT Private Room — Cluster D on 25 Mar 2026 at 2:00 PM has been submitted. You will be notified once the landlord responds.',
+        sender_id: 'L002', read_at: '2026-03-17T10:00:00Z', created_at: '2026-03-17T08:00:00Z',
+    },
+    // Viewing completed update for Business Bay
+    {
+        id: 'inbox-priya-4', user_id: 'S001', category: 'update', type: 'viewing_completed',
+        priority: 'normal',
+        title: 'Viewing Completed',
+        body: 'Your viewing at Premium En-Suite — Business Bay Canal View on 10 Mar 2026 has been marked as completed. Your signed DLD agreement is available for download.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'vb-priya-3', agreement_number: 'NM-VA-2026-PRI01',
+        sender_id: 'L001', read_at: null, created_at: '2026-03-10T12:00:00Z',
+    },
+
+    // ── James Morrison (S004) ────────────────────────────────
+    // FULLY_SIGNED at Marina → signed agreement ready
+    {
+        id: 'inbox-james-1', user_id: 'S004', category: 'action', type: 'agreement_signed',
+        priority: 'normal',
+        title: 'Signed DLD Agreement Ready',
+        body: 'Your DLD Viewing Agreement for Ultra-Premium Marina En-Suite — Ocean View has been fully signed by both parties. Download your copy.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'view-1', agreement_number: 'NM-VA-2026-IEW01',
+        sender_id: 'A001', read_at: null, created_at: '2026-03-11T15:00:00Z',
+    },
+    // Viewing confirmed update
+    {
+        id: 'inbox-james-2', user_id: 'S004', category: 'update', type: 'viewing_confirmed',
+        priority: 'normal',
+        title: 'Viewing Confirmed',
+        body: 'Your viewing at Ultra-Premium Marina En-Suite — Ocean View on 20 Mar 2026 at 2:00 PM has been confirmed by the landlord.',
+        cta_label: 'View Details', cta_link: '/viewings',
+        viewing_id: 'view-1',
+        sender_id: 'A001', read_at: '2026-03-11T08:00:00Z', created_at: '2026-03-10T16:00:00Z',
+    },
+
+    // ── Aisha Patel (S003) ───────────────────────────────────
+    // FULLY_SIGNED at DSO → signed agreement ready
+    {
+        id: 'inbox-aisha-1', user_id: 'S003', category: 'action', type: 'agreement_signed',
+        priority: 'normal',
+        title: 'Signed DLD Agreement Ready',
+        body: 'Your DLD Viewing Agreement for Private Room — Dubai Silicon Oasis has been fully signed by both parties. Download your copy.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'vb-aisha-1', agreement_number: 'NM-VA-2026-ISH01',
+        sender_id: 'L001', read_at: null, created_at: '2026-03-15T15:00:00Z',
+    },
+    // PENDING_LANDLORD at DSO → request submitted
+    {
+        id: 'inbox-aisha-2', user_id: 'S003', category: 'update', type: 'viewing_requested',
+        priority: 'normal',
+        title: 'Viewing Request Submitted',
+        body: 'Your viewing request for Private Room — Dubai Silicon Oasis on 22 Mar 2026 at 10:00 AM has been submitted. Awaiting landlord approval.',
+        sender_id: 'L001', read_at: '2026-03-12T09:00:00Z', created_at: '2026-03-11T10:00:00Z',
+    },
+
+    // ── Sofia Kowalski (S006) ────────────────────────────────
+    // AGREEMENT_SENT at Marina → sign agreement action
+    {
+        id: 'inbox-sofia-1', user_id: 'S006', category: 'action', type: 'sign_agreement',
+        priority: 'high',
+        title: 'Sign Viewing Agreement',
+        body: 'Your DLD Viewing Agreement for Ultra-Premium Marina En-Suite — Ocean View has been generated. Please sign the agreement to complete your viewing booking.',
+        cta_label: 'Sign Now', cta_link: '/viewings',
+        viewing_id: 'vb-sofia-1', agreement_number: 'NM-VA-2026-SOF01',
+        sender_id: 'L001', read_at: null, created_at: '2026-03-17T12:00:00Z',
+    },
+
+    // ── Landlord: Ahmed Al Maktoum (L001) ────────────────────
+    {
+        id: 'inbox-ahmed-1', user_id: 'L001', category: 'action', type: 'viewing_request',
+        priority: 'high',
+        title: 'New Viewing Request',
+        body: 'Aisha Patel has requested a viewing for Private Room — Dubai Silicon Oasis on 22 Mar 2026 at 10:00 AM. Please approve or decline.',
+        cta_label: 'Review', cta_link: '/viewings',
+        viewing_id: 'view-2',
+        sender_id: 'S003', read_at: null, created_at: '2026-03-11T10:30:00Z',
+    },
+    {
+        id: 'inbox-ahmed-2', user_id: 'L001', category: 'update', type: 'agreement_signed',
+        priority: 'normal',
+        title: 'Agreement Fully Signed — James Morrison',
+        body: 'The DLD Viewing Agreement (NM-VA-2026-IEW01) for Ultra-Premium Marina En-Suite has been signed by James Morrison. Both parties have signed.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'view-1', agreement_number: 'NM-VA-2026-IEW01',
+        sender_id: 'S004', read_at: '2026-03-11T16:00:00Z', created_at: '2026-03-11T14:35:00Z',
+    },
+    {
+        id: 'inbox-ahmed-3', user_id: 'L001', category: 'update', type: 'agreement_signed',
+        priority: 'normal',
+        title: 'Agreement Fully Signed — Aisha Patel',
+        body: 'The DLD Viewing Agreement (NM-VA-2026-ISH01) for Private Room — Dubai Silicon Oasis has been signed by Aisha Patel. Both parties have signed.',
+        cta_label: 'View Agreement', cta_link: '/viewings',
+        viewing_id: 'vb-aisha-1', agreement_number: 'NM-VA-2026-ISH01',
+        sender_id: 'S003', read_at: null, created_at: '2026-03-15T14:05:00Z',
+    },
+];
+
+/** Get inbox messages for a specific user, optionally filtered by category */
+export function getInboxForUser(userId: string, category?: string): {
+    messages: MockInboxMessage[];
+    unread: { action: number; message: number; update: number; total: number };
+} {
+    const userMessages = mockInboxMessages.filter(m => m.user_id === userId);
+    const filtered = category ? userMessages.filter(m => m.category === category) : userMessages;
+    // Sort by created_at descending (newest first)
+    filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const unreadAction = userMessages.filter(m => m.category === 'action' && !m.read_at).length;
+    const unreadMessage = userMessages.filter(m => m.category === 'message' && !m.read_at).length;
+    const unreadUpdate = userMessages.filter(m => m.category === 'update' && !m.read_at).length;
+    return {
+        messages: filtered,
+        unread: { action: unreadAction, message: unreadMessage, update: unreadUpdate, total: unreadAction + unreadMessage + unreadUpdate },
+    };
 }
 
 // ─── Chat Auto-Creation (Priority 3) ────────────────────────

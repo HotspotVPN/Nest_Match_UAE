@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMatch UAE — Product Journey Map</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-title {
+            padding: 0 20px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            border-left-color: #f59e0b;
+        }
+
+        .nav-item.active {
+            background: #334155;
+            border-left-color: #f59e0b;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .header-meta {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .card-toggle {
+            font-size: 20px;
+            color: #f59e0b;
+        }
+
+        .card-content {
+            display: none;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .card-content.open {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .badge-gold {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-slate {
+            background: rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tier-badge-tier2 {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .tier-badge-tier1 {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .tier-badge-tier0 {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .property-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .property-card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        .property-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .property-meta {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .occupancy-bar {
+            background: #0f172a;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .occupancy-fill {
+            background: linear-gradient(90deg, #f59e0b, #22c55e);
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .occupancy-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .state-machine {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 20px;
+            background: #1e293b;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .state-node {
+            background: #334155;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: #cbd5e1;
+        }
+
+        .state-node.active {
+            background: #f59e0b;
+            color: #0f172a;
+            border-color: #f59e0b;
+        }
+
+        .state-arrow {
+            color: #475569;
+            font-size: 20px;
+        }
+
+        .search-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #e2e8f0;
+            width: 100%;
+        }
+
+        .search-box::placeholder {
+            color: #64748b;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: #334155;
+        }
+
+        .table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            border-bottom: 1px solid #475569;
+        }
+
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid #334155;
+            font-size: 13px;
+        }
+
+        .table tr:hover {
+            background: #334155;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .comparison-cell {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .comparison-cell.yes {
+            border-left: 3px solid #22c55e;
+        }
+
+        .comparison-cell.no {
+            border-left: 3px solid #ef4444;
+        }
+
+        .comparison-cell.header {
+            background: #334155;
+            font-weight: 700;
+            color: #f59e0b;
+            text-align: center;
+        }
+
+        .tier-pyramid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tier-level {
+            background: #1e293b;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .tier-level.tier2 {
+            border-left-color: #f59e0b;
+        }
+
+        .tier-level.tier1 {
+            border-left-color: #3b82f6;
+        }
+
+        .tier-level.tier0 {
+            border-left-color: #22c55e;
+        }
+
+        .tier-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .tier-name.tier2 {
+            color: #f59e0b;
+        }
+
+        .tier-name.tier1 {
+            color: #3b82f6;
+        }
+
+        .tier-name.tier0 {
+            color: #22c55e;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #1e293b;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .flow-step-number {
+            background: #f59e0b;
+            color: #0f172a;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .flow-step-text {
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .nav-item {
+                padding: 12px;
+                text-align: center;
+                border-left: 0;
+                border-bottom: 3px solid transparent;
+            }
+
+            .nav-item.active {
+                border-bottom-color: #f59e0b;
+                border-left: 0;
+            }
+
+            .metric-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .property-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar scrollbar">
+            <div class="sidebar-title">NestMatch UAE</div>
+            <div class="nav-item active" onclick="showSection('summary')">📊 Executive Summary</div>
+            <div class="nav-item" onclick="showSection('personas')">👥 All 15 Personas</div>
+            <div class="nav-item" onclick="showSection('properties')">🏠 12 Properties</div>
+            <div class="nav-item" onclick="showSection('viewings')">👁️ Viewing States</div>
+            <div class="nav-item" onclick="showSection('journeys')">🗺️ User Journeys</div>
+            <div class="nav-item" onclick="showSection('tiers')">🔐 Tier System</div>
+            <div class="nav-item" onclick="showSection('onboarding')">📋 Onboarding</div>
+            <div class="nav-item" onclick="showSection('chat')">💬 Chat & Comms</div>
+            <div class="nav-item" onclick="showSection('pages')">📄 Pages Map</div>
+            <div class="nav-item" onclick="showSection('competitive')">⚡ Differentiation</div>
+            <div class="nav-item" onclick="showSection('agreements')">📑 Agreements</div>
+            <div class="nav-item" onclick="showSection('architecture')">🏗️ Architecture</div>
+        </div>
+
+        <div class="main">
+            <div class="header">
+                <div>
+                    <div class="header-title" id="currentTitle">Executive Summary</div>
+                    <div class="header-meta">Interactive Product Journey Map • NestMatch UAE v2.14.0</div>
+                </div>
+                <div class="header-meta">Gate: G6 — Pre-Demo | Status: Demo Ready</div>
+            </div>
+
+            <div class="content scrollbar">
+                <!-- SECTION 1: EXECUTIVE SUMMARY -->
+                <div id="summary" class="section active">
+                    <div class="section-title">Executive Summary</div>
+                    <div class="section-subtitle">Compliance-first property discovery platform for Dubai shared housing</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">What is NestMatch UAE?</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p>NestMatch UAE is a compliance-first property discovery platform solving Dubai's grey market shared housing crisis. We list <strong>ROOMS not bed-spaces</strong> — maximum 1 tenant per bedroom, municipality-permitted properties only, bilingual DLD agreements, and full KYC/AML verification.</p>
+                            <p style="margin-top: 10px;"><strong>The Problem:</strong> Grey market bed-space listings on Dubizzle, PropertyFinder, Bayut, and Facebook Marketplace violate Dubai Law No. 4 of 2026 (housing occupancy standards). Thousands of tenants live in unregulated shared bedrooms with no legal protections, no lease agreements, and no recourse.</p>
+                            <p style="margin-top: 10px;"><strong>Our Solution:</strong> NestMatch verifies every property, enforces 1 tenant per room, generates DLD-compliant bilingual viewing agreements, and builds a trust layer through tiered verification (UAE PASS OAuth), occupant profiles, and GCC Score matching. Landlords, agents, and tenants all benefit from compliance and transparency.</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">15</div>
+                            <div class="metric-label">Approved Personas</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">12</div>
+                            <div class="metric-label">Properties</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">3</div>
+                            <div class="metric-label">Verification Tiers</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">28+</div>
+                            <div class="metric-label">API Routes</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🔴 Hard Constraints (Never Violate)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong style="color: #ef4444;">🚫 No payment processing</strong> — Requires CBUAE licence (out of scope)</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 No lease/tenancy contract drafting</strong> — Requires RERA broker licence (out of scope)</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 No escrow, deposit holding, rent collection</strong> — Financial services licence required</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 Star-only ratings (no text)</strong> — UAE Cybercrime Law § 34 (text reviews = defamation risk)</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 No twin share, bed-space, or shared bedroom listings</strong> — Law No. 4 of 2026 violation. maxLegalOccupancy = number of bedrooms (1 person each).</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 Identity fields always masked</strong> — Emirates ID, passport, UAE PASS ID hidden in UI. KYC docs only in R2 KYC_DOCS bucket, never IMAGES bucket.</p>
+                            <p style="margin-top: 8px;"><strong style="color: #ef4444;">🚫 Never set verification_tier to 'gold' without UAE PASS OAuth completing</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Tech Stack & Infrastructure</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Frontend:</strong> React 19 + TypeScript + Vite → Auto-deploy on Vercel</p>
+                            <p style="margin-top: 8px;"><strong>Backend:</strong> Cloudflare Workers + Hono framework + D1 (SQLite) + R2 (object storage)</p>
+                            <p style="margin-top: 8px;"><strong>API Fallback:</strong> Frontend health-checks backend (3s timeout), caches result for 30s. If backend down, falls back to mock data in /src/data/mockData.ts. Zero UI disruption either way.</p>
+                            <p style="margin-top: 8px;"><strong>Database:</strong> 24 D1 tables, state machine audit logs, KYC document storage</p>
+                            <p style="margin-top: 8px;"><strong>Live URLs:</strong><br>
+                            • Frontend: <span style="color: #3b82f6;">https://nest-match-uae.vercel.app</span><br>
+                            • Backend: <span style="color: #3b82f6;">https://nest-match-uae.pushkar-nagela.workers.dev</span><br>
+                            • Repo: <span style="color: #3b82f6;">https://github.com/HotspotVPN/Nest_Match_UAE</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: ALL 15 PERSONAS -->
+                <div id="personas" class="section">
+                    <div class="section-title">All 15 Approved Personas</div>
+                    <div class="section-subtitle">Complete canon list (LOCKED) — these are the verified users who power the demo</div>
+
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="personaSearch" class="search-box" placeholder="Search personas by name, role, email..." onkeyup="filterCards('personaSearch', 'personaGrid')">
+                    </div>
+
+                    <div id="personaGrid" class="persona-grid"></div>
+                </div>
+
+                <!-- SECTION 3: 12 PROPERTIES -->
+                <div id="properties" class="section">
+                    <div class="section-title">All 12 Properties</div>
+                    <div class="section-subtitle">Municipality-verified properties with occupancy tracking and compliance status</div>
+
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="propertySearch" class="search-box" placeholder="Search properties by district, title, landlord..." onkeyup="filterCards('propertySearch', 'propertyGrid')">
+                    </div>
+
+                    <div id="propertyGrid" class="property-grid"></div>
+                </div>
+
+                <!-- SECTION 4: VIEWING STATES -->
+                <div id="viewings" class="section">
+                    <div class="section-title">Viewing State Machine & Active Viewings</div>
+                    <div class="section-subtitle">7 states, 7 active viewings, audit log for every transition</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Viewing State Machine Flow</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="state-machine">
+                                <div class="state-node">PENDING</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">CONFIRMED</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">AGREEMENT_SENT</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">AGENT_SIGNED</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node active">FULLY_SIGNED</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">COMPLETED</div>
+                            </div>
+                            <p style="margin-top: 15px; font-size: 12px; color: #94a3b8;">Every state transition writes to viewing_events (audit log). FULLY_SIGNED triggers room_occupancy → pending_approval.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">7 Active Viewings</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tenant</th>
+                                        <th>Property</th>
+                                        <th>State</th>
+                                        <th>Agreement</th>
+                                        <th>Last Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewingsList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: USER JOURNEYS -->
+                <div id="journeys" class="section">
+                    <div class="section-title">User Journey Flows</div>
+                    <div class="section-subtitle">4 roles, 4 distinct journeys, unified platform</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🔍 Searching Tenant Journey</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>Land on Homepage</strong> — Browse properties freely (Tier 1+)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>Browse & Filter</strong> — Search by district, price, amenities, occupant lifestyle</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>View Listing Detail</strong> — See full occupancy, co-tenants (if Tier 2), ratings, amenities</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>Request Viewing</strong> — Requires Tier 0+, generates viewing agreement</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Chat with Landlord/Agent</strong> — In-app property viewing chat</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Sign Viewing Agreement</strong> — Bilingual Arabic/English DLD form</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">7</div>
+                                <div class="flow-step-text"><strong>Attend Viewing</strong> — Landlord confirms via platform</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">8</div>
+                                <div class="flow-step-text"><strong>Move In & Become Residing Tenant</strong> — Access house chat, maintenance, rent ledger, Ejari docs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🏠 Residing Tenant Journey</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>View My Property</strong> — Dashboard showing co-tenants, house rules, maintenance status</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>House Chat</strong> — Co-tenants + landlord/agent in one place</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>Report Maintenance</strong> — Ticketing system with escalation</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>View Rent Ledger</strong> — Payment history and upcoming due dates</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Access Ejari Documents</strong> — Lease storage and contract tracking</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Build GCC Score</strong> — Earn points through reviews, ratings, compliance</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">7</div>
+                                <div class="flow-step-text"><strong>Rate Property</strong> — Star-only ratings (no text, UAE Cybercrime Law compliant)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">8</div>
+                                <div class="flow-step-text"><strong>Give Notice & Move Out</strong> — Trigger occupancy state transition, audit logged</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🔑 Landlord & Agent Journey</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>Dashboard Overview</strong> — All properties at a glance: occupancy, pending viewings, applications</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>Manage Properties</strong> — Add property (with permits: Makani, Trakheesi, Municipality), edit rooms, pricing, house rules</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>Review Viewing Requests</strong> — Approve or decline, triggers agreement generation</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>Sign Agreements</strong> — Digital signatures on viewing/tenancy agreements</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Manage Tenants</strong> — Co-tenants in house chat, occupancy updates, notice tracking</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Track Maintenance</strong> — Ticketing system with tenant escalations</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">7</div>
+                                <div class="flow-step-text"><strong>Upload Ejari Documents</strong> — Contract storage, legal compliance tracking</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">8</div>
+                                <div class="flow-step-text"><strong>Rent Tracking & Analytics</strong> — Monthly income, occupancy history, compliance metrics</div>
+                            </div>
+                            <div style="margin-top: 15px; font-size: 12px; color: #94a3b8;"><strong>Agent-Specific:</strong> Same as landlord, but only for managed_properties. Commission tracking. RERA licence displayed on profile.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 6: TIER SYSTEM -->
+                <div id="tiers" class="section">
+                    <div class="section-title">Verification Tier System</div>
+                    <div class="section-subtitle">3 tiers, state machine, KYC/AML compliance, UAE PASS OAuth</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Tier Architecture</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p style="margin-bottom: 15px; font-size: 12px; color: #94a3b8;">Note: Naming inconsistency known (TD-001). Internal value ≠ display label.</p>
+
+                            <div class="tier-level tier1">
+                                <div class="tier-name tier1">Tier 1 — Verified</div>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Internal Code:</strong> <code style="color: #3b82f6;">tier1_unverified</code></p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Authentication:</strong> Email/Google only, no documents required</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Platform Access:</strong> Browse only — blurred occupant profiles, locked contact info</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Users:</strong> Liam O'Brien (S008), Amara Diallo (S009)</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Upgrade Path:</strong> Upload passport + visa OR Emirates ID → Tier 0</p>
+                            </div>
+
+                            <div class="tier-level tier0">
+                                <div class="tier-name tier0">Tier 0 — Explorer</div>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Internal Code:</strong> <code style="color: #22c55e;">tier0_passport</code></p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Authentication:</strong> Passport + visa uploaded OR Emirates ID uploaded (KYC review required)</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Platform Access:</strong> Request viewings, send chat messages, sign DLD viewing agreements</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Users:</strong> James Okafor (S005), Sofia Kowalski (S006), Ravi Menon (S007)</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Upgrade Path:</strong> Complete UAE PASS OAuth (Emirates ID verified) → Tier 2</p>
+                            </div>
+
+                            <div class="tier-level tier2">
+                                <div class="tier-name tier2">Tier 2 — Gold</div>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Internal Code:</strong> <code style="color: #f59e0b;">tier2_uae_pass</code></p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Authentication:</strong> UAE PASS OAuth verified (Emirates ID, full KYC/AML)</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Platform Access:</strong> Full access — all features, applications, contracts, GCC Score, premium matching</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Premium Status:</strong> Automatically granted (overlaid on tier). Access: occupant profiles, resident reviews, GCC Score boost, priority support</p>
+                                <p style="font-size: 12px; margin: 8px 0;"><strong>Users (10):</strong> Ahmed (L001), Fatima (L002), Khalid (A001), Tariq (A002), Priya (S001), Marcus (S002), Aisha (S003), James Morrison (S004), Sara (ADM001), Rashid (ADM002)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Source of Truth Functions</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Location:</strong> <code style="color: #3b82f6;">src/utils/accessControl.ts</code></p>
+                            <p style="margin-top: 10px;"><strong>getTierLabel(tier_code)</strong> → Returns display label:<br>
+                            • <code>tier1_unverified</code> → "Tier 1 — Verified"<br>
+                            • <code>tier0_passport</code> → "Tier 0 — Explorer"<br>
+                            • <code>tier2_uae_pass</code> → "Tier 2 — Gold"</p>
+                            <p style="margin-top: 10px;"><strong>getTierColor(tier_code)</strong> → Returns brand color:<br>
+                            • <code>tier1_unverified</code> → #3b82f6 (blue)<br>
+                            • <code>tier0_passport</code> → #22c55e (green)<br>
+                            • <code>tier2_uae_pass</code> → #f59e0b (gold)</p>
+                            <p style="margin-top: 10px; color: #ef4444;"><strong>Rule:</strong> Never hardcode tier strings. Always use these functions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 7: ONBOARDING FLOWS -->
+                <div id="onboarding" class="section">
+                    <div class="section-title">Onboarding Flows</div>
+                    <div class="section-subtitle">3 user types, 3 complete flows, signup to Tier 2 Gold</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🆕 Fresh Tenant to Dubai (New to Platform)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>Land on NestMatch Homepage</strong> — Browse properties freely (no auth required)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>Click "Request Viewing"</strong> → Redirected to signup (flows to /register/tenant)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>Register with Email or Google</strong> → Tier 1 (Verified) — browse only, blurred profiles</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>Upload Passport + Visa (or Emirates ID)</strong> → KYC review → Tier 0 (Explorer)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Complete UAE PASS OAuth</strong> → Emirates ID verified → Tier 2 Gold</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Full Platform Access + Auto-Premium</strong> — Request viewings, chat, sign agreements, access occupant profiles, GCC Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🔄 Existing Tenant in Shared Housing (Landlord-Invited)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>Landlord Registers on NestMatch</strong> → Adds property → Lists rooms</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>Landlord Invites Co-Tenants</strong> → "Your landlord has listed [Property] on NestMatch — join now"</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>Existing Tenant Signs Up</strong> → Tier 1 (browse only)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>Upload Passport/Visa → KYC Review</strong> → Tier 0</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Complete UAE PASS</strong> → Tier 2 Gold</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Tenant Now Appears as "Residing"</strong> — Occupancy shows "1/[total rooms]" assigned</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">7</div>
+                                <div class="flow-step-text"><strong>Access All Resident Features</strong> — House chat, maintenance tickets, rent ledger, Ejari docs, GCC Score, rate property</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🏢 Landlord/Agent Onboarding</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-step">
+                                <div class="flow-step-number">1</div>
+                                <div class="flow-step-text"><strong>Register</strong> → Email or Google → Tier 1</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">2</div>
+                                <div class="flow-step-text"><strong>Upload Emirates ID</strong> → KYC review → Tier 0</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">3</div>
+                                <div class="flow-step-text"><strong>Complete UAE PASS OAuth</strong> → Tier 2 Gold (required for landlords)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">4</div>
+                                <div class="flow-step-text"><strong>Add Property</strong> → Upload Municipality permits (Makani, Trakheesi, Municipality approval)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">5</div>
+                                <div class="flow-step-text"><strong>Set Rooms & Pricing</strong> → 1 tenant per bedroom (Law No. 4 of 2026 enforced)</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">6</div>
+                                <div class="flow-step-text"><strong>Property Goes Live</strong> → Searchable on Browse page, property rating section visible</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">7</div>
+                                <div class="flow-step-text"><strong>Receive Viewing Requests</strong> → Approve/decline → Generate agreements</div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-step-number">8</div>
+                                <div class="flow-step-text"><strong>Full Dashboard Access</strong> — Analytics, tenant management, Ejari uploads, rent tracking</div>
+                            </div>
+                            <div style="margin-top: 15px; font-size: 12px; color: #94a3b8;"><strong>Agent-Specific:</strong> After Tier 2, add RERA licence number. Can only manage properties delegated by landlords.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 8: CHAT & COMMUNICATIONS -->
+                <div id="chat" class="section">
+                    <div class="section-title">Chat & Communication Map</div>
+                    <div class="section-subtitle">2 chat types: Property chats (post-tenancy) & Viewing chats (pre-tenancy)</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🏠 Property Chats (In-House Communication)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p style="margin-bottom: 15px; font-size: 12px; color: #94a3b8;">Post-tenancy: co-tenants + landlord/agent in one place for day-to-day house communications</p>
+                            <table class="table" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Channel ID</th>
+                                        <th>Property</th>
+                                        <th>Members</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ch-prop-p011</td>
+                                        <td>JLT Cluster D (P011)</td>
+                                        <td>Priya, Fatima, Tariq</td>
+                                        <td>House rules, maintenance, rent coordination</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-prop-p012</td>
+                                        <td>Marina Princess (P012)</td>
+                                        <td>Marcus, Ahmed, Khalid</td>
+                                        <td>House rules, maintenance, rent coordination</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-prop-p001</td>
+                                        <td>Deira (P001)</td>
+                                        <td>Liam, Ahmed, Tariq</td>
+                                        <td>House rules, maintenance, rent coordination</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-prop-p003</td>
+                                        <td>Al Qusais (P003)</td>
+                                        <td>Sofia, Fatima, Khalid</td>
+                                        <td>House rules, maintenance, rent coordination</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">👁️ Viewing Chats (Pre-Tenancy Enquiries)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p style="margin-bottom: 15px; font-size: 12px; color: #94a3b8;">Pre-tenancy: Tenant ↔ Landlord/Agent for viewing scheduling and property questions</p>
+                            <table class="table" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Channel ID</th>
+                                        <th>Tenant</th>
+                                        <th>Landlord/Agent</th>
+                                        <th>Property</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ch-priya-ahmed</td>
+                                        <td>Priya Sharma</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>Marina P012</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-ravi-fatima</td>
+                                        <td>Ravi Menon</td>
+                                        <td>Fatima Hassan</td>
+                                        <td>JLT P011</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-sofia-ahmed</td>
+                                        <td>Sofia Kowalski</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>Marina P012</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-james-khalid</td>
+                                        <td>James Morrison</td>
+                                        <td>Khalid Al Rashid</td>
+                                        <td>Marina P012</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ch-aisha-ahmed</td>
+                                        <td>Aisha Patel</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>DSO P008</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 9: PAGES MAP -->
+                <div id="pages" class="section">
+                    <div class="section-title">Platform Pages Map</div>
+                    <div class="section-subtitle">24 routes, 3 access levels, complete user journey coverage</div>
+
+                    <div id="pagesList"></div>
+                </div>
+
+                <!-- SECTION 10: COMPETITIVE DIFFERENTIATION -->
+                <div id="competitive" class="section">
+                    <div class="section-title">Competitive Differentiation</div>
+                    <div class="section-subtitle">NestMatch vs Dubizzle, PropertyFinder, Bayut, Facebook Marketplace</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Feature Comparison</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <div id="competitiveTable"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 11: AGREEMENTS & DOCUMENTS -->
+                <div id="agreements" class="section">
+                    <div class="section-title">Agreements & Documents</div>
+                    <div class="section-subtitle">4 DLD viewing agreements + 5 Ejari contracts (bilingual, digital signatures)</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">DLD Viewing Agreements (Bilingual)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <table class="table" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Agreement ID</th>
+                                        <th>Tenant</th>
+                                        <th>Landlord</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Signatures</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>NM-VA-2026-IEW01</td>
+                                        <td>James Morrison</td>
+                                        <td>Khalid Al Rashid</td>
+                                        <td>Marina P012</td>
+                                        <td><span class="badge badge-green">FULLY SIGNED</span></td>
+                                        <td>✓ James, ✓ Khalid</td>
+                                    </tr>
+                                    <tr>
+                                        <td>NM-VA-2026-ISH01</td>
+                                        <td>Aisha Patel</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>DSO P008</td>
+                                        <td><span class="badge badge-green">FULLY SIGNED</span></td>
+                                        <td>✓ Aisha, ✓ Ahmed</td>
+                                    </tr>
+                                    <tr>
+                                        <td>NM-VA-2026-PRI01</td>
+                                        <td>Priya Sharma</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>Business Bay P010</td>
+                                        <td><span class="badge badge-green">FULLY SIGNED</span></td>
+                                        <td>✓ Priya, ✓ Ahmed</td>
+                                    </tr>
+                                    <tr>
+                                        <td>NM-VA-2026-SOF01</td>
+                                        <td>Sofia Kowalski</td>
+                                        <td>Ahmed Al Maktoum</td>
+                                        <td>Marina P012</td>
+                                        <td><span class="badge badge-blue">UNSIGNED</span></td>
+                                        <td>⏳ Sofia, ⏳ Ahmed</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">Ejari Documents (Contract Storage)</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <table class="table" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Ejari ID</th>
+                                        <th>Tenant</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Contract Year</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>EJ-2026-001234</td>
+                                        <td>Priya Sharma</td>
+                                        <td>Business Bay P010</td>
+                                        <td><span class="badge badge-green">ACTIVE</span></td>
+                                        <td>2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EJ-2026-001235</td>
+                                        <td>Marcus Chen</td>
+                                        <td>Business Bay P010</td>
+                                        <td><span class="badge badge-green">ACTIVE</span></td>
+                                        <td>2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EJ-2026-001567</td>
+                                        <td>Aisha Patel</td>
+                                        <td>JLT P011</td>
+                                        <td><span class="badge badge-green">ACTIVE</span></td>
+                                        <td>2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EJ-2025-008765</td>
+                                        <td>James Morrison</td>
+                                        <td>Silicon Oasis P008</td>
+                                        <td><span class="badge badge-red">EXPIRED</span></td>
+                                        <td>2025</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EJ-2026-003456</td>
+                                        <td>Liam O'Brien</td>
+                                        <td>Dubai Marina P012</td>
+                                        <td><span class="badge badge-green">ACTIVE</span></td>
+                                        <td>2026</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 12: ARCHITECTURE -->
+                <div id="architecture" class="section">
+                    <div class="section-title">Technical Architecture</div>
+                    <div class="section-subtitle">Modern, serverless, state-machine driven, zero single point of failure</div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🎨 Frontend Stack</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Framework:</strong> React 19 (latest with new hooks)</p>
+                            <p style="margin-top: 8px;"><strong>Language:</strong> TypeScript (strict mode, zero-tolerance on type errors)</p>
+                            <p style="margin-top: 8px;"><strong>Build Tool:</strong> Vite (fast HMR, optimized production builds)</p>
+                            <p style="margin-top: 8px;"><strong>Deployment:</strong> Vercel (auto-deploy on git push)</p>
+                            <p style="margin-top: 8px;"><strong>Key Components:</strong> Navbar, ChatPanel, ViewingsPanel, ViewingAgreementModal, LeaseHandoffCard, DemoControls, Toast, UAEPassOverlay, PassportKycModal, ComplianceFlow, InboxBadge, ProtectedRoute</p>
+                            <p style="margin-top: 8px;"><strong>State Management:</strong> React Context (AuthContext, DemoStateContext, ToastContext)</p>
+                            <p style="margin-top: 8px;"><strong>API Strategy:</strong> Smart fallback to mock data if backend unreachable (3s health check, 30s cache)</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">⚙️ Backend Stack</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Runtime:</strong> Cloudflare Workers (serverless, edge-first, global CDN)</p>
+                            <p style="margin-top: 8px;"><strong>Web Framework:</strong> Hono (lightweight, TypeScript-first, fast routing)</p>
+                            <p style="margin-top: 8px;"><strong>Database:</strong> Cloudflare D1 (SQLite, serverless, automatic backups)</p>
+                            <p style="margin-top: 8px;"><strong>Object Storage:</strong> Cloudflare R2 (KYC_DOCS bucket, IMAGES bucket, cost-optimized)</p>
+                            <p style="margin-top: 8px;"><strong>Authentication:</strong> Custom JWT + OAuth 2.0 (Google, UAE PASS)</p>
+                            <p style="margin-top: 8px;"><strong>Database Tables:</strong> 24 tables including state machine audit logs (occupancy_events, viewing_events, verification_events, tenancy_events)</p>
+                            <p style="margin-top: 8px;"><strong>API Routes:</strong> 28+ routes covering auth, properties, users, viewings, agreements, KYC, occupancy, GCC, ratings, payments, inbox, Ejari, maintenance, chat</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" onclick="toggleCard(this)">
+                            <div class="card-title">🔄 State Machines</div>
+                            <div class="card-toggle">▶</div>
+                        </div>
+                        <div class="card-content">
+                            <p style="margin-bottom: 15px;"><strong>Every major entity is a state machine. Every transition is audit-logged.</strong></p>
+
+                            <p style="margin-top: 15px;"><strong>Room Occupancy States:</strong></p>
+                            <div class="state-machine" style="margin: 10px 0;">
+                                <div class="state-node">available</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">pending_approval</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">occupied</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">notice_given</div>
+                                <div class="state-arrow">→</div>
+                                <div class="state-node">available</div>
+                            </div>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">Every transition writes to occupancy_events audit log. Never go below 0 or above maxLegalOccupancy.</p>
+
+                            <p style="margin-top: 15px;"><strong>Viewing States:</strong></p>
+                            <p style="font-size: 12px; color: #94a3b8;">PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED → FULLY_SIGNED → COMPLETED | NO_SHOW | CANCELLED</p>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Every state transition writes to viewing_events. FULLY_SIGNED triggers room_occupancy → pending_approval.</p>
+
+                            <p style="margin-top: 15px;"><strong>User Verification States:</strong></p>
+                            <p style="font-size: 12px; color: #94a3b8;">tier1_unverified → tier0_passport → tier2_uae_pass</p>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Every state transition writes to verification_events. KYC documents stored only in R2 KYC_DOCS bucket.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const personas = [
+            { id: 'L001', name: 'Ahmed Al Maktoum', role: 'Landlord', tier: 'tier2_uae_pass', email: 'ahmed@nestmatch.ae', nationality: 'Emirati', owns: 'P001, P004, P006, P008, P010, P012', rent: 'Variable', gcc: '-', premium: 'N/A', monthly: 'AED 28,000' },
+            { id: 'L002', name: 'Fatima Hassan', role: 'Landlord', tier: 'tier2_uae_pass', email: 'fatima@nestmatch.ae', nationality: 'Emirati', owns: 'P002, P003, P005, P007, P009, P011', rent: 'Variable', gcc: '-', premium: 'N/A', monthly: 'AED 14,000' },
+            { id: 'A001', name: 'Khalid Al Rashid', role: 'Agent', tier: 'tier2_uae_pass', email: 'khalid@dubaipropertygroup.ae', nationality: 'Emirati', owns: 'Manages P003, P012', rent: '-', gcc: '-', premium: 'N/A', monthly: '5% commission' },
+            { id: 'A002', name: 'Tariq Mahmood', role: 'Agent', tier: 'tier2_uae_pass', email: 'tariq@agency.ae', nationality: 'Pakistani', owns: 'Manages multiple', rent: '-', gcc: '-', premium: 'N/A', monthly: '5% commission' },
+            { id: 'S001', name: 'Priya Sharma', role: 'Residing Tenant', tier: 'tier2_uae_pass', email: 'priya@nestmatch.ae', nationality: 'Indian', owns: 'P011 (JLT)', rent: 'AED 3,200', gcc: '85', premium: 'Yes', monthly: 'UX Designer @ DIFC' },
+            { id: 'S002', name: 'Marcus Chen', role: 'Residing Tenant', tier: 'tier2_uae_pass', email: 'marcus.chen@email.com', nationality: 'Singaporean', owns: 'P012 (Marina)', rent: 'AED 3,500', gcc: '70', premium: 'Yes', monthly: 'Software Engineer' },
+            { id: 'S003', name: 'Aisha Patel', role: 'Searching Tenant', tier: 'tier2_uae_pass', email: 'aisha.patel@email.com', nationality: 'British-Indian', owns: 'Searching', rent: '-', gcc: '92', premium: 'Yes', monthly: 'Strategy Consultant' },
+            { id: 'S004', name: 'James Morrison', role: 'Searching Tenant', tier: 'tier2_uae_pass', email: 'james.morrison@email.com', nationality: 'British', owns: 'P004 (Bur Dubai)', rent: 'AED 1,000', gcc: '78', premium: 'Yes', monthly: 'Data Analyst' },
+            { id: 'S005', name: 'James Okafor', role: 'Searching Tenant', tier: 'tier0_passport', email: 'james@nestmatch.ae', nationality: 'Nigerian', owns: 'Searching', rent: '-', gcc: '-', premium: 'No', monthly: 'Data Engineer' },
+            { id: 'S006', name: 'Sofia Kowalski', role: 'Residing Tenant', tier: 'tier0_passport', email: 'sofia@nestmatch.ae', nationality: 'Polish', owns: 'P003 (Al Qusais)', rent: 'AED 800', gcc: '-', premium: 'No', monthly: 'Marketing Manager' },
+            { id: 'S007', name: 'Ravi Menon', role: 'Searching Tenant', tier: 'tier0_passport', email: 'ravi.menon@gmail.com', nationality: 'Indian', owns: 'Searching', rent: '-', gcc: '-', premium: 'No', monthly: 'Finance Analyst' },
+            { id: 'S008', name: 'Liam O\'Brien', role: 'Residing Tenant', tier: 'tier1_unverified', email: 'liam@nestmatch.ae', nationality: 'Irish', owns: 'P001 (Deira)', rent: 'AED 500', gcc: '-', premium: 'No', monthly: 'Job Seeker' },
+            { id: 'S009', name: 'Amara Diallo', role: 'Searching Tenant', tier: 'tier1_unverified', email: 'amara.diallo@email.com', nationality: 'Senegalese', owns: 'P009 (Al Barsha)', rent: 'AED 2,500', gcc: '-', premium: 'No', monthly: 'Freelance Photographer' },
+            { id: 'ADM001', name: 'Sara Al Hashimi', role: 'Compliance Admin', tier: 'tier2_uae_pass', email: 'compliance@nestmatch.ae', nationality: 'Emirati', owns: '-', rent: '-', gcc: '-', premium: 'N/A', monthly: 'Admin' },
+            { id: 'ADM002', name: 'Rashid Khalil', role: 'Operations Admin', tier: 'tier2_uae_pass', email: 'operations@nestmatch.ae', nationality: 'Emirati', owns: '-', rent: '-', gcc: '-', premium: 'N/A', monthly: 'Admin' }
+        ];
+
+        const properties = [
+            { id: 'P001', title: 'Deira Studio', district: 'Deira', rent: 500, rooms: 3, occupied: 1, residents: 'Liam (S008)', landlord: 'Ahmed', agent: 'Tariq' },
+            { id: 'P002', title: 'Intl City Apt', district: 'International City', rent: 600, rooms: 2, occupied: 0, residents: 'Empty', landlord: 'Fatima', agent: '-' },
+            { id: 'P003', title: 'Al Qusais Tower', district: 'Al Qusais', rent: 800, rooms: 4, occupied: 1, residents: 'Sofia (S006)', landlord: 'Fatima', agent: 'Khalid' },
+            { id: 'P004', title: 'Bur Dubai Flat', district: 'Bur Dubai', rent: 1000, rooms: 2, occupied: 1, residents: 'James M (S004)', landlord: 'Ahmed', agent: '-' },
+            { id: 'P005', title: 'Al Nahda Complex', district: 'Al Nahda', rent: 1200, rooms: 2, occupied: 0, residents: 'Empty', landlord: 'Fatima', agent: 'Tariq' },
+            { id: 'P006', title: 'Discovery Gardens', district: 'Discovery Gardens', rent: 1500, rooms: 2, occupied: 1, residents: 'Aisha (S003)', landlord: 'Ahmed', agent: '-' },
+            { id: 'P007', title: 'JVC Villa', district: 'JVC', rent: 1800, rooms: 4, occupied: 0, residents: 'Empty', landlord: 'Fatima', agent: 'Tariq' },
+            { id: 'P008', title: 'DSO Tech Hub', district: 'Dubai Silicon Oasis', rent: 2200, rooms: 2, occupied: 0, residents: 'Empty', landlord: 'Ahmed', agent: '-' },
+            { id: 'P009', title: 'Al Barsha Penthouse', district: 'Al Barsha', rent: 2500, rooms: 3, occupied: 1, residents: 'Amara (S009)', landlord: 'Fatima', agent: 'Tariq' },
+            { id: 'P010', title: 'Business Bay Suite', district: 'Business Bay', rent: 2800, rooms: 2, occupied: 0, residents: 'Empty', landlord: 'Ahmed', agent: '-' },
+            { id: 'P011', title: 'JLT Cluster D', district: 'JLT', rent: 3200, rooms: 3, occupied: 1, residents: 'Priya (S001)', landlord: 'Fatima', agent: 'Tariq' },
+            { id: 'P012', title: 'Marina Princess Tower', district: 'Dubai Marina', rent: 3500, rooms: 2, occupied: 1, residents: 'Marcus (S002)', landlord: 'Ahmed', agent: 'Khalid' }
+        ];
+
+        const viewings = [
+            { id: 'view-1', tenant: 'James Morrison', property: 'Marina P012', state: 'FULLY_SIGNED', agreement: 'NM-VA-2026-IEW01', date: '20 Mar 2026' },
+            { id: 'view-2', tenant: 'Aisha Patel', property: 'DSO P008', state: 'PENDING_LANDLORD_APPROVAL', agreement: '-', date: '19 Mar 2026' },
+            { id: 'vb-priya-1', tenant: 'Priya Sharma', property: 'Marina P012', state: 'CONFIRMED', agreement: '-', date: '18 Mar 2026' },
+            { id: 'vb-ravi-1', tenant: 'Ravi Menon', property: 'JLT P011', state: 'PENDING', agreement: '-', date: '17 Mar 2026' },
+            { id: 'vb-priya-3', tenant: 'Priya Sharma', property: 'Business Bay P010', state: 'COMPLETED', agreement: 'NM-VA-2026-PRI01', date: '15 Mar 2026' },
+            { id: 'vb-aisha-1', tenant: 'Aisha Patel', property: 'DSO P008', state: 'FULLY_SIGNED', agreement: 'NM-VA-2026-ISH01', date: '14 Mar 2026' },
+            { id: 'vb-sofia-1', tenant: 'Sofia Kowalski', property: 'Marina P012', state: 'AGREEMENT_SENT', agreement: 'NM-VA-2026-SOF01', date: '13 Mar 2026' }
+        ];
+
+        const pages = [
+            { path: '/', name: 'Home', access: 'Public', desc: 'Hero section, featured properties, sign-up CTAs' },
+            { path: '/login', name: 'Login', access: 'Public', desc: 'Email/Google/UAE PASS authentication' },
+            { path: '/register', name: 'Register Landing', access: 'Public', desc: 'Choose tenant or landlord path' },
+            { path: '/register/tenant', name: 'Tenant Signup', access: 'Public', desc: 'Email/Google registration' },
+            { path: '/register/landlord', name: 'Landlord Signup', access: 'Public', desc: 'Email/Google + UAE PASS required' },
+            { path: '/browse', name: 'Browse Properties', access: 'Public', desc: 'All properties, filters, search, occupancy' },
+            { path: '/how-it-works', name: 'How It Works', access: 'Public', desc: 'Compliance story, user flows, legal info' },
+            { path: '/listing/:id', name: 'Listing Detail', access: 'Public', desc: 'Full property info, occupancy, ratings, request viewing' },
+            { path: '/profile/:id?', name: 'User Profile', access: 'Auth', desc: 'Personal info, KYC status, tier, preferences' },
+            { path: '/viewings', name: 'My Viewings', access: 'Auth', desc: 'Active viewing requests, agreements, history' },
+            { path: '/chat', name: 'Chat', access: 'Auth', desc: 'Property chats, viewing enquiries' },
+            { path: '/maintenance', name: 'Maintenance', access: 'Auth (roommate)', desc: 'Ticket system for co-tenants' },
+            { path: '/inbox', name: 'Inbox', access: 'Auth', desc: 'Messages, notifications, action items' },
+            { path: '/ejari', name: 'Ejari Documents', access: 'Auth', desc: 'Contract storage, history, download' },
+            { path: '/dashboard', name: 'Landlord Dashboard', access: 'Landlord/Agent', desc: 'Overview, viewing requests, applications' },
+            { path: '/residing-dashboard', name: 'Residing Dashboard', access: 'Landlord/Agent', desc: 'Property occupancy, tenants, maintenance' },
+            { path: '/analytics', name: 'Viewing Analytics', access: 'Operations/Compliance', desc: 'Platform metrics, viewing trends' },
+            { path: '/compliance', name: 'Compliance', access: 'Compliance Admin', desc: 'KYC review, tier management, audit logs' },
+            { path: '/customers', name: 'Customer Database', access: 'Operations Admin', desc: 'User CRM, search, export' },
+            { path: '/gcc', name: 'GCC Dashboard', access: 'Auth', desc: 'Score, points, leaderboard, tenant matching' },
+            { path: '/add-property', name: 'Add Property', access: 'Landlord/Agent', desc: 'Create new property, permits, rooms' },
+            { path: '/my-properties', name: 'My Properties', access: 'Landlord/Agent', desc: 'Property management, edit, analytics' },
+            { path: '/privacy', name: 'Privacy Policy', access: 'Public', desc: 'UAE Federal Law No. 45 compliance' },
+            { path: '/terms', name: 'Terms of Service', access: 'Public', desc: 'Legal boundaries, disclaimers' }
+        ];
+
+        // Tier badge helper
+        function getTierBadge(tier) {
+            const badges = {
+                'tier2_uae_pass': '<span class="tier-badge tier-badge-tier2">Tier 2 — Gold</span>',
+                'tier0_passport': '<span class="tier-badge tier-badge-tier0">Tier 0 — Explorer</span>',
+                'tier1_unverified': '<span class="tier-badge tier-badge-tier1">Tier 1 — Verified</span>'
+            };
+            return badges[tier] || tier;
+        }
+
+        // Render personas
+        function renderPersonas() {
+            const grid = document.getElementById('personaGrid');
+            grid.innerHTML = personas.map(p => `
+                <div class="card">
+                    <div class="card-header">
+                        <div style="flex: 1;">
+                            <div class="card-title">${p.name}</div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${p.id} • ${p.role}</div>
+                        </div>
+                    </div>
+                    <div class="card-content" style="display: block;">
+                        <div style="margin-bottom: 10px;">${getTierBadge(p.tier)}</div>
+                        <p style="font-size: 12px; margin-top: 8px;"><strong>Email:</strong> ${p.email}</p>
+                        <p style="font-size: 12px; margin-top: 6px;"><strong>Nationality:</strong> ${p.nationality}</p>
+                        <p style="font-size: 12px; margin-top: 6px;"><strong>Property/Role:</strong> ${p.owns}</p>
+                        <p style="font-size: 12px; margin-top: 6px;"><strong>Monthly:</strong> ${p.monthly}</p>
+                        ${p.gcc !== '-' ? `<p style="font-size: 12px; margin-top: 6px;"><strong>GCC Score:</strong> ${p.gcc}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render properties
+        function renderProperties() {
+            const grid = document.getElementById('propertyGrid');
+            grid.innerHTML = properties.map(p => {
+                const occupancyPct = Math.round((p.occupied / p.rooms) * 100);
+                return `
+                    <div class="property-card">
+                        <div class="property-title">${p.title}</div>
+                        <div class="property-meta">${p.district} • AED ${p.rent}/month</div>
+                        <div style="border-top: 1px solid #334155; padding-top: 10px;">
+                            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;"><strong>Occupancy:</strong> ${p.occupied}/${p.rooms} rooms</div>
+                            <div class="occupancy-bar">
+                                <div class="occupancy-fill" style="width: ${occupancyPct}%"></div>
+                            </div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 8px;">
+                                <div>Residents: ${p.residents}</div>
+                                <div style="margin-top: 6px;">Landlord: ${p.landlord}</div>
+                                ${p.agent !== '-' ? `<div>Agent: ${p.agent}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render viewings table
+        function renderViewings() {
+            const tbody = document.getElementById('viewingsList');
+            tbody.innerHTML = viewings.map(v => `
+                <tr>
+                    <td>${v.id}</td>
+                    <td>${v.tenant}</td>
+                    <td>${v.property}</td>
+                    <td><span class="badge badge-gold">${v.state}</span></td>
+                    <td>${v.agreement || '-'}</td>
+                    <td>${v.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Render pages
+        function renderPages() {
+            const list = document.getElementById('pagesList');
+            list.innerHTML = pages.map(p => `
+                <div class="card">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #3b82f6;">${p.path}</div>
+                            <div style="font-size: 14px; font-weight: 600; margin-top: 8px;">${p.name}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #94a3b8;"><strong>Access:</strong> ${p.access}</div>
+                            <div style="font-size: 12px; color: #cbd5e1; margin-top: 8px;">${p.desc}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render competitive table
+        function renderCompetitive() {
+            const features = [
+                { name: 'Compliance (Law No. 4 2026)', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Municipality Permits Required', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: '1 Tenant per Bedroom Enforced', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Bilingual DLD Agreements', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: '3-Tier Verification (UAE PASS)', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'KYC/AML Screening', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Digital Signatures', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Occupant Profile Matching', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'GCC Score Gamification', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'In-App Chat (Not WhatsApp)', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Maintenance Ticketing', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Ejari Document Storage', nest: 'yes', dub: 'no', pf: 'no', bay: 'no', fb: 'no' },
+                { name: 'Landlord Analytics', nest: 'yes', dub: 'no', pf: 'yes', bay: 'yes', fb: 'no' },
+                { name: 'Listing Availability (millions)', nest: 'no', dub: 'yes', pf: 'yes', bay: 'yes', fb: 'yes' }
+            ];
+
+            const table = document.getElementById('competitiveTable');
+            table.innerHTML = `
+                <table class="table" style="font-size: 11px;">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>NestMatch</th>
+                            <th>Dubizzle</th>
+                            <th>PropertyFinder</th>
+                            <th>Bayut</th>
+                            <th>Facebook</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${features.map(f => `
+                            <tr>
+                                <td>${f.name}</td>
+                                <td>${f.nest === 'yes' ? '✓' : '✗'}</td>
+                                <td>${f.dub === 'yes' ? '✓' : '✗'}</td>
+                                <td>${f.pf === 'yes' ? '✓' : '✗'}</td>
+                                <td>${f.bay === 'yes' ? '✓' : '✗'}</td>
+                                <td>${f.fb === 'yes' ? '✓' : '✗'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Show section
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+
+            const titles = {
+                summary: 'Executive Summary',
+                personas: 'All 15 Personas',
+                properties: 'All 12 Properties',
+                viewings: 'Viewing State Machine',
+                journeys: 'User Journey Flows',
+                tiers: 'Verification Tier System',
+                onboarding: 'Onboarding Flows',
+                chat: 'Chat & Communications',
+                pages: 'Platform Pages Map',
+                competitive: 'Competitive Differentiation',
+                agreements: 'Agreements & Documents',
+                architecture: 'Technical Architecture'
+            };
+            document.getElementById('currentTitle').textContent = titles[id] || id;
+        }
+
+        // Toggle card
+        function toggleCard(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.card-toggle');
+            content.classList.toggle('open');
+            toggle.textContent = content.classList.contains('open') ? '▼' : '▶';
+        }
+
+        // Filter cards
+        function filterCards(searchId, gridId) {
+            const searchTerm = document.getElementById(searchId).value.toLowerCase();
+            const cards = document.getElementById(gridId).querySelectorAll('.card, .property-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPersonas();
+            renderProperties();
+            renderViewings();
+            renderPages();
+            renderCompetitive();
+        });
+    </script>
+</body>
+</html>
