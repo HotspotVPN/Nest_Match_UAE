@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 Format: ## [version] — date · what changed · why
 
+## [2.14.2] — 2026-03-21 · Product Journey Map, FigJam UAT Boards, Docs Overhaul
+
+### Added
+- **NestMatch_Product_Map.html**: 1616-line interactive dark-themed HTML dashboard for investor demo preparation
+  - 12 sections: Executive Summary, 15 Personas, 12 Properties, Viewing State Machine, User Journeys, Tier System, Onboarding Flows, Chat Map, Platform Pages, Competitive Differentiation, Agreements & Documents, Technical Architecture
+  - Sidebar navigation, expandable cards, search/filter, responsive design, zero external dependencies
+- **docs/UAT_FIGJAM_BOARDS.md**: Reference document linking 22 individual FigJam UAT boards
+  - 15 persona boards (one per user with all touchpoints, states, and data relationships)
+  - 7 property/property-group boards (ownership, tenants, viewings, ejari, occupancy)
+- **public/samples/va-NM-VA-2026-PRI01.pdf**: Priya Sharma DLD Viewing Agreement for P010
+
+### Changed
+- **docs/SESSION_LOG.md**: Added session entry for v2.14.2
+- **docs/HISTORY.md**: Updated from Phase 21 (15 Mar) to Phase 32 (21 Mar) — 11 new phases documented
+- **docs/TECH_DEBT.md**: Comprehensive rewrite — 18 items covering all incidents, fixes, corrections, omissions, failed enhancements, production bugs, and removed features as complete audit trail
+- **docs/CHANGELOG.md**: This entry
+
+---
+
 ## [2.14.3] — 2026-03-20 · Line-ending normalisation, docs sync
 
 ### Fixed

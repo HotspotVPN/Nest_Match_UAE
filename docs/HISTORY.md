@@ -107,5 +107,113 @@ This document provides a permanent, high-fidelity record of every development ph
     - Created database migrations and seed scripts to populate the production-ready schema.
     - **v1.5.2 Update:** Instantiated the production D1 database and synchronized final configuration files.
 
+## Phase 22: Viewing Seeding & State Machine Wiring (17 Mar — v2.9.0)
+- **Objective:** Populate D1 with realistic viewing data to power the demo.
+- **Actions:**
+    - Seeded 5 `viewing_bookings`, 4 `viewing_agreements`, 5 `agreement_signatures` into D1.
+    - Fixed `viewing_bookings` CHECK constraint from 6 to 12 status values to support the full state machine (PENDING → CONFIRMED → AGREEMENT_SENT → AGENT_SIGNED → FULLY_SIGNED → COMPLETED | NO_SHOW_TENANT | NO_SHOW_LANDLORD | CANCELLED).
+    - Wired PATCH `/api/agreements/:id/sign` route for digital signature capture.
+
+## Phase 23: QA Fixes & Demo Polish (17 Mar — v2.8.1)
+- **Objective:** Pre-demo bug sweep and quality improvements.
+- **Actions:**
+    - Fixed demo password auto-fill on LoginPage (quickLogin now fills both fields).
+    - Aligned demo emails to D1 canonical format (@nestmatch.ae).
+    - Fixed occupancy wording on ListingDetailPage.
+    - Cleaned console errors (console.error → console.info for non-critical items).
+    - Added scroll-to-top on ListingDetailPage navigation.
+    - Added return path on login redirect.
+    - Added empty state CTAs on ViewingsPage.
+
+## Phase 24: Auth Guard & Governance (18 Mar — v2.9.1, v2.9.2)
+- **Objective:** Secure routes and establish development governance.
+- **Actions:**
+    - Created ProtectedRoute component wrapping 11 authenticated routes.
+    - Built PATCH `/api/agreements/:id/sign` backend route.
+    - Fixed Amara Diallo tier assignment.
+    - Created governance documentation: TECH_DEBT.md, incident report, briefing doc.
+    - Added Data Model Governance section to CLAUDE.md.
+    - Created CLAUDE_MD_GOVERNANCE.md for governance meta-rules.
+    - Added filtered viewings empty state UI.
+
+## Phase 25: ComplianceFlow Component (19 Mar — v2.10.0)
+- **Objective:** Build animated compliance verification flow for investor demo.
+- **Actions:**
+    - Created ComplianceFlow.tsx — 6-step animated compliance verification sequence.
+    - Steps: UAE PASS → RERA Verification → Makani Number → Law No. 4 Check → DocuSign → DLD Registry.
+    - Each step has animated progress indicators, success/loading states, and realistic timing.
+    - Integrated into ListingDetailPage booking modal as pre-booking verification.
+
+## Phase 26: Inbox System (19 Mar — v2.11.0, v2.11.1)
+- **Objective:** Build platform notification and messaging system.
+- **Actions:**
+    - Backend: Created `inbox_messages` table with migration 0009.
+    - Built 5 API routes: GET /, GET /unread-count, PATCH /:id/read, POST /mark-all-read, PATCH /:id/action.
+    - Seeded 7 demo messages (migration 0009), then 8 additional messages (migration 0010) to match canonical seed.
+    - Frontend: Built InboxPage.tsx with 3-tab layout (All, Unread, Action Required).
+    - Created InboxBadge.tsx component with red unread count indicator in Navbar.
+
+## Phase 27: Ejari Documents & Critical Fixes (19 Mar — v2.12.0)
+- **Objective:** Ejari document storage system and critical production bug fixes.
+- **Actions:**
+    - Backend: Created `ejari_documents` table, 5 demo records, 4 API routes.
+    - Frontend: Built EjariDocumentsPage.tsx with navigation for landlord/agent/residing tenants.
+    - **CORS Origin Fix (INCIDENT):** Production 403 errors caused by CORS origin mismatch — `nestmatch` vs `nest-match` in Vercel URL. Fixed in wrangler.toml and cors.ts.
+    - **Auth Login Fix (INCIDENT):** Login was not fetching full user profile from backend, causing blank profiles. Fixed by adding `/api/auth/me` call after login.
+    - Ejari nav shown to residing tenants only (not searching tenants).
+    - Stats bar hidden for tenants (landlord-only aggregate view).
+
+## Phase 28: ID Format Migration (20 Mar — v2.13.0)
+- **Objective:** Standardise all user and property IDs to canonical format.
+- **Actions:**
+    - **Deleted 17 non-canonical users** and 2 non-canonical properties from D1 and mockData.
+    - Migrated all 15 user IDs: landlord-1→L001, roommate-1→S001, agent-1→A001, etc.
+    - Migrated all 12 property IDs: list-entry-1→P001, etc.
+    - Updated 6 D1 data-bearing tables (102 queries) via migration 0014 (11 phases).
+    - Created rollback migration (0014_id_migration_ROLLBACK.sql).
+    - Updated mockData.ts, DemoControls (10 persona IDs), 5 component files.
+    - Auth login() now syncs JWT with backend on persona switch.
+    - Added ejari mock fallback with getEjariForUser helper.
+    - Enhanced CLAUDE.md with session protocol and risk gates.
+    - Created SESSION_PROTOCOL.md and SESSION_LOG.md governance files.
+    - **Resolved TD-003** (orphaned users), **TD-004** (orphaned properties), **TD-005** (ID inconsistency).
+
+## Phase 29: UI Polish & Tier-Gated Features (20 Mar — v2.13.1, v2.13.2, v2.13.3)
+- **Objective:** Post-migration UI refinements, tier-gated content, and document generation.
+- **Actions:**
+    - **v2.13.1:** Created UserBadge component. Added tier-gated roommate visibility on ListingDetailPage (Gold sees full profiles, others see blurred overlay with upgrade prompt). Fixed profile/chat/navbar for new ID format.
+    - **v2.13.2:** LoginPage tier order corrected (Tier 2 → 1 → 0). All 15 personas in DemoControls with tier-grouped display and Residing/Searching badges. Navbar browse link for tenants.
+    - **v2.13.3:** Government-template PDF generation using actual DLD/Ejari PDFs as base templates. pypdf + reportlab overlay engine preserving DLD logos, Arabic text, EJARI watermarks, SGS badges. DocuSign Digital Verification page appended. ViewingAgreementModal DocuSign banners (green signed, blue pending) + PDF download. EjariDocumentsPage DocuSign badges + PDF downloads. ProfilePage Ejari section. 8 sample PDFs generated. Product Director Signoff Report (DOCX). Gate G6 Pre-Demo approved.
+
+## Phase 30: UX Enhancement Release (20 Mar — v2.14.0)
+- **Objective:** Major UX overhaul covering phases P2–P6 from UX Enhancement Roadmap.
+- **Actions:**
+    - RegisterLandingPage fully rewritten as 4-step wizard (UK-style) completely decoupled from signin.
+    - Image carousels on ListingDetailPage with prev/next, dot indicators, photo counter.
+    - Calendar view for ViewingsPage with counter-proposals.
+    - Tag-based filtering on BrowsePage with 11 tag types.
+    - Neighbourhood & landmark sections on ListingDetailPage.
+    - GCC dashboard polish with score trends and improvement tips.
+    - Profile local recommendations section.
+    - HomePage search bar made functional with 10 quick-filter tag chips passing URL params to BrowsePage.
+    - **Zero backend changes** — all UX-only.
+
+## Phase 31: HomePage Rewrite & Search Improvements (20 Mar — v2.14.1, v2.14.3)
+- **Objective:** Complete homepage redesign and intelligent search.
+- **Actions:**
+    - HomePage complete rewrite with enhanced layout and visual polish.
+    - BrowsePage search upgraded with stop-word filtering, multi-word OR matching, and tag-inclusive search haystack.
+    - Full mockData refresh with updated property and user metadata.
+    - v2.14.3: Normalised line endings (CRLF → LF) across 63 files for cross-platform consistency.
+
+## Phase 32: Product Journey Map & UAT Boards (21 Mar — v2.14.2)
+- **Objective:** Investor demo preparation — comprehensive product documentation and UAT tooling.
+- **Actions:**
+    - Created NestMatch_Product_Map.html — 1616-line interactive dark-themed HTML dashboard for investor demo.
+    - 12 sections: Executive Summary, 15 Personas, 12 Properties, Viewing State Machine, User Journeys, Tier System, Onboarding Flows, Chat Map, Platform Pages, Competitive Differentiation, Agreements & Documents, Technical Architecture.
+    - Generated 22 individual FigJam UAT boards (15 personas + 7 property groups) — each mapping every touchpoint, state, and data relationship for UAT testing.
+    - Created docs/UAT_FIGJAM_BOARDS.md as in-repo reference linking all boards.
+    - Comprehensive documentation overhaul: SESSION_LOG.md, HISTORY.md, TECH_DEBT.md, CHANGELOG.md.
+
 ---
-*Last Updated: 2026-03-15*
+*Last Updated: 2026-03-21*
